@@ -19,7 +19,9 @@
 
 //! RPC middleware to collect prometheus metrics on RPC calls.
 
-use jsonrpsee::server::logger::{HttpRequest, Logger, MethodKind, Params, TransportProtocol};
+use jsonrpsee::server::logger::{
+	HttpRequest, Logger, MethodKind, Params, SuccessOrError, TransportProtocol,
+};
 use prometheus_endpoint::{
 	register, Counter, CounterVec, HistogramOpts, HistogramVec, Opts, PrometheusError, Registry,
 	U64,
@@ -177,7 +179,7 @@ impl Logger for RpcMetrics {
 	fn on_result(
 		&self,
 		name: &str,
-		success: bool,
+		success_or_error: SuccessOrError,
 		started_at: Self::Instant,
 		transport: TransportProtocol,
 	) {
@@ -198,7 +200,7 @@ impl Logger for RpcMetrics {
 				name,
 				// the label "is_error", so `success` should be regarded as false
 				// and vice-versa to be registrered correctly.
-				if success { "false" } else { "true" },
+				if success_or_error.is_success() { "false" } else { "true" },
 			])
 			.inc();
 	}

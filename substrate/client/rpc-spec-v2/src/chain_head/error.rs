@@ -19,10 +19,8 @@
 
 //! Error helpers for `chainHead` RPC module.
 
-use jsonrpsee::{
-	core::Error as RpcError,
-	types::error::{CallError, ErrorObject},
-};
+use jsonrpsee::types::error::ErrorObject;
+use sp_blockchain::Error as BlockchainError;
 
 /// ChainHead RPC errors.
 #[derive(Debug, thiserror::Error)]
@@ -80,11 +78,5 @@ impl From<Error> for ErrorObject<'static> {
 			Error::InternalError(_) =>
 				ErrorObject::owned(json_rpc_spec::INTERNAL_ERROR, msg, None::<()>),
 		}
-	}
-}
-
-impl From<Error> for RpcError {
-	fn from(e: Error) -> Self {
-		CallError::Custom(e.into()).into()
 	}
 }

@@ -19,26 +19,27 @@
 
 //! Substrate blockchain API.
 
-use jsonrpsee::{core::RpcResult, proc_macros::rpc};
-use sp_core::bytes::to_hex;
-use sp_rpc::{list::ListOrValue, number::NumberOrHex};
-use sp_runtime::generic::SignedBlock;
-
 pub mod error;
+
+use error::Error;
+use sp_core::bytes::to_hex;
+use sp_runtime::generic::SignedBlock;
+use jsonrpsee::proc_macros::rpc;
+use sp_rpc::{list::ListOrValue, number::NumberOrHex};
 
 #[rpc(client, server)]
 pub trait ChainApi<Number, Hash, Header, Block: codec::Encode> {
 	/// Get header.
 	#[method(name = "chain_getHeader", blocking)]
-	fn header(&self, hash: Option<Hash>) -> RpcResult<Option<Header>>;
+	fn header(&self, hash: Option<Hash>) -> Result<Option<Header>, Error>;
 
 	/// Get header and body of a block.
 	#[method(name = "chain_getBlock", blocking)]
-	fn block(&self, hash: Option<Hash>) -> RpcResult<Option<SignedBlock<Block>>>;
+	fn block(&self, hash: Option<Hash>) -> Result<Option<SignedBlock<Block>>, Error>;
 
 	/// Get a hex-encoded block.
 	#[method(name = "chain_getBlockBin", blocking)]
-	fn block_bin(&self, hash: Option<Hash>) -> RpcResult<Option<String>> {
+	fn block_bin(&self, hash: Option<Hash>) -> Result<Option<String>, Error> {
 		self.block(hash)
 			.map(|opt| opt.map(|signed_block| to_hex(&signed_block.block.encode(), false)))
 	}
@@ -50,11 +51,11 @@ pub trait ChainApi<Number, Hash, Header, Block: codec::Encode> {
 	fn block_hash(
 		&self,
 		hash: Option<ListOrValue<NumberOrHex>>,
-	) -> RpcResult<ListOrValue<Option<Hash>>>;
+	) -> Result<ListOrValue<Option<Hash>>, Error>;
 
 	/// Get hash of the last finalized block in the canon chain.
 	#[method(name = "chain_getFinalizedHead", aliases = ["chain_getFinalisedHead"], blocking)]
-	fn finalized_head(&self) -> RpcResult<Hash>;
+	fn finalized_head(&self) -> Result<Hash, Error>;
 
 	/// All head subscription.
 	#[subscription(
