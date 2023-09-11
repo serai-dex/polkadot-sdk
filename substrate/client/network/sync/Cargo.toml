@@ -24,7 +24,7 @@ async-channel = "2"
 async-trait = "0.1.74"
 codec = { package = "parity-scale-codec", version = "3.6.1", features = ["derive"] }
 futures = "0.3.21"
-libp2p = "0.51.4"
+libp2p = "0.52.3"
 log = "0.4.17"
 mockall = "0.12"
 prost = "0.12"
