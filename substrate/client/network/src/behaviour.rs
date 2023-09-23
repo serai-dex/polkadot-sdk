@@ -46,6 +46,8 @@ pub use crate::request_responses::{InboundFailure, OutboundFailure, ResponseFail
 #[derive(NetworkBehaviour)]
 #[behaviour(to_swarm = "BehaviourOut")]
 pub struct Behaviour<B: BlockT> {
+	/// Connection limits.
+	connection_limits: libp2p::connection_limits::Behaviour,
 	/// All the substrate-specific protocols.
 	substrate: Protocol<B>,
 	/// Periodically pings and identifies the nodes we are connected to, and store information in a
@@ -53,8 +55,6 @@ pub struct Behaviour<B: BlockT> {
 	peer_info: peer_info::PeerInfoBehaviour,
 	/// Discovers nodes of the network.
 	discovery: DiscoveryBehaviour,
-	/// Connection limits.
-	connection_limits: libp2p::connection_limits::Behaviour,
 	/// Generic request-response protocols.
 	request_responses: request_responses::RequestResponsesBehaviour,
 }
