@@ -58,9 +58,7 @@ sp-inherents = { path = "../../../primitives/inherents" }
 sp-keyring = { path = "../../../primitives/keyring" }
 sp-keystore = { path = "../../../primitives/keystore" }
 sp-consensus = { path = "../../../primitives/consensus/common" }
-sp-transaction-storage-proof = { path = "../../../primitives/transaction-storage-proof" }
 sp-io = { path = "../../../primitives/io" }
-sp-statement-store = { path = "../../../primitives/statement-store" }
 
 # client dependencies
 sc-client-api = { path = "../../../client/api" }
@@ -68,11 +66,9 @@ sc-chain-spec = { path = "../../../client/chain-spec" }
 sc-consensus = { path = "../../../client/consensus/common" }
 sc-transaction-pool = { path = "../../../client/transaction-pool" }
 sc-transaction-pool-api = { path = "../../../client/transaction-pool/api" }
-sc-statement-store = { path = "../../../client/statement-store" }
 sc-network = { path = "../../../client/network" }
 sc-network-common = { path = "../../../client/network/common" }
 sc-network-sync = { path = "../../../client/network/sync" }
-sc-network-statement = { path = "../../../client/network/statement" }
 sc-consensus-slots = { path = "../../../client/consensus/slots" }
 sc-consensus-babe = { path = "../../../client/consensus/babe" }
 grandpa = { package = "sc-consensus-grandpa", path = "../../../client/consensus/grandpa" }

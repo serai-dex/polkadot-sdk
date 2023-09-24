@@ -24,7 +24,6 @@ sp-keystore = { path = "../../../primitives/keystore" }
 sp-state-machine = { path = "../../../primitives/state-machine" }
 sp-tracing = { path = "../../../primitives/tracing" }
 sp-trie = { path = "../../../primitives/trie" }
-sp-statement-store = { path = "../../../primitives/statement-store" }
 
 [dev-dependencies]
 criterion = "0.4.0"
@@ -34,12 +33,10 @@ frame-support = { path = "../../../frame/support" }
 frame-system = { path = "../../../frame/system" }
 node-testing = { path = "../testing" }
 pallet-balances = { path = "../../../frame/balances" }
-pallet-contracts = { path = "../../../frame/contracts" }
 pallet-im-online = { path = "../../../frame/im-online" }
 pallet-glutton = { path = "../../../frame/glutton" }
 pallet-sudo = { path = "../../../frame/sudo" }
 pallet-timestamp = { path = "../../../frame/timestamp" }
-pallet-treasury = { path = "../../../frame/treasury" }
 pallet-transaction-payment = { path = "../../../frame/transaction-payment" }
 sp-application-crypto = { path = "../../../primitives/application-crypto" }
 pallet-root-testing = { path = "../../../frame/root-testing" }

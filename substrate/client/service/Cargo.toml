@@ -65,7 +65,6 @@ sc-executor = { path = "../executor" }
 sc-transaction-pool = { path = "../transaction-pool" }
 sp-transaction-pool = { path = "../../primitives/transaction-pool" }
 sc-transaction-pool-api = { path = "../transaction-pool/api" }
-sp-transaction-storage-proof = { path = "../../primitives/transaction-storage-proof" }
 sc-rpc-server = { path = "../rpc-servers" }
 sc-rpc = { path = "../rpc" }
 sc-rpc-spec-v2 = { path = "../rpc-spec-v2" }

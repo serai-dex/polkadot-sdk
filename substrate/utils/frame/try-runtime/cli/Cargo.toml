@@ -26,7 +26,6 @@ sp-runtime = { path = "../../../../primitives/runtime" }
 sp-rpc = { path = "../../../../primitives/rpc" }
 sp-state-machine = { path = "../../../../primitives/state-machine" }
 sp-timestamp = { path = "../../../../primitives/timestamp" }
-sp-transaction-storage-proof = { path = "../../../../primitives/transaction-storage-proof" }
 sp-version = { path = "../../../../primitives/version" }
 sp-debug-derive = { path = "../../../../primitives/debug-derive" }
 sp-api = { path = "../../../../primitives/api" }

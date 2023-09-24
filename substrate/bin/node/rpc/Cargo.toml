@@ -16,7 +16,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 jsonrpsee = { version = "0.16.2", features = ["server"] }
 node-primitives = { path = "../primitives" }
 pallet-transaction-payment-rpc = { path = "../../../frame/transaction-payment/rpc" }
-mmr-rpc = { path = "../../../client/merkle-mountain-range/rpc" }
 sc-chain-spec = { path = "../../../client/chain-spec" }
 sc-client-api = { path = "../../../client/api" }
 sc-consensus-babe = { path = "../../../client/consensus/babe" }
@@ -35,6 +34,5 @@ sp-consensus = { path = "../../../primitives/consensus/common" }
 sp-consensus-babe = { path = "../../../primitives/consensus/babe" }
 sp-keystore = { path = "../../../primitives/keystore" }
 sp-runtime = { path = "../../../primitives/runtime" }
-sp-statement-store = { path = "../../../primitives/statement-store" }
 substrate-frame-rpc-system = { path = "../../../utils/frame/rpc/system" }
 substrate-state-trie-migration-rpc = { path = "../../../utils/frame/rpc/state-trie-migration-rpc" }
