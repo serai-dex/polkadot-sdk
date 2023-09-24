@@ -133,8 +133,6 @@ pub enum CryptoScheme {
 	Ed25519,
 	/// Use sr25519.
 	Sr25519,
-	/// Use
-	Ecdsa,
 }
 
 /// The type of the output format.

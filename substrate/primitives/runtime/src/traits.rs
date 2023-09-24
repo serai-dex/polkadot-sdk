@@ -89,13 +89,6 @@ impl IdentifyAccount for sp_core::sr25519::Public {
 	}
 }
 
-impl IdentifyAccount for sp_core::ecdsa::Public {
-	type AccountId = Self;
-	fn into_account(self) -> Self {
-		self
-	}
-}
-
 /// Means of signature verification.
 pub trait Verify {
 	/// Type of the signer.
@@ -123,19 +116,6 @@ impl Verify for sp_core::sr25519::Signature {
 
 	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::sr25519::Public) -> bool {
 		sp_io::crypto::sr25519_verify(self, msg.get(), signer)
-	}
-}
-
-impl Verify for sp_core::ecdsa::Signature {
-	type Signer = sp_core::ecdsa::Public;
-	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa::Public) -> bool {
-		match sp_io::crypto::secp256k1_ecdsa_recover_compressed(
-			self.as_ref(),
-			&sp_io::hashing::blake2_256(msg.get()),
-		) {
-			Ok(pubkey) => signer.as_ref() == &pubkey[..],
-			_ => false,
-		}
 	}
 }
 
@@ -2303,7 +2283,7 @@ mod tests {
 	use sp_core::{bls377, bls381};
 	use sp_core::{
 		crypto::{Pair, UncheckedFrom},
-		ecdsa, ed25519, sr25519,
+		ed25519, sr25519,
 	};
 
 	macro_rules! signature_verify_test {
@@ -2437,11 +2417,6 @@ mod tests {
 	#[test]
 	fn sr25519_verify_works() {
 		signature_verify_test!(sr25519);
-	}
-
-	#[test]
-	fn ecdsa_verify_works() {
-		signature_verify_test!(ecdsa);
 	}
 
 	#[cfg(feature = "bls-experimental")]

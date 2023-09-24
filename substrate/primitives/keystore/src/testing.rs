@@ -25,7 +25,7 @@ use sp_core::bandersnatch;
 use sp_core::{bls377, bls381};
 use sp_core::{
 	crypto::{ByteArray, KeyTypeId, Pair, VrfSecret},
-	ecdsa, ed25519, sr25519,
+	ed25519, sr25519,
 };
 
 use parking_lot::RwLock;
@@ -185,37 +185,6 @@ impl Keystore for MemoryKeystore {
 		self.sign::<ed25519::Pair>(key_type, public, msg)
 	}
 
-	fn ecdsa_public_keys(&self, key_type: KeyTypeId) -> Vec<ecdsa::Public> {
-		self.public_keys::<ecdsa::Pair>(key_type)
-	}
-
-	fn ecdsa_generate_new(
-		&self,
-		key_type: KeyTypeId,
-		seed: Option<&str>,
-	) -> Result<ecdsa::Public, Error> {
-		self.generate_new::<ecdsa::Pair>(key_type, seed)
-	}
-
-	fn ecdsa_sign(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8],
-	) -> Result<Option<ecdsa::Signature>, Error> {
-		self.sign::<ecdsa::Pair>(key_type, public, msg)
-	}
-
-	fn ecdsa_sign_prehashed(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> Result<Option<ecdsa::Signature>, Error> {
-		let sig = self.pair::<ecdsa::Pair>(key_type, public).map(|pair| pair.sign_prehashed(msg));
-		Ok(sig)
-	}
-
 	#[cfg(feature = "bandersnatch-experimental")]
 	fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {
 		self.public_keys::<bandersnatch::Pair>(key_type)
@@ -359,7 +328,7 @@ mod tests {
 	use super::*;
 	use sp_core::{
 		sr25519,
-		testing::{ECDSA, ED25519, SR25519},
+		testing::{ED25519, SR25519},
 	};
 
 	#[test]
@@ -445,26 +414,6 @@ mod tests {
 
 		let result = preout.make_bytes::<32>(b"rand", &input, &pair.public());
 		assert!(result.is_ok());
-	}
-
-	#[test]
-	fn ecdsa_sign_prehashed_works() {
-		let store = MemoryKeystore::new();
-
-		let suri = "//Alice";
-		let pair = ecdsa::Pair::from_string(suri, None).unwrap();
-
-		let msg = sp_core::keccak_256(b"this should be a hashed message");
-
-		// no key in key store
-		let res = store.ecdsa_sign_prehashed(ECDSA, &pair.public(), &msg).unwrap();
-		assert!(res.is_none());
-
-		// insert key, sign again
-		store.insert(ECDSA, suri, pair.public().as_ref()).unwrap();
-
-		let res = store.ecdsa_sign_prehashed(ECDSA, &pair.public(), &msg).unwrap();
-		assert!(res.is_some());
 	}
 
 	#[test]

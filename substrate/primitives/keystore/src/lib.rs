@@ -26,7 +26,7 @@ use sp_core::bandersnatch;
 use sp_core::{bls377, bls381};
 use sp_core::{
 	crypto::{ByteArray, CryptoTypeId, KeyTypeId},
-	ecdsa, ed25519, sr25519,
+	ed25519, sr25519,
 };
 
 use std::sync::Arc;
@@ -133,49 +133,6 @@ pub trait Keystore: Send + Sync {
 		public: &ed25519::Public,
 		msg: &[u8],
 	) -> Result<Option<ed25519::Signature>, Error>;
-
-	/// Returns all ecdsa public keys for the given key type.
-	fn ecdsa_public_keys(&self, key_type: KeyTypeId) -> Vec<ecdsa::Public>;
-
-	/// Generate a new ecdsa key pair for the given key type and an optional seed.
-	///
-	/// Returns an `ecdsa::Public` key of the generated key pair or an `Err` if
-	/// something failed during key generation.
-	fn ecdsa_generate_new(
-		&self,
-		key_type: KeyTypeId,
-		seed: Option<&str>,
-	) -> Result<ecdsa::Public, Error>;
-
-	/// Generate an ecdsa signature for a given message.
-	///
-	/// Receives [`KeyTypeId`] and an [`ecdsa::Public`] key to be able to map
-	/// them to a private key that exists in the keystore.
-	///
-	/// Returns an [`ecdsa::Signature`] or `None` in case the given `key_type`
-	/// and `public` combination doesn't exist in the keystore.
-	/// An `Err` will be returned if generating the signature itself failed.
-	fn ecdsa_sign(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8],
-	) -> Result<Option<ecdsa::Signature>, Error>;
-
-	/// Generate an ecdsa signature for a given pre-hashed message.
-	///
-	/// Receives [`KeyTypeId`] and an [`ecdsa::Public`] key to be able to map
-	/// them to a private key that exists in the keystore.
-	///
-	/// Returns an [`ecdsa::Signature`] or `None` in case the given `key_type`
-	/// and `public` combination doesn't exist in the keystore.
-	/// An `Err` will be returned if generating the signature itself failed.
-	fn ecdsa_sign_prehashed(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> Result<Option<ecdsa::Signature>, Error>;
 
 	/// Returns all the bandersnatch public keys for the given key type.
 	#[cfg(feature = "bandersnatch-experimental")]
@@ -345,7 +302,6 @@ pub trait Keystore: Send + Sync {
 	/// Schemes supported by the default trait implementation:
 	/// - sr25519
 	/// - ed25519
-	/// - ecdsa
 	/// - bandersnatch
 	/// - bls381
 	/// - bls377
@@ -373,12 +329,6 @@ pub trait Keystore: Send + Sync {
 				let public = ed25519::Public::from_slice(public)
 					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
 				self.ed25519_sign(id, &public, msg)?.map(|s| s.encode())
-			},
-			ecdsa::CRYPTO_ID => {
-				let public = ecdsa::Public::from_slice(public)
-					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
-
-				self.ecdsa_sign(id, &public, msg)?.map(|s| s.encode())
 			},
 			#[cfg(feature = "bandersnatch-experimental")]
 			bandersnatch::CRYPTO_ID => {
@@ -463,36 +413,6 @@ impl<T: Keystore + ?Sized> Keystore for Arc<T> {
 		msg: &[u8],
 	) -> Result<Option<ed25519::Signature>, Error> {
 		(**self).ed25519_sign(key_type, public, msg)
-	}
-
-	fn ecdsa_public_keys(&self, key_type: KeyTypeId) -> Vec<ecdsa::Public> {
-		(**self).ecdsa_public_keys(key_type)
-	}
-
-	fn ecdsa_generate_new(
-		&self,
-		key_type: KeyTypeId,
-		seed: Option<&str>,
-	) -> Result<ecdsa::Public, Error> {
-		(**self).ecdsa_generate_new(key_type, seed)
-	}
-
-	fn ecdsa_sign(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8],
-	) -> Result<Option<ecdsa::Signature>, Error> {
-		(**self).ecdsa_sign(key_type, public, msg)
-	}
-
-	fn ecdsa_sign_prehashed(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> Result<Option<ecdsa::Signature>, Error> {
-		(**self).ecdsa_sign_prehashed(key_type, public, msg)
 	}
 
 	#[cfg(feature = "bandersnatch-experimental")]

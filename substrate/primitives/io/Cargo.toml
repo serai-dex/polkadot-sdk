@@ -21,14 +21,12 @@ codec = { package = "parity-scale-codec", version = "3.6.1", default-features = 
 sp-core = { path = "../core", default-features = false}
 sp-keystore = { path = "../keystore", default-features = false, optional = true}
 sp-std = { path = "../std", default-features = false}
-libsecp256k1 = { version = "0.7", optional = true }
 sp-state-machine = { path = "../state-machine", default-features = false, optional = true}
 sp-runtime-interface = { path = "../runtime-interface", default-features = false}
 sp-trie = { path = "../trie", default-features = false, optional = true}
 sp-externalities = { path = "../externalities", default-features = false}
 sp-tracing = { path = "../tracing", default-features = false}
 log = { version = "0.4.17", optional = true }
-secp256k1 = { version = "0.24.0", features = ["recovery", "global-context"], optional = true }
 tracing = { version = "0.1.29", default-features = false }
 tracing-core = { version = "0.1.28", default-features = false}
 
@@ -40,9 +38,7 @@ default = [ "std" ]
 std = [
 	"bytes/std",
 	"codec/std",
-	"libsecp256k1",
 	"log",
-	"secp256k1",
 	"sp-core/std",
 	"sp-externalities/std",
 	"sp-keystore/std",

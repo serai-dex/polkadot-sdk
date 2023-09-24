@@ -60,7 +60,6 @@ pub mod bandersnatch;
 #[cfg(feature = "bls-experimental")]
 pub mod bls;
 pub mod defer;
-pub mod ecdsa;
 pub mod ed25519;
 pub mod hash;
 #[cfg(feature = "std")]

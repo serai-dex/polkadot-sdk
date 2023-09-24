@@ -96,7 +96,7 @@ use sp_keystore::KeystoreExt;
 use sp_core::bandersnatch;
 use sp_core::{
 	crypto::KeyTypeId,
-	ecdsa, ed25519,
+	ed25519,
 	offchain::{
 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
 	},
@@ -119,29 +119,12 @@ use sp_runtime_interface::{
 use codec::{Decode, Encode};
 
 #[cfg(feature = "std")]
-use secp256k1::{
-	ecdsa::{RecoverableSignature, RecoveryId},
-	Message, SECP256K1,
-};
-
-#[cfg(feature = "std")]
 use sp_externalities::{Externalities, ExternalitiesExt};
 
 pub use sp_externalities::MultiRemovalResults;
 
 #[cfg(feature = "std")]
 const LOG_TARGET: &str = "runtime::io";
-
-/// Error verifying ECDSA signature
-#[derive(Encode, Decode)]
-pub enum EcdsaVerifyError {
-	/// Incorrect value of R or S
-	BadRS,
-	/// Incorrect value of V
-	BadV,
-	/// Invalid signature
-	BadSignature,
-}
 
 /// The outcome of calling `storage_kill`. Returned value is the number of storage items
 /// removed from the backend from making the `storage_kill` call.
@@ -940,213 +923,6 @@ pub trait Crypto {
 		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
 	}
 
-	/// Returns all `ecdsa` public keys for the given key id from the keystore.
-	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_public_keys(id)
-	}
-
-	/// Generate an `ecdsa` key for the given key type using an optional `seed` and
-	/// store it in the keystore.
-	///
-	/// The `seed` needs to be a valid utf8.
-	///
-	/// Returns the public key.
-	fn ecdsa_generate(&mut self, id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
-		let seed = seed.as_ref().map(|s| std::str::from_utf8(s).expect("Seed is valid utf8!"));
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_generate_new(id, seed)
-			.expect("`ecdsa_generate` failed")
-	}
-
-	/// Sign the given `msg` with the `ecdsa` key that corresponds to the given public key and
-	/// key type in the keystore.
-	///
-	/// Returns the signature.
-	fn ecdsa_sign(
-		&mut self,
-		id: KeyTypeId,
-		pub_key: &ecdsa::Public,
-		msg: &[u8],
-	) -> Option<ecdsa::Signature> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_sign(id, pub_key, msg)
-			.ok()
-			.flatten()
-	}
-
-	/// Sign the given a pre-hashed `msg` with the `ecdsa` key that corresponds to the given public
-	/// key and key type in the keystore.
-	///
-	/// Returns the signature.
-	fn ecdsa_sign_prehashed(
-		&mut self,
-		id: KeyTypeId,
-		pub_key: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> Option<ecdsa::Signature> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_sign_prehashed(id, pub_key, msg)
-			.ok()
-			.flatten()
-	}
-
-	/// Verify `ecdsa` signature.
-	///
-	/// Returns `true` when the verification was successful.
-	/// This version is able to handle, non-standard, overflowing signatures.
-	fn ecdsa_verify(sig: &ecdsa::Signature, msg: &[u8], pub_key: &ecdsa::Public) -> bool {
-		#[allow(deprecated)]
-		ecdsa::Pair::verify_deprecated(sig, msg, pub_key)
-	}
-
-	/// Verify `ecdsa` signature.
-	///
-	/// Returns `true` when the verification was successful.
-	#[version(2)]
-	fn ecdsa_verify(sig: &ecdsa::Signature, msg: &[u8], pub_key: &ecdsa::Public) -> bool {
-		ecdsa::Pair::verify(sig, msg, pub_key)
-	}
-
-	/// Verify `ecdsa` signature with pre-hashed `msg`.
-	///
-	/// Returns `true` when the verification was successful.
-	fn ecdsa_verify_prehashed(
-		sig: &ecdsa::Signature,
-		msg: &[u8; 32],
-		pub_key: &ecdsa::Public,
-	) -> bool {
-		ecdsa::Pair::verify_prehashed(sig, msg, pub_key)
-	}
-
-	/// Register a `ecdsa` signature for batch verification.
-	///
-	/// Batch verification must be enabled by calling [`start_batch_verify`].
-	/// If batch verification is not enabled, the signature will be verified immediatley.
-	/// To get the result of the batch verification, [`finish_batch_verify`]
-	/// needs to be called.
-	///
-	/// Returns `true` when the verification is either successful or batched.
-	///
-	/// NOTE: Is tagged with `register_only` to keep the functions around for backwards
-	/// compatibility with old runtimes, but it should not be used anymore by new runtimes.
-	/// The implementation emulates the old behavior, but isn't doing any batch verification
-	/// anymore.
-	#[version(1, register_only)]
-	fn ecdsa_batch_verify(
-		&mut self,
-		sig: &ecdsa::Signature,
-		msg: &[u8],
-		pub_key: &ecdsa::Public,
-	) -> bool {
-		let res = ecdsa_verify(sig, msg, pub_key);
-
-		if let Some(ext) = self.extension::<VerificationExtDeprecated>() {
-			ext.0 &= res;
-		}
-
-		res
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 64-byte pubkey
-	/// (doesn't include the 0x04 prefix).
-	/// This version is able to handle, non-standard, overflowing signatures.
-	fn secp256k1_ecdsa_recover(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 64], EcdsaVerifyError> {
-		let rid = libsecp256k1::RecoveryId::parse(
-			if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as u8,
-		)
-		.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = libsecp256k1::Signature::parse_overflowing_slice(&sig[..64])
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = libsecp256k1::Message::parse(msg);
-		let pubkey =
-			libsecp256k1::recover(&msg, &sig, &rid).map_err(|_| EcdsaVerifyError::BadSignature)?;
-		let mut res = [0u8; 64];
-		res.copy_from_slice(&pubkey.serialize()[1..65]);
-		Ok(res)
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 64-byte pubkey
-	/// (doesn't include the 0x04 prefix).
-	#[version(2)]
-	fn secp256k1_ecdsa_recover(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 64], EcdsaVerifyError> {
-		let rid = RecoveryId::from_i32(if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as i32)
-			.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = RecoverableSignature::from_compact(&sig[..64], rid)
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = Message::from_slice(msg).expect("Message is 32 bytes; qed");
-		let pubkey = SECP256K1
-			.recover_ecdsa(&msg, &sig)
-			.map_err(|_| EcdsaVerifyError::BadSignature)?;
-		let mut res = [0u8; 64];
-		res.copy_from_slice(&pubkey.serialize_uncompressed()[1..]);
-		Ok(res)
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 33-byte compressed pubkey.
-	fn secp256k1_ecdsa_recover_compressed(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 33], EcdsaVerifyError> {
-		let rid = libsecp256k1::RecoveryId::parse(
-			if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as u8,
-		)
-		.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = libsecp256k1::Signature::parse_overflowing_slice(&sig[0..64])
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = libsecp256k1::Message::parse(msg);
-		let pubkey =
-			libsecp256k1::recover(&msg, &sig, &rid).map_err(|_| EcdsaVerifyError::BadSignature)?;
-		Ok(pubkey.serialize_compressed())
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 33-byte compressed pubkey.
-	#[version(2)]
-	fn secp256k1_ecdsa_recover_compressed(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 33], EcdsaVerifyError> {
-		let rid = RecoveryId::from_i32(if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as i32)
-			.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = RecoverableSignature::from_compact(&sig[..64], rid)
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = Message::from_slice(msg).expect("Message is 32 bytes; qed");
-		let pubkey = SECP256K1
-			.recover_ecdsa(&msg, &sig)
-			.map_err(|_| EcdsaVerifyError::BadSignature)?;
-		Ok(pubkey.serialize())
-	}
-
 	/// Generate an `bls12-377` key for the given key type using an optional `seed` and
 	/// store it in the keystore.
 	///
@@ -1756,7 +1532,7 @@ pub type SubstrateHostFunctions = (
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use sp_core::{crypto::UncheckedInto, map, storage::Storage};
+	use sp_core::{map, storage::Storage};
 	use sp_state_machine::BasicExternalities;
 
 	#[test]

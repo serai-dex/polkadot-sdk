@@ -21,7 +21,7 @@ use parking_lot::RwLock;
 use sp_application_crypto::{AppCrypto, AppPair, IsWrappedBy};
 use sp_core::{
 	crypto::{ByteArray, ExposeSecret, KeyTypeId, Pair as CorePair, SecretString, VrfSecret},
-	ecdsa, ed25519, sr25519,
+	ed25519, sr25519,
 };
 use sp_keystore::{Error as TraitError, Keystore, KeystorePtr};
 use std::{
@@ -219,44 +219,6 @@ impl Keystore for LocalKeystore {
 		msg: &[u8],
 	) -> std::result::Result<Option<ed25519::Signature>, TraitError> {
 		self.sign::<ed25519::Pair>(key_type, public, msg)
-	}
-
-	fn ecdsa_public_keys(&self, key_type: KeyTypeId) -> Vec<ecdsa::Public> {
-		self.public_keys::<ecdsa::Pair>(key_type)
-	}
-
-	/// Generate a new pair compatible with the 'ecdsa' signature scheme.
-	///
-	/// If `[seed]` is `Some` then the key will be ephemeral and stored in memory.
-	fn ecdsa_generate_new(
-		&self,
-		key_type: KeyTypeId,
-		seed: Option<&str>,
-	) -> std::result::Result<ecdsa::Public, TraitError> {
-		self.generate_new::<ecdsa::Pair>(key_type, seed)
-	}
-
-	fn ecdsa_sign(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8],
-	) -> std::result::Result<Option<ecdsa::Signature>, TraitError> {
-		self.sign::<ecdsa::Pair>(key_type, public, msg)
-	}
-
-	fn ecdsa_sign_prehashed(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> std::result::Result<Option<ecdsa::Signature>, TraitError> {
-		let sig = self
-			.0
-			.read()
-			.key_pair_by_type::<ecdsa::Pair>(public, key_type)?
-			.map(|pair| pair.sign_prehashed(msg));
-		Ok(sig)
 	}
 
 	sp_keystore::bandersnatch_experimental_enabled! {

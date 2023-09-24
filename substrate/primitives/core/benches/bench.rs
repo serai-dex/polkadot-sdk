@@ -121,36 +121,11 @@ fn bench_sr25519(c: &mut Criterion) {
 	group.finish();
 }
 
-fn bench_ecdsa(c: &mut Criterion) {
-	let mut group = c.benchmark_group("ecdsa");
-
-	for &msg_size in &[32, 1024, 1024 * 1024] {
-		let msg = (0..msg_size).map(|_| rand::random::<u8>()).collect::<Vec<_>>();
-		let key = sp_core::ecdsa::Pair::generate().0;
-		group.bench_function(BenchmarkId::new("signing", format!("{}", msg_size)), |b| {
-			b.iter(|| key.sign(&msg))
-		});
-	}
-
-	for &msg_size in &[32, 1024, 1024 * 1024] {
-		let msg = (0..msg_size).map(|_| rand::random::<u8>()).collect::<Vec<_>>();
-		let key = sp_core::ecdsa::Pair::generate().0;
-		let sig = key.sign(&msg);
-		let public = key.public();
-		group.bench_function(BenchmarkId::new("verifying", format!("{}", msg_size)), |b| {
-			b.iter(|| sp_core::ecdsa::Pair::verify(&sig, &msg, &public))
-		});
-	}
-
-	group.finish();
-}
-
 criterion_group!(
 	benches,
 	bench_hash_128_fix_size,
 	bench_hash_128_dyn_size,
 	bench_ed25519,
 	bench_sr25519,
-	bench_ecdsa,
 );
 criterion_main!(benches);

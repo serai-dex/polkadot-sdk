@@ -69,7 +69,7 @@ pub use sp_core::storage::{Storage, StorageChild};
 
 use sp_core::{
 	crypto::{self, ByteArray, FromEntropy},
-	ecdsa, ed25519,
+	ed25519,
 	hash::{H256, H512},
 	sr25519,
 };
@@ -272,8 +272,6 @@ pub enum MultiSignature {
 	Ed25519(ed25519::Signature),
 	/// An Sr25519 signature.
 	Sr25519(sr25519::Signature),
-	/// An ECDSA/SECP256k1 signature.
-	Ecdsa(ecdsa::Signature),
 }
 
 impl From<ed25519::Signature> for MultiSignature {
@@ -310,23 +308,6 @@ impl TryFrom<MultiSignature> for sr25519::Signature {
 	}
 }
 
-impl From<ecdsa::Signature> for MultiSignature {
-	fn from(x: ecdsa::Signature) -> Self {
-		Self::Ecdsa(x)
-	}
-}
-
-impl TryFrom<MultiSignature> for ecdsa::Signature {
-	type Error = ();
-	fn try_from(m: MultiSignature) -> Result<Self, Self::Error> {
-		if let MultiSignature::Ecdsa(x) = m {
-			Ok(x)
-		} else {
-			Err(())
-		}
-	}
-}
-
 /// Public key for any known crypto algorithm.
 #[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -335,16 +316,13 @@ pub enum MultiSigner {
 	Ed25519(ed25519::Public),
 	/// An Sr25519 identity.
 	Sr25519(sr25519::Public),
-	/// An SECP256k1/ECDSA identity (actually, the Blake2 hash of the compressed pub key).
-	Ecdsa(ecdsa::Public),
 }
 
 impl FromEntropy for MultiSigner {
 	fn from_entropy(input: &mut impl codec::Input) -> Result<Self, codec::Error> {
-		Ok(match input.read_byte()? % 3 {
+		Ok(match input.read_byte()? % 2 {
 			0 => Self::Ed25519(FromEntropy::from_entropy(input)?),
-			1 => Self::Sr25519(FromEntropy::from_entropy(input)?),
-			2.. => Self::Ecdsa(FromEntropy::from_entropy(input)?),
+			1.. => Self::Sr25519(FromEntropy::from_entropy(input)?),
 		})
 	}
 }
@@ -362,7 +340,6 @@ impl AsRef<[u8]> for MultiSigner {
 		match *self {
 			Self::Ed25519(ref who) => who.as_ref(),
 			Self::Sr25519(ref who) => who.as_ref(),
-			Self::Ecdsa(ref who) => who.as_ref(),
 		}
 	}
 }
@@ -373,7 +350,6 @@ impl traits::IdentifyAccount for MultiSigner {
 		match self {
 			Self::Ed25519(who) => <[u8; 32]>::from(who).into(),
 			Self::Sr25519(who) => <[u8; 32]>::from(who).into(),
-			Self::Ecdsa(who) => sp_io::hashing::blake2_256(who.as_ref()).into(),
 		}
 	}
 }
@@ -412,37 +388,19 @@ impl TryFrom<MultiSigner> for sr25519::Public {
 	}
 }
 
-impl From<ecdsa::Public> for MultiSigner {
-	fn from(x: ecdsa::Public) -> Self {
-		Self::Ecdsa(x)
-	}
-}
-
-impl TryFrom<MultiSigner> for ecdsa::Public {
-	type Error = ();
-	fn try_from(m: MultiSigner) -> Result<Self, Self::Error> {
-		if let MultiSigner::Ecdsa(x) = m {
-			Ok(x)
-		} else {
-			Err(())
-		}
-	}
-}
-
 #[cfg(feature = "std")]
 impl std::fmt::Display for MultiSigner {
 	fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
 		match *self {
 			Self::Ed25519(ref who) => write!(fmt, "ed25519: {}", who),
 			Self::Sr25519(ref who) => write!(fmt, "sr25519: {}", who),
-			Self::Ecdsa(ref who) => write!(fmt, "ecdsa: {}", who),
 		}
 	}
 }
 
 impl Verify for MultiSignature {
 	type Signer = MultiSigner;
-	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &AccountId32) -> bool {
+	fn verify<L: Lazy<[u8]>>(&self, msg: L, signer: &AccountId32) -> bool {
 		match (self, signer) {
 			(Self::Ed25519(ref sig), who) => match ed25519::Public::from_slice(who.as_ref()) {
 				Ok(signer) => sig.verify(msg, &signer),
@@ -451,15 +409,6 @@ impl Verify for MultiSignature {
 			(Self::Sr25519(ref sig), who) => match sr25519::Public::from_slice(who.as_ref()) {
 				Ok(signer) => sig.verify(msg, &signer),
 				Err(()) => false,
-			},
-			(Self::Ecdsa(ref sig), who) => {
-				let m = sp_io::hashing::blake2_256(msg.get());
-				match sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m) {
-					Ok(pubkey) =>
-						&sp_io::hashing::blake2_256(pubkey.as_ref()) ==
-							<dyn AsRef<[u8; 32]>>::as_ref(who),
-					_ => false,
-				}
 			},
 		}
 	}
@@ -978,7 +927,6 @@ mod tests {
 
 	use super::*;
 	use codec::{Decode, Encode};
-	use sp_core::crypto::Pair;
 	use sp_io::TestExternalities;
 	use sp_state_machine::create_proof_check_backend;
 
@@ -1043,22 +991,6 @@ mod tests {
 			Module(ModuleError { index: 1, error: [1, 0, 0, 0], message: Some("foo") }),
 			Module(ModuleError { index: 1, error: [1, 0, 0, 0], message: None }),
 		);
-	}
-
-	#[test]
-	fn multi_signature_ecdsa_verify_works() {
-		let msg = &b"test-message"[..];
-		let (pair, _) = ecdsa::Pair::generate();
-
-		let signature = pair.sign(&msg);
-		assert!(ecdsa::Pair::verify(&signature, msg, &pair.public()));
-
-		let multi_sig = MultiSignature::from(signature);
-		let multi_signer = MultiSigner::from(pair.public());
-		assert!(multi_sig.verify(msg, &multi_signer.into_account()));
-
-		let multi_signer = MultiSigner::from(pair.public());
-		assert!(multi_sig.verify(msg, &multi_signer.into_account()));
 	}
 
 	#[test]
