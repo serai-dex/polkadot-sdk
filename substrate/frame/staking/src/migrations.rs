@@ -383,7 +383,7 @@ pub mod v8 {
 			"must upgrade linearly"
 		);
 
-		crate::log!(info, "👜 staking bags-list migration passes PRE migrate checks ✅",);
+		crate::log!(info, "staking bags-list migration passes PRE migrate checks",);
 		Ok(())
 	}
 
@@ -400,7 +400,7 @@ pub mod v8 {
 			StorageVersion::<T>::put(ObsoleteReleases::V8_0_0);
 			crate::log!(
 				info,
-				"👜 completed staking migration to ObsoleteReleases::V8_0_0 with {} voters migrated",
+				"completed staking migration to ObsoleteReleases::V8_0_0 with {} voters migrated",
 				migrated,
 			);
 
@@ -413,7 +413,7 @@ pub mod v8 {
 	#[cfg(feature = "try-runtime")]
 	pub fn post_migrate<T: Config>() -> Result<(), &'static str> {
 		T::VoterList::try_state().map_err(|_| "VoterList is not in a sane state.")?;
-		crate::log!(info, "👜 staking bags-list migration passes POST migrate checks ✅",);
+		crate::log!(info, "staking bags-list migration passes POST migrate checks",);
 		Ok(())
 	}
 }

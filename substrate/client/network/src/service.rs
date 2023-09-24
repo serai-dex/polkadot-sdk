@@ -216,7 +216,7 @@ where
 
 		info!(
 			target: "sub-libp2p",
-			"🏷  Local node identity is: {}",
+			"Local node identity is: {}",
 			local_peer_id.to_base58(),
 		);
 
@@ -1640,7 +1640,7 @@ where
 				self.listen_addresses.lock().insert(address.clone());
 			},
 			SwarmEvent::ExpiredListenAddr { address, .. } => {
-				info!(target: "sub-libp2p", "📪 No longer listening on {}", address);
+				info!(target: "sub-libp2p", "No longer listening on {}", address);
 				if let Some(metrics) = self.metrics.as_ref() {
 					metrics.listeners_local_addresses.dec();
 				}
@@ -1669,7 +1669,7 @@ where
 								// boot node.
 								if addresses.iter().any(|a| address_without_peer_id == *a) {
 									warn!(
-										"💔 The bootnode you want to connect to at `{address}` provided a \
+										"The bootnode you want to connect to at `{address}` provided a \
 										 different peer ID `{obtained}` than the one you expect `{peer_id}`.",
 									);
 
@@ -1770,12 +1770,12 @@ where
 				match reason {
 					Ok(()) => error!(
 						target: "sub-libp2p",
-						"📪 Libp2p listener ({}) closed gracefully",
+						"Libp2p listener ({}) closed gracefully",
 						addrs
 					),
 					Err(e) => error!(
 						target: "sub-libp2p",
-						"📪 Libp2p listener ({}) closed: {}",
+						"Libp2p listener ({}) closed: {}",
 						addrs, e
 					),
 				}

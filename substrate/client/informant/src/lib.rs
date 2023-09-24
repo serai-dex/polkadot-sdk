@@ -116,7 +116,7 @@ where
 
 				match maybe_ancestor {
 					Ok(ref ancestor) if ancestor.hash != *last_hash => info!(
-						"♻️  Reorg on #{},{} to #{},{}, common ancestor #{},{}",
+						"Reorg on #{},{} to #{},{}, common ancestor #{},{}",
 						Colour::Red.bold().paint(format!("{}", last_num)),
 						last_hash,
 						Colour::Green.bold().paint(format!("{}", n.header.number())),
@@ -145,7 +145,7 @@ where
 
 			info!(
 				target: "substrate",
-				"✨ Imported #{} ({})",
+				"Imported #{} ({})",
 				Colour::White.bold().paint(format!("{}", n.header.number())),
 				n.hash,
 			);

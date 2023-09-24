@@ -99,7 +99,7 @@ async fn init_prometheus_with_listener(
 	registry: Registry,
 ) -> Result<(), Error> {
 	let listener = hyper::server::conn::AddrIncoming::from_listener(listener)?;
-	log::info!("〽️ Prometheus exporter started at {}", listener.local_addr());
+	log::info!("Prometheus exporter started at {}", listener.local_addr());
 
 	let service = make_service_fn(move |_| {
 		let registry = registry.clone();

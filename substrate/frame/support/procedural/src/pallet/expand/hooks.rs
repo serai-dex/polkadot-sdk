@@ -40,7 +40,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 		quote::quote! {
 			#frame_support::__private::log::info!(
 				target: #frame_support::LOG_TARGET,
-				"⚠️ {} declares internal migrations (which *might* execute). \
+				"{} declares internal migrations (which *might* execute). \
 				 On-chain `{:?}` vs current storage version `{:?}`",
 				pallet_name,
 				<Self as #frame_support::traits::GetStorageVersion>::on_chain_storage_version(),
@@ -52,7 +52,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 		quote::quote! {
 			#frame_support::__private::log::debug!(
 				target: #frame_support::LOG_TARGET,
-				"✅ no migration for {}",
+				"no migration for {}",
 				pallet_name,
 			);
 		}
@@ -66,7 +66,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 		>::name::<Self>().expect("No name found for the pallet! This usually means that the pallet wasn't added to `construct_runtime!`.");
 		#frame_support::__private::log::debug!(
 			target: #frame_support::LOG_TARGET,
-			"🩺 try-state pallet {:?}",
+			"try-state pallet {:?}",
 			pallet_name,
 		);
 	};

@@ -78,7 +78,7 @@ cargo run --profile=production -- --dev -d /tmp/dev
 You should see after some seconds that it started to produce blocks:
 ```pre
 …
-✨ Imported #1 (0x801d…9189)
+Imported #1 (0x801d…9189)
 …
 ```
 You can now kill the node with `Ctrl+C`. Then measure how long it takes to execute these blocks:

@@ -220,7 +220,7 @@ impl MachineCmd {
 impl BenchResult {
 	/// Format [`Self`] as row that can be printed in a table.
 	fn to_row(&self, req: &Requirement) -> Row {
-		let passed = if self.passed { "✅ Pass" } else { "❌ Fail" };
+		let passed = if self.passed { "Pass" } else { "Fail" };
 		vec![
 			req.metric.category().into(),
 			req.metric.name().into(),

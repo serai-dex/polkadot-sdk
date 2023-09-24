@@ -648,7 +648,7 @@ impl NetworkBehaviour for DiscoveryBehaviour {
 					if self.known_external_addresses.insert(new_addr.clone()) {
 						info!(
 						  target: "sub-libp2p",
-						  "🔍 Discovered new external address for our node: {}",
+						  "Discovered new external address for our node: {}",
 						  new_addr,
 						);
 					}

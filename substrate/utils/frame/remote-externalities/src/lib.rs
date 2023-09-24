@@ -579,7 +579,7 @@ where
 			.into_iter()
 			.collect::<Vec<_>>();
 		sp.stop_with_message(format!(
-			"✅ Found {} keys ({:.2}s)",
+			"Found {} keys ({:.2}s)",
 			keys.len(),
 			start.elapsed().as_secs_f32()
 		));
@@ -623,7 +623,7 @@ where
 				return Err("Error while getting storage data")
 			},
 		};
-		bar.finish_with_message("✅ Downloaded key values");
+		bar.finish_with_message("Downloaded key values");
 		print!("\n");
 
 		// Check if we got responses for all submitted requests.
@@ -653,7 +653,7 @@ where
 			}
 		}));
 		sp.stop_with_message(format!(
-			"✅ Inserted keys into DB ({:.2}s)",
+			"Inserted keys into DB ({:.2}s)",
 			start.elapsed().as_secs_f32()
 		));
 		Ok(key_values)
@@ -769,13 +769,13 @@ where
 			.collect::<Vec<_>>();
 
 		if child_roots.is_empty() {
-			info!(target: LOG_TARGET, "👩‍👦 no child roots found to scrape",);
+			info!(target: LOG_TARGET, "no child roots found to scrape",);
 			return Ok(Default::default())
 		}
 
 		info!(
 			target: LOG_TARGET,
-			"👩‍👦 scraping child-tree data from {} top keys",
+			"scraping child-tree data from {} top keys",
 			child_roots.len(),
 		);
 
@@ -993,7 +993,7 @@ where
 			storage_root,
 			self.overwrite_state_version.unwrap_or(state_version),
 		);
-		sp.stop_with_message(format!("✅ Loaded snapshot ({:.2}s)", start.elapsed().as_secs_f32()));
+		sp.stop_with_message(format!("Loaded snapshot ({:.2}s)", start.elapsed().as_secs_f32()));
 
 		Ok(RemoteExternalities { inner_ext, block_hash })
 	}

@@ -314,7 +314,7 @@ impl<P: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>> frame_support::traits
 			},
 		} as u64;
 
-		log::info!("Removed {} {} keys 🧹", keys_removed, P::get());
+		log::info!("Removed {} {} keys", keys_removed, P::get());
 
 		DbWeight::get().reads_writes(keys_removed + 1, keys_removed)
 	}
@@ -325,7 +325,7 @@ impl<P: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>> frame_support::traits
 
 		let hashed_prefix = twox_128(P::get().as_bytes());
 		match contains_prefixed_key(&hashed_prefix) {
-			true => log::info!("Found {} keys pre-removal 👀", P::get()),
+			true => log::info!("Found {} keys pre-removal", P::get()),
 			false => log::warn!(
 				"Migration RemovePallet<{}> can be removed (no keys found pre-removal).",
 				P::get()
@@ -341,10 +341,10 @@ impl<P: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>> frame_support::traits
 		let hashed_prefix = twox_128(P::get().as_bytes());
 		match contains_prefixed_key(&hashed_prefix) {
 			true => {
-				log::error!("{} has keys remaining post-removal ❗", P::get());
-				return Err("Keys remaining post-removal, this should never happen 🚨".into())
+				log::error!("{} has keys remaining post-removal", P::get());
+				return Err("Keys remaining post-removal, this should never happen".into())
 			},
-			false => log::info!("No {} keys found post-removal 🎉", P::get()),
+			false => log::info!("No {} keys found post-removal", P::get()),
 		};
 		Ok(())
 	}

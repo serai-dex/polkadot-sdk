@@ -196,7 +196,7 @@ where
 	) -> Proposer<B, Block, C, A, PR> {
 		let parent_hash = parent_header.hash();
 
-		info!("🙌 Starting consensus session on top of parent {:?}", parent_hash);
+		info!("Starting consensus session on top of parent {:?}", parent_hash);
 
 		let proposer = Proposer::<_, _, _, _, PR> {
 			spawn_handle: self.spawn_handle.clone(),
@@ -379,19 +379,19 @@ where
 				Err(ApplyExtrinsicFailed(Validity(e))) if e.exhausted_resources() => {
 					warn!(
 						target: LOG_TARGET,
-						"⚠️  Dropping non-mandatory inherent from overweight block."
+						"Dropping non-mandatory inherent from overweight block."
 					)
 				},
 				Err(ApplyExtrinsicFailed(Validity(e))) if e.was_mandatory() => {
 					error!(
-						"❌️ Mandatory inherent extrinsic returned error. Block cannot be produced."
+						"Mandatory inherent extrinsic returned error. Block cannot be produced."
 					);
 					return Err(ApplyExtrinsicFailed(Validity(e)))
 				},
 				Err(e) => {
 					warn!(
 						target: LOG_TARGET,
-						"❗️ Inherent extrinsic returned unexpected error: {}. Dropping.", e
+						"Inherent extrinsic returned unexpected error: {}. Dropping.", e
 					);
 				},
 				Ok(_) => {},
@@ -569,7 +569,7 @@ where
 		};
 
 		info!(
-			"🎁 Prepared block for proposing at {} ({} ms) [hash: {:?}; parent_hash: {}; {extrinsics_summary}",
+			"Prepared block for proposing at {} ({} ms) [hash: {:?}; parent_hash: {}; {extrinsics_summary}",
 			block.header().number(),
 			block_took.as_millis(),
 			<Block as BlockT>::Hash::from(block.header().hash()),

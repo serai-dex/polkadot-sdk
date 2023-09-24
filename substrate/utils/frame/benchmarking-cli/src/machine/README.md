@@ -17,15 +17,15 @@ The output on reference hardware:
 +----------+----------------+---------------+--------------+-------------------+
 | Category | Function       | Score         | Minimum      | Result            |
 +----------+----------------+---------------+--------------+-------------------+
-| CPU      | BLAKE2-256     | 1023.00 MiB/s | 1.00 GiB/s   | ✅ Pass ( 99.4 %) |
+| CPU      | BLAKE2-256     | 1023.00 MiB/s | 1.00 GiB/s   | Pass ( 99.4 %) |
 +----------+----------------+---------------+--------------+-------------------+
-| CPU      | SR25519-Verify | 665.13 KiB/s  | 666.00 KiB/s | ✅ Pass ( 99.9 %) |
+| CPU      | SR25519-Verify | 665.13 KiB/s  | 666.00 KiB/s | Pass ( 99.9 %) |
 +----------+----------------+---------------+--------------+-------------------+
-| Memory   | Copy           | 14.39 GiB/s   | 14.32 GiB/s  | ✅ Pass (100.4 %) |
+| Memory   | Copy           | 14.39 GiB/s   | 14.32 GiB/s  | Pass (100.4 %) |
 +----------+----------------+---------------+--------------+-------------------+
-| Disk     | Seq Write      | 457.00 MiB/s  | 450.00 MiB/s | ✅ Pass (101.6 %) |
+| Disk     | Seq Write      | 457.00 MiB/s  | 450.00 MiB/s | Pass (101.6 %) |
 +----------+----------------+---------------+--------------+-------------------+
-| Disk     | Rnd Write      | 190.00 MiB/s  | 200.00 MiB/s | ✅ Pass ( 95.0 %) |
+| Disk     | Rnd Write      | 190.00 MiB/s  | 200.00 MiB/s | Pass ( 95.0 %) |
 +----------+----------------+---------------+--------------+-------------------+
 ```
 
@@ -53,7 +53,7 @@ flag.
 
 The *result* indicated if a specific benchmark was passed by the machine or not. The percent number is the relative
 score reached to the *minimum* that is needed. The `--tolerance` flag is taken into account for this decision. For
-example a benchmark that passes even with 95% since the *tolerance* was set to 10% would look like this: `✅ Pass ( 95.0
+example a benchmark that passes even with 95% since the *tolerance* was set to 10% would look like this: `Pass ( 95.0
 %)`.
 
 ## Interpretation

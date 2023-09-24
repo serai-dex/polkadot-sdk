@@ -152,7 +152,7 @@ impl PalletCmd {
 			sp_core::defer::DeferGuard::new(move || {
 				log::warn!(
 					target: LOG_TARGET,
-					"⚠️  Argument `--execution` is deprecated. Its value of `{exec}` has on effect.",
+					"Argument `--execution` is deprecated. Its value of `{exec}` has on effect.",
 				)
 			})
 		});

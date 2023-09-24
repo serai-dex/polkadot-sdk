@@ -809,10 +809,10 @@ mod score {
 	#[test]
 	fn score_comparison_is_lexicographical_no_epsilon() {
 		let epsilon = Perbill::zero();
-		// only better in the fist parameter, worse in the other two ✅
+		// only better in the fist parameter, worse in the other two
 		assert_eq!(is_score_better([12, 10, 35], [10, 20, 30], epsilon), true);
 
-		// worse in the first, better in the other two ❌
+		// worse in the first, better in the other two
 		assert_eq!(is_score_better([9, 30, 10], [10, 20, 30], epsilon), false);
 
 		// equal in the first, the second one dictates.

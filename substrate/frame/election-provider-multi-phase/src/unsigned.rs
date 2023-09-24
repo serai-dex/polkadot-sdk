@@ -1507,7 +1507,6 @@ mod tests {
 
 			drop(guard);
 
-			// 🎉 !
 			MultiPhase::offchain_worker(25);
 			assert_eq!(pool.read().transactions.len(), 1);
 		});

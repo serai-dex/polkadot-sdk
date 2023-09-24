@@ -519,7 +519,7 @@ impl ConnectionHandler for NotifsHandler {
 						*pending_opening = false;
 					},
 					State::Open { .. } => {
-						error!(target: "sub-libp2p", "☎️ State mismatch in notifications handler");
+						error!(target: "sub-libp2p", "State mismatch in notifications handler");
 						debug_assert!(false);
 					},
 					State::Opening { ref mut in_substream, inbound } => {

@@ -104,42 +104,42 @@ impl ExecutionLimit {
 
 /// Prints out the system software/hardware information in the logs.
 pub fn print_sysinfo(sysinfo: &sc_telemetry::SysInfo) {
-	log::info!("💻 Operating system: {}", TARGET_OS);
-	log::info!("💻 CPU architecture: {}", TARGET_ARCH);
+	log::info!("Operating system: {}", TARGET_OS);
+	log::info!("CPU architecture: {}", TARGET_ARCH);
 	if !TARGET_ENV.is_empty() {
-		log::info!("💻 Target environment: {}", TARGET_ENV);
+		log::info!("Target environment: {}", TARGET_ENV);
 	}
 
 	if let Some(ref cpu) = sysinfo.cpu {
-		log::info!("💻 CPU: {}", cpu);
+		log::info!("CPU: {}", cpu);
 	}
 	if let Some(core_count) = sysinfo.core_count {
-		log::info!("💻 CPU cores: {}", core_count);
+		log::info!("CPU cores: {}", core_count);
 	}
 	if let Some(memory) = sysinfo.memory {
-		log::info!("💻 Memory: {}MB", memory / (1024 * 1024));
+		log::info!("Memory: {}MB", memory / (1024 * 1024));
 	}
 	if let Some(ref linux_kernel) = sysinfo.linux_kernel {
-		log::info!("💻 Kernel: {}", linux_kernel);
+		log::info!("Kernel: {}", linux_kernel);
 	}
 	if let Some(ref linux_distro) = sysinfo.linux_distro {
-		log::info!("💻 Linux distribution: {}", linux_distro);
+		log::info!("Linux distribution: {}", linux_distro);
 	}
 	if let Some(is_virtual_machine) = sysinfo.is_virtual_machine {
-		log::info!("💻 Virtual machine: {}", if is_virtual_machine { "yes" } else { "no" });
+		log::info!("Virtual machine: {}", if is_virtual_machine { "yes" } else { "no" });
 	}
 }
 
 /// Prints out the results of the hardware benchmarks in the logs.
 pub fn print_hwbench(hwbench: &HwBench) {
-	log::info!("🏁 CPU score: {}", hwbench.cpu_hashrate_score);
-	log::info!("🏁 Memory score: {}", hwbench.memory_memcpy_score);
+	log::info!("CPU score: {}", hwbench.cpu_hashrate_score);
+	log::info!("Memory score: {}", hwbench.memory_memcpy_score);
 
 	if let Some(score) = hwbench.disk_sequential_write_score {
-		log::info!("🏁 Disk score (seq. writes): {}", score);
+		log::info!("Disk score (seq. writes): {}", score);
 	}
 	if let Some(score) = hwbench.disk_random_write_score {
-		log::info!("🏁 Disk score (rand. writes): {}", score);
+		log::info!("Disk score (rand. writes): {}", score);
 	}
 }
 

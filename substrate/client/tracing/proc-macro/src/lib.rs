@@ -53,20 +53,20 @@ use syn::{Error, Expr, Ident, ItemFn};
 ///
 /// ```text
 /// 2020-10-16 08:03:14  Substrate Node
-/// 2020-10-16 08:03:14  ✌️  version 2.0.0-47f7d3f2e-x86_64-linux-gnu
-/// 2020-10-16 08:03:14  ❤️  by Anonymous, 2017-2020
-/// 2020-10-16 08:03:14  📋 Chain specification: Local Testnet
-/// 2020-10-16 08:03:14  🏷  Node name: nice-glove-1401
-/// 2020-10-16 08:03:14  👤 Role: LIGHT
-/// 2020-10-16 08:03:14  💾 Database: RocksDb at /tmp/substrate95w2Dk/chains/local_testnet/db
-/// 2020-10-16 08:03:14  ⛓  Native runtime: node-template-1 (node-template-1.tx1.au1)
-/// 2020-10-16 08:03:14  [light] 🔨 Initializing Genesis block/state (state: 0x121d…8e36, header-hash: 0x24ef…8ff6)
+/// 2020-10-16 08:03:14    version 2.0.0-47f7d3f2e-x86_64-linux-gnu
+/// 2020-10-16 08:03:14    by Anonymous, 2017-2020
+/// 2020-10-16 08:03:14  Chain specification: Local Testnet
+/// 2020-10-16 08:03:14  Node name: nice-glove-1401
+/// 2020-10-16 08:03:14  Role: LIGHT
+/// 2020-10-16 08:03:14  Database: RocksDb at /tmp/substrate95w2Dk/chains/local_testnet/db
+/// 2020-10-16 08:03:14  Native runtime: node-template-1 (node-template-1.tx1.au1)
+/// 2020-10-16 08:03:14  [light] Initializing Genesis block/state (state: 0x121d…8e36, header-hash: 0x24ef…8ff6)
 /// 2020-10-16 08:03:14  [light] Loading GRANDPA authorities from genesis on what appears to be first startup.
-/// 2020-10-16 08:03:15  [light] ⏱  Loaded block-time = 6000 milliseconds from genesis on first-launch
+/// 2020-10-16 08:03:15  [light] Loaded block-time = 6000 milliseconds from genesis on first-launch
 /// 2020-10-16 08:03:15  [light] Using default protocol ID "sup" because none is configured in the chain specs
-/// 2020-10-16 08:03:15  [light] 🏷  Local node identity is: 12D3KooWHX4rkWT6a6N55Km7ZnvenGdShSKPkzJ3yj9DU5nqDtWR
-/// 2020-10-16 08:03:15  [light] 📦 Highest known block at #0
-/// 2020-10-16 08:03:15  [light] 〽️ Prometheus server started at 127.0.0.1:9615
+/// 2020-10-16 08:03:15  [light] Local node identity is: 12D3KooWHX4rkWT6a6N55Km7ZnvenGdShSKPkzJ3yj9DU5nqDtWR
+/// 2020-10-16 08:03:15  [light] Highest known block at #0
+/// 2020-10-16 08:03:15  [light] Prometheus server started at 127.0.0.1:9615
 /// 2020-10-16 08:03:15  [light] Listening for new connections on 127.0.0.1:9944.
 /// ```
 ///
@@ -87,20 +87,20 @@ use syn::{Error, Expr, Ident, ItemFn};
 ///
 /// ```text
 /// 2020-10-16 08:12:57  Substrate Node
-/// 2020-10-16 08:12:57  ✌️  version 2.0.0-efb9b822a-x86_64-linux-gnu
-/// 2020-10-16 08:12:57  ❤️  by Anonymous, 2017-2020
-/// 2020-10-16 08:12:57  📋 Chain specification: Local Testnet
-/// 2020-10-16 08:12:57  🏷  Node name: open-harbor-1619
-/// 2020-10-16 08:12:57  👤 Role: LIGHT
-/// 2020-10-16 08:12:57  💾 Database: RocksDb at /tmp/substrate9T9Mtb/chains/local_testnet/db
-/// 2020-10-16 08:12:57  ⛓  Native runtime: node-template-1 (node-template-1.tx1.au1)
-/// 2020-10-16 08:12:58  [open-harbor-1619] 🔨 Initializing Genesis block/state (state: 0x121d…8e36, header-hash: 0x24ef…8ff6)
+/// 2020-10-16 08:12:57    version 2.0.0-efb9b822a-x86_64-linux-gnu
+/// 2020-10-16 08:12:57    by Anonymous, 2017-2020
+/// 2020-10-16 08:12:57  Chain specification: Local Testnet
+/// 2020-10-16 08:12:57  Node name: open-harbor-1619
+/// 2020-10-16 08:12:57  Role: LIGHT
+/// 2020-10-16 08:12:57  Database: RocksDb at /tmp/substrate9T9Mtb/chains/local_testnet/db
+/// 2020-10-16 08:12:57  Native runtime: node-template-1 (node-template-1.tx1.au1)
+/// 2020-10-16 08:12:58  [open-harbor-1619] Initializing Genesis block/state (state: 0x121d…8e36, header-hash: 0x24ef…8ff6)
 /// 2020-10-16 08:12:58  [open-harbor-1619] Loading GRANDPA authorities from genesis on what appears to be first startup.
-/// 2020-10-16 08:12:58  [open-harbor-1619] ⏱  Loaded block-time = 6000 milliseconds from genesis on first-launch
+/// 2020-10-16 08:12:58  [open-harbor-1619] Loaded block-time = 6000 milliseconds from genesis on first-launch
 /// 2020-10-16 08:12:58  [open-harbor-1619] Using default protocol ID "sup" because none is configured in the chain specs
-/// 2020-10-16 08:12:58  [open-harbor-1619] 🏷  Local node identity is: 12D3KooWRzmYC8QTK1Pm8Cfvid3skTS4Hn54jc4AUtje8Rqbfgtp
-/// 2020-10-16 08:12:58  [open-harbor-1619] 📦 Highest known block at #0
-/// 2020-10-16 08:12:58  [open-harbor-1619] 〽️ Prometheus server started at 127.0.0.1:9615
+/// 2020-10-16 08:12:58  [open-harbor-1619] Local node identity is: 12D3KooWRzmYC8QTK1Pm8Cfvid3skTS4Hn54jc4AUtje8Rqbfgtp
+/// 2020-10-16 08:12:58  [open-harbor-1619] Highest known block at #0
+/// 2020-10-16 08:12:58  [open-harbor-1619] Prometheus server started at 127.0.0.1:9615
 /// 2020-10-16 08:12:58  [open-harbor-1619] Listening for new connections on 127.0.0.1:9944.
 /// ```
 #[proc_macro_attribute]

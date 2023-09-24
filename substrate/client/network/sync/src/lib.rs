@@ -506,12 +506,12 @@ where
 				Err(BadPeer(who, rep::BLOCKCHAIN_READ_ERROR))
 			},
 			Ok(BlockStatus::KnownBad) => {
-				info!("💔 New peer with known bad best block {} ({}).", best_hash, best_number);
+				info!("New peer with known bad best block {} ({}).", best_hash, best_number);
 				Err(BadPeer(who, rep::BAD_BLOCK))
 			},
 			Ok(BlockStatus::Unknown) => {
 				if best_number.is_zero() {
-					info!("💔 New peer with unknown genesis hash {} ({}).", best_hash, best_number);
+					info!("New peer with unknown genesis hash {} ({}).", best_hash, best_number);
 					return Err(BadPeer(who, rep::GENESIS_MISMATCH))
 				}
 
@@ -810,7 +810,7 @@ where
 							(_, Err(e)) => {
 								info!(
 									target: LOG_TARGET,
-									"❌ Error answering legitimate blockchain query: {e}",
+									"Error answering legitimate blockchain query: {e}",
 								);
 								return Err(BadPeer(*who, rep::BLOCKCHAIN_READ_ERROR))
 							},
@@ -960,7 +960,7 @@ where
 		} else {
 			error!(
 				target: LOG_TARGET,
-				"💔 Called on_block_justification with a peer ID of an unknown peer",
+				"Called on_block_justification with a peer ID of an unknown peer",
 			);
 			return Ok(OnBlockJustification::Nothing)
 		};
@@ -974,7 +974,7 @@ where
 				if hash != block.hash {
 					warn!(
 						target: LOG_TARGET,
-						"💔 Invalid block justification provided by {}: requested: {:?} got: {:?}",
+						"Invalid block justification provided by {}: requested: {:?} got: {:?}",
 						who,
 						hash,
 						block.hash,
@@ -1047,7 +1047,7 @@ where
 		if let Err(err) = r {
 			warn!(
 				target: LOG_TARGET,
-				"💔 Error cleaning up pending extra justification data requests: {err}",
+				"Error cleaning up pending extra justification data requests: {err}",
 			);
 		}
 	}
@@ -1069,7 +1069,7 @@ where
 		let peer = if let Some(peer) = self.peers.get_mut(&who) {
 			peer
 		} else {
-			error!(target: LOG_TARGET, "💔 Called `on_validated_block_announce` with a bad peer ID");
+			error!(target: LOG_TARGET, "Called `on_validated_block_announce` with a bad peer ID");
 			return
 		};
 
@@ -1492,7 +1492,7 @@ where
 	fn restart(&mut self) -> impl Iterator<Item = Result<(PeerId, BlockRequest<B>), BadPeer>> + '_ {
 		self.blocks.clear();
 		if let Err(e) = self.reset_sync_start_point() {
-			warn!(target: LOG_TARGET, "💔  Unable to restart sync: {e}");
+			warn!(target: LOG_TARGET, "Unable to restart sync: {e}");
 		}
 		self.allowed_requests.set_all();
 		debug!(
@@ -2448,7 +2448,7 @@ where
 
 					if aux.bad_justification {
 						if let Some(ref peer) = who {
-							warn!("💔 Sent block with bad justification to import");
+							warn!("Sent block with bad justification to import");
 							output.push(Err(BadPeer(*peer, rep::BAD_JUSTIFICATION)));
 						}
 					}
@@ -2496,7 +2496,7 @@ where
 					if let Some(peer) = who {
 						warn!(
 							target: LOG_TARGET,
-							"💔 Peer sent block with incomplete header to import",
+							"Peer sent block with incomplete header to import",
 						);
 						output.push(Err(BadPeer(peer, rep::INCOMPLETE_HEADER)));
 						output.extend(self.restart());
@@ -2507,7 +2507,7 @@ where
 
 					warn!(
 						target: LOG_TARGET,
-						"💔 Verification failed for block {hash:?}{extra_message}: {e:?}",
+						"Verification failed for block {hash:?}{extra_message}: {e:?}",
 					);
 
 					if let Some(peer) = who {
@@ -2520,7 +2520,7 @@ where
 					if let Some(peer) = who {
 						warn!(
 							target: LOG_TARGET,
-							"💔 Block {hash:?} received from peer {peer} has been blacklisted",
+							"Block {hash:?} received from peer {peer} has been blacklisted",
 						);
 						output.push(Err(BadPeer(peer, rep::BAD_BLOCK)));
 					},
@@ -2531,7 +2531,7 @@ where
 					trace!(target: LOG_TARGET, "Obsolete block {hash:?}");
 				},
 				e @ Err(BlockImportError::UnknownParent) | e @ Err(BlockImportError::Other(_)) => {
-					warn!(target: LOG_TARGET, "💔 Error importing block {hash:?}: {}", e.unwrap_err());
+					warn!(target: LOG_TARGET, "Error importing block {hash:?}: {}", e.unwrap_err());
 					self.state_sync = None;
 					self.warp_sync = None;
 					output.extend(self.restart());

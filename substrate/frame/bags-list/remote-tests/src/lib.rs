@@ -99,7 +99,7 @@ pub fn display_and_check_bags<Runtime: RuntimeT<Instance1>>(
 			if vote_weight_as_balance < min_nominator_bond {
 				log::trace!(
 					target: LOG_TARGET,
-					"⚠️ {} Account found below min bond: {:?}.",
+					"{} Account found below min bond: {:?}.",
 					pretty_thresh,
 					id
 				);

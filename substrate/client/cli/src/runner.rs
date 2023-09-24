@@ -62,13 +62,13 @@ impl<C: SubstrateCli> Runner<C> {
 	///
 	/// ```text
 	/// 2020-06-03 16:14:21 Substrate Node
-	/// 2020-06-03 16:14:21 ✌️  version 2.0.0-rc3-f4940588c-x86_64-linux-gnu
-	/// 2020-06-03 16:14:21 ❤️  by Parity Technologies <admin@parity.io>, 2017-2020
-	/// 2020-06-03 16:14:21 📋 Chain specification: Flaming Fir
-	/// 2020-06-03 16:14:21 🏷  Node name: jolly-rod-7462
-	/// 2020-06-03 16:14:21 👤 Role: FULL
-	/// 2020-06-03 16:14:21 💾 Database: RocksDb at /tmp/c/chains/flamingfir7/db
-	/// 2020-06-03 16:14:21 ⛓  Native runtime: node-251 (substrate-node-1.tx1.au10)
+	/// 2020-06-03 16:14:21   version 2.0.0-rc3-f4940588c-x86_64-linux-gnu
+	/// 2020-06-03 16:14:21   by Parity Technologies <admin@parity.io>, 2017-2020
+	/// 2020-06-03 16:14:21  Chain specification: Flaming Fir
+	/// 2020-06-03 16:14:21  Node name: jolly-rod-7462
+	/// 2020-06-03 16:14:21  Role: FULL
+	/// 2020-06-03 16:14:21  Database: RocksDb at /tmp/c/chains/flamingfir7/db
+	/// 2020-06-03 16:14:21  Native runtime: node-251 (substrate-node-1.tx1.au10)
 	/// ```
 	fn print_node_infos(&self) {
 		print_node_infos::<C>(self.config())
@@ -174,13 +174,13 @@ impl<C: SubstrateCli> Runner<C> {
 /// Log information about the node itself.
 pub fn print_node_infos<C: SubstrateCli>(config: &Configuration) {
 	info!("{}", C::impl_name());
-	info!("✌️  version {}", C::impl_version());
-	info!("❤️  by {}, {}-{}", C::author(), C::copyright_start_year(), Local::now().year());
-	info!("📋 Chain specification: {}", config.chain_spec.name());
-	info!("🏷  Node name: {}", config.network.node_name);
-	info!("👤 Role: {}", config.display_role());
+	info!("  version {}", C::impl_version());
+	info!("  by {}, {}-{}", C::author(), C::copyright_start_year(), Local::now().year());
+	info!("Chain specification: {}", config.chain_spec.name());
+	info!("Node name: {}", config.network.node_name);
+	info!("Role: {}", config.display_role());
 	info!(
-		"💾 Database: {} at {}",
+		"Database: {} at {}",
 		config.database,
 		config
 			.database

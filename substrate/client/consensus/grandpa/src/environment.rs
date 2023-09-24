@@ -1482,15 +1482,11 @@ where
 			if set_ref.len() > 16 {
 				grandpa_log!(
 					initial_sync,
-					"👴 Applying GRANDPA set change to new set with {} authorities",
+					"Applying GRANDPA set change to new set with {} authorities",
 					set_ref.len(),
 				);
 			} else {
-				grandpa_log!(
-					initial_sync,
-					"👴 Applying GRANDPA set change to new set {:?}",
-					set_ref
-				);
+				grandpa_log!(initial_sync, "Applying GRANDPA set change to new set {:?}", set_ref);
 			}
 
 			telemetry!(

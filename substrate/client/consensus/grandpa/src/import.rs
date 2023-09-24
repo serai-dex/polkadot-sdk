@@ -811,7 +811,7 @@ where
 			Err(CommandOrError::VoterCommand(command)) => {
 				grandpa_log!(
 					initial_sync,
-					"👴 Imported justification for block #{} that triggers \
+					"Imported justification for block #{} that triggers \
 					command {}, signaling voter.",
 					number,
 					command,

@@ -393,9 +393,7 @@ pub fn new_full_base(
 	if let Some(hwbench) = hwbench {
 		sc_sysinfo::print_hwbench(&hwbench);
 		if !SUBSTRATE_REFERENCE_HARDWARE.check_hardware(&hwbench) && role.is_authority() {
-			log::warn!(
-				"⚠️  The hardware does not meet the minimal requirements for role 'Authority'."
-			);
+			log::warn!("The hardware does not meet the minimal requirements for role 'Authority'.");
 		}
 
 		if let Some(ref mut telemetry) = telemetry {
