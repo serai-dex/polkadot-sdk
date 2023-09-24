@@ -10,6 +10,7 @@
 ./substrate/client/consensus/beefy
 ./substrate/client/consensus/merkle-mountain-range
 ./substrate/client/consensus/pow
+./substrate/client/merkle-mountain-range
 ./substrate/client/network/statement
 ./substrate/client/rpc/src/statement
 ./substrate/client/rpc-api/src/statement
