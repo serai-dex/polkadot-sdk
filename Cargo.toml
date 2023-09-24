@@ -272,7 +272,6 @@ parking_lot = { opt-level = 3 }
 parking_lot_core = { opt-level = 3 }
 percent-encoding = { opt-level = 3 }
 primitive-types = { opt-level = 3 }
-reed-solomon-novelpoly = { opt-level = 3 }
 ring = { opt-level = 3 }
 rustls = { opt-level = 3 }
 sha2 = { opt-level = 3 }
@@ -282,7 +281,6 @@ snow = { opt-level = 3 }
 substrate-bip39 = { opt-level = 3 }
 twox-hash = { opt-level = 3 }
 uint = { opt-level = 3 }
-wasmi = { opt-level = 3 }
 x25519-dalek = { opt-level = 3 }
 yamux = { opt-level = 3 }
 zeroize = { opt-level = 3 }
