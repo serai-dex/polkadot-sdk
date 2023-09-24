@@ -685,8 +685,8 @@ pub mod pallet {
 	#[pallet::genesis_build]
 	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
 		fn build(&self) {
-			<BlockHash<T>>::insert::<_, T::Hash>(BlockNumberFor::<T>::zero(), hash69());
-			<ParentHash<T>>::put::<T::Hash>(hash69());
+			<BlockHash<T>>::insert::<_, T::Hash>(BlockNumberFor::<T>::zero(), build_genesis_hash());
+			<ParentHash<T>>::put::<T::Hash>(build_genesis_hash());
 			<LastRuntimeUpgrade<T>>::put(LastRuntimeUpgradeInfo::from(T::Version::get()));
 			<UpgradedToU32RefCount<T>>::put(true);
 			<UpgradedToTripleRefCount<T>>::put(true);
@@ -730,11 +730,11 @@ pub struct EventRecord<E: Parameter + Member, T> {
 	pub topics: Vec<T>,
 }
 
-// Create a Hash with 69 for each byte,
-// only used to build genesis config.
-fn hash69<T: AsMut<[u8]> + Default>() -> T {
+// Hash used when building the genesis config,
+fn build_genesis_hash<T: AsMut<[u8]> + Default>() -> T {
 	let mut h = T::default();
-	h.as_mut().iter_mut().for_each(|byte| *byte = 69);
+	// 0xfe. Close to "ge"nesis, not 0xff, Rust.
+	h.as_mut().iter_mut().for_each(|byte| *byte = 0xfe);
 	h
 }
 
