@@ -170,7 +170,9 @@ where
 		_ => true,
 	} || detailed_output;
 
-	let enable_color = force_colors.unwrap_or_else(|| atty::is(atty::Stream::Stderr));
+	use std::io::IsTerminal;
+
+	let enable_color = force_colors.unwrap_or_else(|| std::io::stderr().is_terminal());
 	let timer = fast_local_time::FastLocalTime { with_fractional: detailed_output };
 
 	let event_format = EventFormat {
@@ -179,7 +181,7 @@ where
 		display_level: detailed_output,
 		display_thread_name: detailed_output,
 		enable_color,
-		dup_to_stdout: !atty::is(atty::Stream::Stderr) && atty::is(atty::Stream::Stdout),
+		dup_to_stdout: !std::io::stderr().is_terminal() && std::io::stdout().is_terminal(),
 	};
 	let builder = FmtSubscriber::builder().with_env_filter(env_filter);
 

@@ -9092,7 +9092,6 @@ name = "sc-tracing"
 version = "4.0.0-dev"
 dependencies = [
  "ansi_term",
- "atty",
  "chrono",
  "criterion",
  "lazy_static",
