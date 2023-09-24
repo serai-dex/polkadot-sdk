@@ -139,14 +139,12 @@ pub fn substrate_info<Block: BlockT>(
 			Slot::from_timestamp(*timestamp_idp, SlotDuration::from_millis(blocktime_millis));
 		let slot_idp = sp_consensus_babe::inherents::InherentDataProvider::new(slot);
 
-		let storage_proof_idp = sp_transaction_storage_proof::InherentDataProvider::new(None);
-
 		let digest = vec![DigestItem::PreRuntime(
 			BABE_ENGINE_ID,
 			PreDigest::SecondaryPlain(SecondaryPlainPreDigest { slot, authority_index: 0 })
 				.encode(),
 		)];
 
-		Ok(((slot_idp, timestamp_idp, storage_proof_idp), digest))
+		Ok(((slot_idp, timestamp_idp), digest))
 	}
 }

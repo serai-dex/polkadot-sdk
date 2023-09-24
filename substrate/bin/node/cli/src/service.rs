@@ -34,7 +34,6 @@ use sc_executor::NativeElseWasmExecutor;
 use sc_network::{event::Event, NetworkEventStream, NetworkService};
 use sc_network_sync::{warp::WarpSyncParams, SyncingService};
 use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager};
-use sc_statement_store::Store as StatementStore;
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_api::ProvideRuntimeApi;
@@ -153,7 +152,6 @@ pub fn new_partial(
 			),
 			grandpa::SharedVoterState,
 			Option<Telemetry>,
-			Arc<StatementStore>,
 		),
 	>,
 	ServiceError,
@@ -236,16 +234,6 @@ pub fn new_partial(
 
 	let import_setup = (block_import, grandpa_link, babe_link);
 
-	let statement_store = sc_statement_store::Store::new_shared(
-		&config.data_path,
-		Default::default(),
-		client.clone(),
-		keystore_container.local_keystore(),
-		config.prometheus_registry(),
-		&task_manager.spawn_handle(),
-	)
-	.map_err(|e| ServiceError::Other(format!("Statement store error: {:?}", e)))?;
-
 	let (rpc_extensions_builder, rpc_setup) = {
 		let (_, grandpa_link, _) = &import_setup;
 
@@ -266,7 +254,6 @@ pub fn new_partial(
 		let chain_spec = config.chain_spec.cloned_box();
 
 		let rpc_backend = backend.clone();
-		let rpc_statement_store = statement_store.clone();
 		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| {
 			let deps = node_rpc::FullDeps {
 				client: client.clone(),
@@ -285,7 +272,6 @@ pub fn new_partial(
 					subscription_executor,
 					finality_provider: finality_proof_provider.clone(),
 				},
-				statement_store: rpc_statement_store.clone(),
 				backend: rpc_backend.clone(),
 			};
 
@@ -303,7 +289,7 @@ pub fn new_partial(
 		select_chain,
 		import_queue,
 		transaction_pool,
-		other: (rpc_extensions_builder, import_setup, rpc_setup, telemetry, statement_store),
+		other: (rpc_extensions_builder, import_setup, rpc_setup, telemetry),
 	})
 }
 
@@ -347,7 +333,7 @@ pub fn new_full_base(
 		keystore_container,
 		select_chain,
 		transaction_pool,
-		other: (rpc_builder, import_setup, rpc_setup, mut telemetry, statement_store),
+		other: (rpc_builder, import_setup, rpc_setup, mut telemetry),
 	} = new_partial(&config)?;
 
 	let shared_voter_state = rpc_setup;
@@ -361,16 +347,6 @@ pub fn new_full_base(
 	net_config.add_notification_protocol(grandpa::grandpa_peers_set_config(
 		grandpa_protocol_name.clone(),
 	));
-
-	let statement_handler_proto = sc_network_statement::StatementHandlerPrototype::new(
-		client
-			.block_hash(0u32.into())
-			.ok()
-			.flatten()
-			.expect("Genesis block exists; qed"),
-		config.chain_spec.fork_id(),
-	);
-	net_config.add_notification_protocol(statement_handler_proto.set_config());
 
 	let warp_sync = Arc::new(grandpa::warp_proof::NetworkProvider::new(
 		backend.clone(),
@@ -445,7 +421,6 @@ pub fn new_full_base(
 			telemetry.as_ref().map(|x| x.handle()),
 		);
 
-		let client_clone = client.clone();
 		let slot_duration = babe_link.config().slot_duration();
 		let babe_config = sc_consensus_babe::BabeParams {
 			keystore: keystore_container.keystore(),
@@ -455,25 +430,16 @@ pub fn new_full_base(
 			block_import,
 			sync_oracle: sync_service.clone(),
 			justification_sync_link: sync_service.clone(),
-			create_inherent_data_providers: move |parent, ()| {
-				let client_clone = client_clone.clone();
-				async move {
-					let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
+			create_inherent_data_providers: move |_, ()| async move {
+				let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
 
-					let slot =
+				let slot =
 						sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
 							*timestamp,
 							slot_duration,
 						);
 
-					let storage_proof =
-						sp_transaction_storage_proof::registration::new_data_provider(
-							&*client_clone,
-							&parent,
-						)?;
-
-					Ok((slot, timestamp, storage_proof))
-				}
+				Ok((slot, timestamp))
 			},
 			force_authoring,
 			backoff_authoring_blocks,
@@ -566,26 +532,6 @@ pub fn new_full_base(
 		);
 	}
 
-	// Spawn statement protocol worker
-	let statement_protocol_executor = {
-		let spawn_handle = task_manager.spawn_handle();
-		Box::new(move |fut| {
-			spawn_handle.spawn("network-statement-validator", Some("networking"), fut);
-		})
-	};
-	let statement_handler = statement_handler_proto.build(
-		network.clone(),
-		sync_service.clone(),
-		statement_store.clone(),
-		prometheus_registry.as_ref(),
-		statement_protocol_executor,
-	)?;
-	task_manager.spawn_handle().spawn(
-		"network-statement-handler",
-		Some("networking"),
-		statement_handler.run(),
-	);
-
 	if enable_offchain_worker {
 		task_manager.spawn_handle().spawn(
 			"offchain-workers-runner",
@@ -600,9 +546,7 @@ pub fn new_full_base(
 				network_provider: network.clone(),
 				is_validator: role.is_authority(),
 				enable_http_requests: true,
-				custom_extensions: move |_| {
-					vec![Box::new(statement_store.clone().as_statement_store_ext()) as Box<_>]
-				},
+				custom_extensions: move |_| vec![],
 			})
 			.run(client.clone(), task_manager.spawn_handle())
 			.boxed(),

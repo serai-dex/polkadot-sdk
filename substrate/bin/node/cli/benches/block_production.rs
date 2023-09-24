@@ -37,7 +37,7 @@ use sp_consensus::BlockOrigin;
 use sp_keyring::Sr25519Keyring;
 use sp_runtime::{
 	transaction_validity::{InvalidTransaction, TransactionValidityError},
-	AccountId32, MultiAddress, OpaqueExtrinsic,
+	AccountId32, OpaqueExtrinsic,
 };
 use tokio::runtime::Handle;
 
@@ -135,7 +135,7 @@ fn prepare_benchmark(client: &FullClient) -> (usize, Vec<OpaqueExtrinsic>) {
 
 	// Creating those is surprisingly costly, so let's only do it once and later just `clone` them.
 	let src = Sr25519Keyring::Alice.pair();
-	let dst: MultiAddress<AccountId32, u32> = Sr25519Keyring::Bob.to_account_id().into();
+	let dst: AccountId32 = Sr25519Keyring::Bob.to_account_id();
 
 	// Add as many tranfer extrinsics as possible into a single block.
 	for nonce in 0.. {

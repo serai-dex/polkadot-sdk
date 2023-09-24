@@ -194,26 +194,6 @@ fn can_filter_balance_in_batch_when_activated() {
 }
 
 #[test]
-fn can_filter_balance_in_proxy_when_activated() {
-	new_test_ext().execute_with(|| {
-		assert_ok!(Proxy::add_proxy(RuntimeOrigin::signed(1), 2, ProxyType::JustTransfer, 0));
-
-		assert_ok!(Proxy::proxy(RuntimeOrigin::signed(2), 1, None, Box::new(call_transfer())));
-		System::assert_last_event(pallet_proxy::Event::ProxyExecuted { result: Ok(()) }.into());
-
-		assert_ok!(SafeMode::force_enter(signed(ForceEnterWeak::get())));
-
-		assert_ok!(Proxy::proxy(RuntimeOrigin::signed(2), 1, None, Box::new(call_transfer())));
-		System::assert_last_event(
-			pallet_proxy::Event::ProxyExecuted {
-				result: DispatchError::from(frame_system::Error::<Test>::CallFiltered).into(),
-			}
-			.into(),
-		);
-	});
-}
-
-#[test]
 fn can_activate() {
 	new_test_ext().execute_with(|| {
 		assert_ok!(SafeMode::enter(RuntimeOrigin::signed(0)));

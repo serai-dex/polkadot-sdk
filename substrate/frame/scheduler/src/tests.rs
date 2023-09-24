@@ -924,7 +924,7 @@ fn migration_to_v4_works() {
 						.unwrap(),
 						maybe_periodic: None,
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 					None,
 					Some(ScheduledOf::<Test> {
@@ -937,7 +937,7 @@ fn migration_to_v4_works() {
 						.unwrap(),
 						maybe_periodic: Some((456u64, 10)),
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 				],
 			),
@@ -954,7 +954,7 @@ fn migration_to_v4_works() {
 						.unwrap(),
 						maybe_periodic: None,
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 					None,
 					Some(ScheduledOf::<Test> {
@@ -967,7 +967,7 @@ fn migration_to_v4_works() {
 						.unwrap(),
 						maybe_periodic: Some((456u64, 10)),
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 				],
 			),
@@ -984,7 +984,7 @@ fn migration_to_v4_works() {
 						.unwrap(),
 						maybe_periodic: None,
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 					None,
 					Some(ScheduledOf::<Test> {
@@ -997,7 +997,7 @@ fn migration_to_v4_works() {
 						.unwrap(),
 						maybe_periodic: Some((456u64, 10)),
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 				],
 			),
@@ -1077,7 +1077,7 @@ fn test_migrate_origin() {
 							.unwrap(),
 							maybe_periodic: None,
 							origin: system::RawOrigin::Root.into(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 						Some(Scheduled {
@@ -1090,7 +1090,7 @@ fn test_migrate_origin() {
 							.unwrap(),
 							maybe_periodic: Some((456u64, 10)),
 							origin: system::RawOrigin::None.into(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 					]
 				),
@@ -1107,7 +1107,7 @@ fn test_migrate_origin() {
 							.unwrap(),
 							maybe_periodic: None,
 							origin: system::RawOrigin::Root.into(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 						Some(Scheduled {
@@ -1120,7 +1120,7 @@ fn test_migrate_origin() {
 							.unwrap(),
 							maybe_periodic: Some((456u64, 10)),
 							origin: system::RawOrigin::None.into(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 					]
 				),
@@ -1137,7 +1137,7 @@ fn test_migrate_origin() {
 							.unwrap(),
 							maybe_periodic: None,
 							origin: system::RawOrigin::Root.into(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 						Some(Scheduled {
@@ -1150,7 +1150,7 @@ fn test_migrate_origin() {
 							.unwrap(),
 							maybe_periodic: Some((456u64, 10)),
 							origin: system::RawOrigin::None.into(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 					]
 				)

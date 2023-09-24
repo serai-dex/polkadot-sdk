@@ -105,7 +105,7 @@ pub mod v3 {
 			// Check that no agenda overflows `MaxScheduledPerBlock`.
 			let max_scheduled_per_block = T::MaxScheduledPerBlock::get() as usize;
 			for (block_number, agenda) in Agenda::<T>::iter() {
-				if agenda.iter().cloned().filter_map(|s| s).count() > max_scheduled_per_block {
+				if agenda.iter().cloned().flatten().count() > max_scheduled_per_block {
 					log::error!(
 						target: TARGET,
 						"Would truncate agenda of block {:?} from {} items to {} items.",
@@ -119,7 +119,7 @@ pub mod v3 {
 			// Check that bounding the calls will not overflow `MAX_LENGTH`.
 			let max_length = T::Preimages::MAX_LENGTH as usize;
 			for (block_number, agenda) in Agenda::<T>::iter() {
-				for schedule in agenda.iter().cloned().filter_map(|s| s) {
+				for schedule in agenda.iter().cloned().flatten() {
 					match schedule.call {
 						frame_support::traits::schedule::MaybeHashed::Value(call) => {
 							let l = call.using_encoded(|c| c.len());
@@ -340,7 +340,7 @@ mod test {
 						call: small_call.clone().into(),
 						maybe_periodic: None, // 1
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 					None,
 					Some(ScheduledV3Of::<Test> {
@@ -349,7 +349,7 @@ mod test {
 						call: large_call.clone().into(),
 						maybe_periodic: Some((4u64, 20)),
 						origin: signed(i),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 					Some(ScheduledV3Of::<Test> {
 						maybe_id: Some(vec![255 - i as u8; 320]),
@@ -357,15 +357,15 @@ mod test {
 						call: MaybeHashed::Hash(bound_hashed_call.hash()),
 						maybe_periodic: Some((8u64, 10)),
 						origin: signed(i),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 					Some(ScheduledV3Of::<Test> {
 						maybe_id: Some(vec![i as u8; 320]),
 						priority: 123,
-						call: MaybeHashed::Hash(undecodable_hash.clone()),
+						call: MaybeHashed::Hash(undecodable_hash),
 						maybe_periodic: Some((4u64, 20)),
 						origin: root(),
-						_phantom: PhantomData::<u64>::default(),
+						_phantom: PhantomData,
 					}),
 				];
 				frame_support::migration::put_storage_value(b"Scheduler", b"Agenda", &k, old);
@@ -393,7 +393,7 @@ mod test {
 							call: bound_small_call.clone(),
 							maybe_periodic: None,
 							origin: root(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 						Some(ScheduledOf::<Test> {
@@ -402,7 +402,7 @@ mod test {
 							call: bound_large_call.clone(),
 							maybe_periodic: Some((4u64, 20)),
 							origin: signed(0),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						Some(ScheduledOf::<Test> {
 							maybe_id: Some(blake2_256(&[255u8; 320])),
@@ -410,7 +410,7 @@ mod test {
 							call: Bounded::from_legacy_hash(bound_hashed_call.hash()),
 							maybe_periodic: Some((8u64, 10)),
 							origin: signed(0),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 					],
@@ -424,7 +424,7 @@ mod test {
 							call: bound_small_call.clone(),
 							maybe_periodic: None,
 							origin: root(),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 						Some(ScheduledOf::<Test> {
@@ -433,7 +433,7 @@ mod test {
 							call: bound_large_call.clone(),
 							maybe_periodic: Some((4u64, 20)),
 							origin: signed(1),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						Some(ScheduledOf::<Test> {
 							maybe_id: Some(blake2_256(&[254u8; 320])),
@@ -441,7 +441,7 @@ mod test {
 							call: Bounded::from_legacy_hash(bound_hashed_call.hash()),
 							maybe_periodic: Some((8u64, 10)),
 							origin: signed(1),
-							_phantom: PhantomData::<u64>::default(),
+							_phantom: PhantomData,
 						}),
 						None,
 					],
@@ -478,7 +478,7 @@ mod test {
 				call: too_large_call.clone().into(),
 				maybe_periodic: None,
 				origin: root(),
-				_phantom: PhantomData::<u64>::default(),
+				_phantom: PhantomData,
 			})];
 			frame_support::migration::put_storage_value(b"Scheduler", b"Agenda", &k, old);
 

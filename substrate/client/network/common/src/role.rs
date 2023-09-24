@@ -69,8 +69,6 @@ impl std::fmt::Display for Role {
 bitflags::bitflags! {
 	/// Bitmask of the roles that a node fulfills.
 	pub struct Roles: u8 {
-		/// No network.
-		const NONE = 0b00000000;
 		/// Full node, does not participate in consensus.
 		const FULL = 0b00000001;
 		/// Light client node.

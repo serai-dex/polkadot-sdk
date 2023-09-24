@@ -21,9 +21,8 @@
 use crate::keyring::*;
 use kitchensink_runtime::{
 	constants::currency::*, wasm_binary_unwrap, AccountId, AssetsConfig, BabeConfig,
-	BalancesConfig, GluttonConfig, GrandpaConfig, IndicesConfig, RuntimeGenesisConfig,
-	SessionConfig, SocietyConfig, StakerStatus, StakingConfig, SystemConfig,
-	BABE_GENESIS_EPOCH_CONFIG,
+	BalancesConfig, GluttonConfig, GrandpaConfig, RuntimeGenesisConfig, SessionConfig,
+	StakerStatus, StakingConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG,
 };
 use sp_keyring::{Ed25519Keyring, Sr25519Keyring};
 use sp_runtime::Perbill;
@@ -52,7 +51,6 @@ pub fn config_endowed(code: Option<&[u8]>, extra_endowed: Vec<AccountId>) -> Run
 			code: code.map(|x| x.to_vec()).unwrap_or_else(|| wasm_binary_unwrap().to_vec()),
 			..Default::default()
 		},
-		indices: IndicesConfig { indices: vec![] },
 		balances: BalancesConfig { balances: endowed },
 		session: SessionConfig {
 			keys: vec![
@@ -85,22 +83,10 @@ pub fn config_endowed(code: Option<&[u8]>, extra_endowed: Vec<AccountId>) -> Run
 		grandpa: GrandpaConfig { authorities: vec![], _config: Default::default() },
 		im_online: Default::default(),
 		authority_discovery: Default::default(),
-		democracy: Default::default(),
-		council: Default::default(),
-		technical_committee: Default::default(),
-		technical_membership: Default::default(),
-		elections: Default::default(),
 		sudo: Default::default(),
-		treasury: Default::default(),
-		society: SocietyConfig { pot: 0 },
-		vesting: Default::default(),
 		assets: AssetsConfig { assets: vec![(9, alice(), true, 1)], ..Default::default() },
 		pool_assets: Default::default(),
-		transaction_storage: Default::default(),
 		transaction_payment: Default::default(),
-		alliance: Default::default(),
-		alliance_motion: Default::default(),
-		nomination_pools: Default::default(),
 		safe_mode: Default::default(),
 		tx_pause: Default::default(),
 		glutton: GluttonConfig {

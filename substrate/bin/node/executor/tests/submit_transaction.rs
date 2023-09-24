@@ -17,7 +17,7 @@
 
 use codec::Decode;
 use frame_system::offchain::{SendSignedTransaction, Signer, SubmitTransaction};
-use kitchensink_runtime::{Executive, Indices, Runtime, UncheckedExtrinsic};
+use kitchensink_runtime::{Executive, Runtime, UncheckedExtrinsic};
 use sp_application_crypto::AppCrypto;
 use sp_core::offchain::{testing::TestTransactionPoolExt, TransactionPoolExt};
 use sp_keyring::sr25519::Keyring::Alice;
@@ -200,10 +200,7 @@ fn should_submit_signed_twice_from_all_accounts() {
 #[test]
 fn submitted_transaction_should_be_valid() {
 	use codec::Encode;
-	use sp_runtime::{
-		traits::StaticLookup,
-		transaction_validity::{TransactionSource, TransactionTag},
-	};
+	use sp_runtime::transaction_validity::{TransactionSource, TransactionTag};
 
 	let mut t = new_test_ext(compact_code_unwrap());
 	let (pool, state) = TestTransactionPoolExt::new();
@@ -237,7 +234,7 @@ fn submitted_transaction_should_be_valid() {
 		let extrinsic = UncheckedExtrinsic::decode(&mut &*tx0).unwrap();
 		// add balance to the account
 		let author = extrinsic.signature.clone().unwrap().0;
-		let address = Indices::lookup(author).unwrap();
+		let address = author;
 		let data = pallet_balances::AccountData { free: 5_000_000_000_000, ..Default::default() };
 		let account = frame_system::AccountInfo { data, ..Default::default() };
 		<frame_system::Account<Runtime>>::insert(&address, account);

@@ -301,12 +301,12 @@ impl<'a> Iterator for BlockContentIterator<'a> {
 				function: match self.content.block_type {
 					BlockType::RandomTransfersKeepAlive =>
 						RuntimeCall::Balances(BalancesCall::transfer_keep_alive {
-							dest: sp_runtime::MultiAddress::Id(receiver),
+							dest: receiver,
 							value: kitchensink_runtime::ExistentialDeposit::get() + 1,
 						}),
 					BlockType::RandomTransfersReaping => {
 						RuntimeCall::Balances(BalancesCall::transfer_allow_death {
-							dest: sp_runtime::MultiAddress::Id(receiver),
+							dest: receiver,
 							// Transfer so that ending balance would be 1 less than existential
 							// deposit so that we kill the sender account.
 							value: 100 * DOLLARS -
@@ -577,7 +577,7 @@ impl BenchKeyring {
 					}
 				});
 				UncheckedExtrinsic {
-					signature: Some((sp_runtime::MultiAddress::Id(signed), signature, extra)),
+					signature: Some((signed, signature, extra)),
 					function: payload.0,
 				}
 			},

@@ -20,10 +20,9 @@
 
 use grandpa_primitives::AuthorityId as GrandpaId;
 use kitchensink_runtime::{
-	constants::currency::*, wasm_binary_unwrap, BabeConfig, BalancesConfig, Block, CouncilConfig,
-	DemocracyConfig, ElectionsConfig, ImOnlineConfig, IndicesConfig, MaxNominations,
-	NominationPoolsConfig, SessionConfig, SessionKeys, SocietyConfig, StakerStatus, StakingConfig,
-	SudoConfig, SystemConfig, TechnicalCommitteeConfig,
+	constants::currency::*, wasm_binary_unwrap, BabeConfig, BalancesConfig, Block, ImOnlineConfig,
+	MaxNominations, SessionConfig, SessionKeys, StakerStatus, StakingConfig, SudoConfig,
+	SystemConfig,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sc_chain_spec::ChainSpecExtension;
@@ -288,8 +287,6 @@ pub fn testnet_genesis(
 		}))
 		.collect::<Vec<_>>();
 
-	let num_endowed_accounts = endowed_accounts.len();
-
 	const ENDOWMENT: Balance = 10_000_000 * DOLLARS;
 	const STASH: Balance = ENDOWMENT / 1000;
 
@@ -298,7 +295,6 @@ pub fn testnet_genesis(
 		balances: BalancesConfig {
 			balances: endowed_accounts.iter().cloned().map(|x| (x, ENDOWMENT)).collect(),
 		},
-		indices: IndicesConfig { indices: vec![] },
 		session: SessionConfig {
 			keys: initial_authorities
 				.iter()
@@ -319,24 +315,6 @@ pub fn testnet_genesis(
 			stakers,
 			..Default::default()
 		},
-		democracy: DemocracyConfig::default(),
-		elections: ElectionsConfig {
-			members: endowed_accounts
-				.iter()
-				.take((num_endowed_accounts + 1) / 2)
-				.cloned()
-				.map(|member| (member, STASH))
-				.collect(),
-		},
-		council: CouncilConfig::default(),
-		technical_committee: TechnicalCommitteeConfig {
-			members: endowed_accounts
-				.iter()
-				.take((num_endowed_accounts + 1) / 2)
-				.cloned()
-				.collect(),
-			phantom: Default::default(),
-		},
 		sudo: SudoConfig { key: Some(root_key) },
 		babe: BabeConfig {
 			epoch_config: Some(kitchensink_runtime::BABE_GENESIS_EPOCH_CONFIG),
@@ -345,27 +323,15 @@ pub fn testnet_genesis(
 		im_online: ImOnlineConfig { keys: vec![] },
 		authority_discovery: Default::default(),
 		grandpa: Default::default(),
-		technical_membership: Default::default(),
-		treasury: Default::default(),
-		society: SocietyConfig { pot: 0 },
-		vesting: Default::default(),
 		assets: pallet_assets::GenesisConfig {
 			// This asset is used by the NIS pallet as counterpart currency.
 			assets: vec![(9, get_account_id_from_seed::<sr25519::Public>("Alice"), true, 1)],
 			..Default::default()
 		},
 		pool_assets: Default::default(),
-		transaction_storage: Default::default(),
 		transaction_payment: Default::default(),
-		alliance: Default::default(),
 		safe_mode: Default::default(),
 		tx_pause: Default::default(),
-		alliance_motion: Default::default(),
-		nomination_pools: NominationPoolsConfig {
-			min_create_bond: 10 * DOLLARS,
-			min_join_bond: 1 * DOLLARS,
-			..Default::default()
-		},
 		glutton: Default::default(),
 	}
 }
