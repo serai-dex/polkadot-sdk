@@ -21,7 +21,6 @@ frame-support = { path = "../support", default-features = false}
 frame-system = { path = "../system", default-features = false}
 pallet-authorship = { path = "../authorship", default-features = false}
 pallet-session = { path = "../session", default-features = false}
-sp-application-crypto = { path = "../../primitives/application-crypto", default-features = false, features = ["serde"] }
 sp-consensus-grandpa = { path = "../../primitives/consensus/grandpa", default-features = false, features = ["serde"] }
 sp-core = { path = "../../primitives/core", default-features = false, features = ["serde"] }
 sp-io = { path = "../../primitives/io", default-features = false}
@@ -57,7 +56,6 @@ std = [
 	"pallet-staking/std",
 	"pallet-timestamp/std",
 	"scale-info/std",
-	"sp-application-crypto/std",
 	"sp-consensus-grandpa/std",
 	"sp-core/std",
 	"sp-io/std",

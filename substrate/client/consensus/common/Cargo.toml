@@ -25,7 +25,6 @@ thiserror = "1.0.48"
 prometheus-endpoint = { package = "substrate-prometheus-endpoint", path = "../../../utils/prometheus" }
 sc-client-api = { path = "../../api" }
 sc-utils = { path = "../../utils" }
-sp-api = { path = "../../../primitives/api" }
 sp-blockchain = { path = "../../../primitives/blockchain" }
 sp-consensus = { path = "../../../primitives/consensus/common" }
 sp-core = { path = "../../../primitives/core" }

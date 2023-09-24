@@ -25,7 +25,6 @@ sc-client-db = { path = "../../client/db", default-features = false, features = 
 ]}
 sc-consensus = { path = "../../client/consensus/common" }
 sc-executor = { path = "../../client/executor" }
-sc-offchain = { path = "../../client/offchain" }
 sc-service = { path = "../../client/service", default-features = false, features = [
 	"test-helpers",
 ]}
@@ -35,4 +34,3 @@ sp-core = { path = "../../primitives/core" }
 sp-keyring = { path = "../../primitives/keyring" }
 sp-keystore = { path = "../../primitives/keystore" }
 sp-runtime = { path = "../../primitives/runtime" }
-sp-state-machine = { path = "../../primitives/state-machine" }

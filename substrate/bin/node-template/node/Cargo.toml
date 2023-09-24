@@ -36,7 +36,6 @@ sc-consensus-grandpa = { path = "../../../client/consensus/grandpa" }
 sp-consensus-grandpa = { path = "../../../primitives/consensus/grandpa" }
 sc-client-api = { path = "../../../client/api" }
 sp-runtime = { path = "../../../primitives/runtime" }
-sp-io = { path = "../../../primitives/io" }
 sp-timestamp = { path = "../../../primitives/timestamp" }
 sp-inherents = { path = "../../../primitives/inherents" }
 sp-keyring = { path = "../../../primitives/keyring" }

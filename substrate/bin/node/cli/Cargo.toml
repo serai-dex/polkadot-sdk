@@ -58,7 +58,6 @@ sp-inherents = { path = "../../../primitives/inherents" }
 sp-keyring = { path = "../../../primitives/keyring" }
 sp-keystore = { path = "../../../primitives/keystore" }
 sp-consensus = { path = "../../../primitives/consensus/common" }
-sp-io = { path = "../../../primitives/io" }
 
 # client dependencies
 sc-client-api = { path = "../../../client/api" }
@@ -67,7 +66,6 @@ sc-consensus = { path = "../../../client/consensus/common" }
 sc-transaction-pool = { path = "../../../client/transaction-pool" }
 sc-transaction-pool-api = { path = "../../../client/transaction-pool/api" }
 sc-network = { path = "../../../client/network" }
-sc-network-common = { path = "../../../client/network/common" }
 sc-network-sync = { path = "../../../client/network/sync" }
 sc-consensus-slots = { path = "../../../client/consensus/slots" }
 sc-consensus-babe = { path = "../../../client/consensus/babe" }
@@ -88,7 +86,6 @@ frame-system = { path = "../../../frame/system" }
 frame-system-rpc-runtime-api = { path = "../../../frame/system/rpc/runtime-api" }
 pallet-assets = { path = "../../../frame/assets" }
 pallet-asset-conversion-tx-payment = { path = "../../../frame/transaction-payment/asset-conversion-tx-payment" }
-pallet-asset-tx-payment = { path = "../../../frame/transaction-payment/asset-tx-payment" }
 pallet-im-online = { path = "../../../frame/im-online", default-features = false}
 
 # node-specific dependencies
@@ -159,7 +156,6 @@ runtime-benchmarks = [
 	"frame-benchmarking-cli/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"kitchensink-runtime/runtime-benchmarks",
-	"pallet-asset-tx-payment/runtime-benchmarks",
 	"pallet-assets/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
@@ -174,7 +170,6 @@ try-runtime = [
 	"frame-system/try-runtime",
 	"kitchensink-runtime/try-runtime",
 	"pallet-asset-conversion-tx-payment/try-runtime",
-	"pallet-asset-tx-payment/try-runtime",
 	"pallet-assets/try-runtime",
 	"pallet-balances/try-runtime",
 	"pallet-im-online/try-runtime",

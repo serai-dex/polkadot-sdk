@@ -39,6 +39,5 @@ sp-state-machine = { path = "../../../primitives/state-machine" }
 sp-storage = { path = "../../../primitives/storage" }
 sp-tracing = { path = "../../../primitives/tracing" }
 sp-trie = { path = "../../../primitives/trie" }
-sp-io = { path = "../../../primitives/io" }
 substrate-test-runtime = { path = "../../../test-utils/runtime" }
 substrate-test-runtime-client = { path = "../../../test-utils/runtime/client" }

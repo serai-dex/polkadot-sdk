@@ -13,12 +13,10 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 static_assertions = "1.1.0"
-serde = { version = "1.0.188", default-features = false, features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
 frame-metadata = { version = "16.0.0", default-features = false, features = ["current"] }
 sp-api = { path = "../../../primitives/api", default-features = false}
-sp-arithmetic = { path = "../../../primitives/arithmetic", default-features = false}
 sp-io = { path = "../../../primitives/io", default-features = false }
 sp-state-machine = { path = "../../../primitives/state-machine", optional = true}
 frame-support = { path = "..", default-features = false}
@@ -46,9 +44,7 @@ std = [
 	"frame-support/std",
 	"frame-system/std",
 	"scale-info/std",
-	"serde/std",
 	"sp-api/std",
-	"sp-arithmetic/std",
 	"sp-core/std",
 	"sp-io/std",
 	"sp-metadata-ir/std",

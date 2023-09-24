@@ -27,7 +27,6 @@ sp-rpc = { path = "../../../../primitives/rpc" }
 sp-state-machine = { path = "../../../../primitives/state-machine" }
 sp-timestamp = { path = "../../../../primitives/timestamp" }
 sp-version = { path = "../../../../primitives/version" }
-sp-debug-derive = { path = "../../../../primitives/debug-derive" }
 sp-api = { path = "../../../../primitives/api" }
 sp-weights = { path = "../../../../primitives/weights" }
 frame-try-runtime = { path = "../../../../frame/try-runtime", optional = true}
@@ -53,7 +52,6 @@ tokio = "1.27.0"
 [features]
 try-runtime = [
 	"frame-try-runtime/try-runtime",
-	"sp-debug-derive/force-debug",
 	"sp-runtime/try-runtime",
 	"substrate-cli-test-utils/try-runtime",
 ]

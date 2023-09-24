@@ -28,7 +28,6 @@ pallet-session = { path = "../session", default-features = false, features = [
 	"historical",
 ]}
 pallet-authorship = { path = "../authorship", default-features = false}
-sp-application-crypto = { path = "../../primitives/application-crypto", default-features = false, features = ["serde"] }
 frame-election-provider-support = { path = "../election-provider-support", default-features = false}
 log = { version = "0.4.17", default-features = false }
 
@@ -65,7 +64,6 @@ std = [
 	"pallet-timestamp/std",
 	"scale-info/std",
 	"serde/std",
-	"sp-application-crypto/std",
 	"sp-core/std",
 	"sp-io/std",
 	"sp-npos-elections/std",

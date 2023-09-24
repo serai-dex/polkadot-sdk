@@ -19,7 +19,6 @@ scale-info = { version = "2.5.0", default-features = false, features = ["derive"
 frame-support = { path = "../support", default-features = false}
 frame-system = { path = "../system", default-features = false}
 pallet-timestamp = { path = "../timestamp", default-features = false}
-sp-application-crypto = { path = "../../primitives/application-crypto", default-features = false}
 sp-consensus-aura = { path = "../../primitives/consensus/aura", default-features = false}
 sp-runtime = { path = "../../primitives/runtime", default-features = false}
 sp-std = { path = "../../primitives/std", default-features = false}
@@ -37,7 +36,6 @@ std = [
 	"log/std",
 	"pallet-timestamp/std",
 	"scale-info/std",
-	"sp-application-crypto/std",
 	"sp-consensus-aura/std",
 	"sp-core/std",
 	"sp-io/std",

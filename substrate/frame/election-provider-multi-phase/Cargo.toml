@@ -33,7 +33,6 @@ frame-election-provider-support = { path = "../election-provider-support", defau
 
 # Optional imports for benchmarking
 frame-benchmarking = { path = "../benchmarking", default-features = false, optional = true }
-pallet-election-provider-support-benchmarking = { path = "../election-provider-support/benchmarking", default-features = false, optional = true }
 rand = { version = "0.8.5", default-features = false, features = ["alloc", "small_rng"], optional = true }
 strum = { version = "0.25",  default-features = false, features = ["derive"], optional = true }
 
@@ -57,7 +56,6 @@ std = [
 	"frame-system/std",
 	"log/std",
 	"pallet-balances/std",
-	"pallet-election-provider-support-benchmarking?/std",
 	"rand/std",
 	"scale-info/std",
 	"sp-arithmetic/std",
@@ -75,7 +73,6 @@ runtime-benchmarks = [
 	"frame-support/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
-	"pallet-election-provider-support-benchmarking?/runtime-benchmarks",
 	"rand",
 	"sp-runtime/runtime-benchmarks",
 	"strum",
