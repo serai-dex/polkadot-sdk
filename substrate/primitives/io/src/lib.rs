@@ -744,34 +744,6 @@ pub trait Misc {
 	}
 }
 
-#[cfg(feature = "std")]
-sp_externalities::decl_extension! {
-	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
-	///
-	/// The switch from `ed25519-dalek` to `ed25519-zebra` was a breaking change.
-	/// `ed25519-zebra` is more permissive when it comes to the verification of signatures.
-	/// This means that some chains may fail to sync from genesis when using `ed25519-zebra`.
-	/// So, this extension can be registered to the runtime execution environment to signal
-	/// that `ed25519-dalek` should be used for verification. The extension can be registered
-	/// in the following way:
-	///
-	/// ```nocompile
-	/// client.execution_extensions().set_extensions_factory(
-	/// 	// Let the `UseDalekExt` extension being registered for each runtime invocation
-	/// 	// until the execution happens in the context of block `1000`.
-	/// 	sc_client_api::execution_extensions::ExtensionBeforeBlock::<Block, UseDalekExt>::new(1000)
-	/// );
-	/// ```
-	pub struct UseDalekExt;
-}
-
-#[cfg(feature = "std")]
-impl Default for UseDalekExt {
-	fn default() -> Self {
-		Self
-	}
-}
-
 /// Interfaces for working with crypto related types from within the runtime.
 #[runtime_interface]
 pub trait Crypto {
@@ -817,24 +789,7 @@ pub trait Crypto {
 	///
 	/// Returns `true` when the verification was successful.
 	fn ed25519_verify(sig: &ed25519::Signature, msg: &[u8], pub_key: &ed25519::Public) -> bool {
-		// We don't want to force everyone needing to call the function in an externalities context.
-		// So, we assume that we should not use dalek when we are not in externalities context.
-		// Otherwise, we check if the extension is present.
-		if sp_externalities::with_externalities(|mut e| e.extension::<UseDalekExt>().is_some())
-			.unwrap_or_default()
-		{
-			use ed25519_dalek::Verifier;
-
-			let Ok(public_key) = ed25519_dalek::VerifyingKey::from_bytes(&pub_key.0) else {
-				return false
-			};
-
-			let sig = ed25519_dalek::Signature::from_bytes(&sig.0);
-
-			public_key.verify(msg, &sig).is_ok()
-		} else {
-			ed25519::Pair::verify(sig, msg, pub_key)
-		}
+		ed25519::Pair::verify(sig, msg, pub_key)
 	}
 
 	/// Register a `ed25519` signature for batch verification.
@@ -1890,48 +1845,6 @@ mod tests {
 			assert!(matches!(
 				storage::clear_prefix(b":abc", None),
 				KillStorageResult::AllRemoved(0),
-			));
-		});
-	}
-
-	fn zero_ed_pub() -> ed25519::Public {
-		[0u8; 32].unchecked_into()
-	}
-
-	fn zero_ed_sig() -> ed25519::Signature {
-		ed25519::Signature::from_raw([0u8; 64])
-	}
-
-	#[test]
-	fn use_dalek_ext_works() {
-		let mut ext = BasicExternalities::default();
-		ext.register_extension(UseDalekExt);
-
-		// With dalek the zero signature should fail to verify.
-		ext.execute_with(|| {
-			assert!(!crypto::ed25519_verify(&zero_ed_sig(), &Vec::new(), &zero_ed_pub()));
-		});
-
-		// But with zebra it should work.
-		BasicExternalities::default().execute_with(|| {
-			assert!(crypto::ed25519_verify(&zero_ed_sig(), &Vec::new(), &zero_ed_pub()));
-		})
-	}
-
-	#[test]
-	fn dalek_should_not_panic_on_invalid_signature() {
-		let mut ext = BasicExternalities::default();
-		ext.register_extension(UseDalekExt);
-
-		ext.execute_with(|| {
-			let mut bytes = [0u8; 64];
-			// Make it invalid
-			bytes[63] = 0b1110_0000;
-
-			assert!(!crypto::ed25519_verify(
-				&ed25519::Signature::from_raw(bytes),
-				&Vec::new(),
-				&zero_ed_pub()
 			));
 		});
 	}

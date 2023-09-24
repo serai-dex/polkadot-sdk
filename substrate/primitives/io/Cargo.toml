@@ -32,9 +32,6 @@ secp256k1 = { version = "0.24.0", features = ["recovery", "global-context"], opt
 tracing = { version = "0.1.29", default-features = false }
 tracing-core = { version = "0.1.28", default-features = false}
 
-# Required for backwards compatibility reason, but only used for verifying when `UseDalekExt` is set.
-ed25519-dalek = { version = "2.0.0", default-features = false, optional = true }
-
 [build-dependencies]
 rustversion = "1.0.6"
 
@@ -43,7 +40,6 @@ default = [ "std" ]
 std = [
 	"bytes/std",
 	"codec/std",
-	"ed25519-dalek",
 	"libsecp256k1",
 	"log",
 	"secp256k1",

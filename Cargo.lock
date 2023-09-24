@@ -10319,7 +10319,6 @@ name = "sp-io"
 version = "23.0.0"
 dependencies = [
  "bytes",
- "ed25519-dalek",
  "libsecp256k1",
  "log",
  "parity-scale-codec",
