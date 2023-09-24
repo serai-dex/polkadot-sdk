@@ -63,7 +63,6 @@ pallet-authorship = { path = "../../../frame/authorship", default-features = fal
 pallet-babe = { path = "../../../frame/babe", default-features = false}
 pallet-bags-list = { path = "../../../frame/bags-list", default-features = false}
 pallet-balances = { path = "../../../frame/balances", default-features = false}
-pallet-broker = { path = "../../../frame/broker", default-features = false}
 pallet-election-provider-multi-phase = { path = "../../../frame/election-provider-multi-phase", default-features = false}
 pallet-election-provider-support-benchmarking = { path = "../../../frame/election-provider-support/benchmarking", default-features = false, optional = true }
 pallet-grandpa = { path = "../../../frame/grandpa", default-features = false}
@@ -122,7 +121,6 @@ std = [
 	"pallet-babe/std",
 	"pallet-bags-list/std",
 	"pallet-balances/std",
-	"pallet-broker/std",
 	"pallet-election-provider-multi-phase/std",
 	"pallet-election-provider-support-benchmarking?/std",
 	"pallet-glutton/std",
@@ -181,7 +179,6 @@ runtime-benchmarks = [
 	"pallet-babe/runtime-benchmarks",
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
-	"pallet-broker/runtime-benchmarks",
 	"pallet-election-provider-multi-phase/runtime-benchmarks",
 	"pallet-election-provider-support-benchmarking/runtime-benchmarks",
 	"pallet-glutton/runtime-benchmarks",
@@ -222,7 +219,6 @@ try-runtime = [
 	"pallet-babe/try-runtime",
 	"pallet-bags-list/try-runtime",
 	"pallet-balances/try-runtime",
-	"pallet-broker/try-runtime",
 	"pallet-election-provider-multi-phase/try-runtime",
 	"pallet-glutton/try-runtime",
 	"pallet-grandpa/try-runtime",
