@@ -213,8 +213,8 @@ where
 			min(request.max_blocks as usize, MAX_BLOCKS_IN_RESPONSE)
 		};
 
-		let direction =
-			Direction::from_i32(request.direction).ok_or(HandleRequestError::ParseDirection)?;
+		let direction = Direction::try_from(request.direction)
+			.map_err(|_| HandleRequestError::ParseDirection)?;
 
 		let attributes = BlockAttributes::from_be_u32(request.fields)?;
 

@@ -13,7 +13,7 @@ documentation = "https://docs.rs/sc-network-sync"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [build-dependencies]
-prost-build = "0.11"
+prost-build = "0.12"
 
 [dependencies]
 array-bytes = "6.1"
@@ -25,7 +25,7 @@ futures-timer = "3.0.2"
 libp2p = "0.51.3"
 log = "0.4.17"
 mockall = "0.11.3"
-prost = "0.11"
+prost = "0.12"
 schnellru = "0.2.1"
 smallvec = "1.11.0"
 thiserror = "1.0"

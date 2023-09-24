@@ -45,7 +45,7 @@ sp-keystore = { path = "../../../primitives/keystore" }
 sp-runtime = { path = "../../../primitives/runtime" }
 
 [dev-dependencies]
-rand_chacha = "0.2.2"
+rand_chacha = "0.3"
 sc-block-builder = { path = "../../block-builder" }
 sp-keyring = { path = "../../../primitives/keyring" }
 sc-network = { path = "../../network" }
