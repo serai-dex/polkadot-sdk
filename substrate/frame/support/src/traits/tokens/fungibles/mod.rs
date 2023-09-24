@@ -19,7 +19,6 @@
 
 pub mod approvals;
 mod enumerable;
-pub mod freeze;
 pub mod hold;
 mod imbalance;
 mod lifetime;
@@ -28,7 +27,6 @@ mod regular;
 pub mod roles;
 
 pub use enumerable::Inspect as InspectEnumerable;
-pub use freeze::{Inspect as InspectFreeze, Mutate as MutateFreeze};
 pub use hold::{
 	Balanced as BalancedHold, Inspect as InspectHold, Mutate as MutateHold,
 	Unbalanced as UnbalancedHold,

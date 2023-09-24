@@ -285,58 +285,6 @@ impl<T: Config<I>, I: 'static> fungible::UnbalancedHold<T::AccountId> for Pallet
 	}
 }
 
-impl<T: Config<I>, I: 'static> fungible::InspectFreeze<T::AccountId> for Pallet<T, I> {
-	type Id = T::FreezeIdentifier;
-
-	fn balance_frozen(id: &Self::Id, who: &T::AccountId) -> Self::Balance {
-		let locks = Freezes::<T, I>::get(who);
-		locks.into_iter().find(|l| &l.id == id).map_or(Zero::zero(), |l| l.amount)
-	}
-
-	fn can_freeze(id: &Self::Id, who: &T::AccountId) -> bool {
-		let l = Freezes::<T, I>::get(who);
-		!l.is_full() || l.iter().any(|x| &x.id == id)
-	}
-}
-
-impl<T: Config<I>, I: 'static> fungible::MutateFreeze<T::AccountId> for Pallet<T, I> {
-	fn set_freeze(id: &Self::Id, who: &T::AccountId, amount: Self::Balance) -> DispatchResult {
-		if amount.is_zero() {
-			return Self::thaw(id, who)
-		}
-		let mut locks = Freezes::<T, I>::get(who);
-		if let Some(i) = locks.iter_mut().find(|x| &x.id == id) {
-			i.amount = amount;
-		} else {
-			locks
-				.try_push(IdAmount { id: *id, amount })
-				.map_err(|_| Error::<T, I>::TooManyFreezes)?;
-		}
-		Self::update_freezes(who, locks.as_bounded_slice())
-	}
-
-	fn extend_freeze(id: &Self::Id, who: &T::AccountId, amount: Self::Balance) -> DispatchResult {
-		if amount.is_zero() {
-			return Ok(())
-		}
-		let mut locks = Freezes::<T, I>::get(who);
-		if let Some(i) = locks.iter_mut().find(|x| &x.id == id) {
-			i.amount = i.amount.max(amount);
-		} else {
-			locks
-				.try_push(IdAmount { id: *id, amount })
-				.map_err(|_| Error::<T, I>::TooManyFreezes)?;
-		}
-		Self::update_freezes(who, locks.as_bounded_slice())
-	}
-
-	fn thaw(id: &Self::Id, who: &T::AccountId) -> DispatchResult {
-		let mut locks = Freezes::<T, I>::get(who);
-		locks.retain(|l| &l.id != id);
-		Self::update_freezes(who, locks.as_bounded_slice())
-	}
-}
-
 impl<T: Config<I>, I: 'static> fungible::Balanced<T::AccountId> for Pallet<T, I> {
 	type OnDropCredit = fungible::DecreaseIssuance<T::AccountId, Self>;
 	type OnDropDebt = fungible::IncreaseIssuance<T::AccountId, Self>;

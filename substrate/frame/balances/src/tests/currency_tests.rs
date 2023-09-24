@@ -1305,27 +1305,3 @@ fn repatriate_all_reserved_named_should_work() {
 		assert_eq!(Balances::free_balance(&3), 25);
 	});
 }
-
-#[test]
-fn freezing_and_locking_should_work() {
-	ExtBuilder::default()
-		.existential_deposit(1)
-		.monied(true)
-		.build_and_execute_with(|| {
-			assert_ok!(<Balances as fungible::MutateFreeze<_>>::set_freeze(&TestId::Foo, &1, 4));
-			Balances::set_lock(ID_1, &1, 5, WithdrawReasons::all());
-			assert_eq!(System::consumers(&1), 2);
-			assert_eq!(Balances::account(&1).frozen, 5);
-			assert_ok!(<Balances as fungible::MutateFreeze<_>>::set_freeze(&TestId::Foo, &1, 6));
-			assert_eq!(Balances::account(&1).frozen, 6);
-			assert_ok!(<Balances as fungible::MutateFreeze<_>>::set_freeze(&TestId::Foo, &1, 4));
-			assert_eq!(Balances::account(&1).frozen, 5);
-			Balances::set_lock(ID_1, &1, 3, WithdrawReasons::all());
-			assert_eq!(Balances::account(&1).frozen, 4);
-			Balances::set_lock(ID_1, &1, 5, WithdrawReasons::all());
-			assert_eq!(Balances::account(&1).frozen, 5);
-			Balances::remove_lock(ID_1, &1);
-			assert_eq!(Balances::account(&1).frozen, 4);
-			assert_eq!(System::consumers(&1), 1);
-		});
-}

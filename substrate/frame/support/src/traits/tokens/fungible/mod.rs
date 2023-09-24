@@ -31,21 +31,17 @@
 //! - `InspectHold`: Inspector functions for balances on hold.
 //! - `MutateHold`: Mutator functions for balances on hold. Mostly pre-implemented using
 //!   `UnbalancedHold`.
-//! - `InspectFreeze`: Inspector functions for frozen balance.
-//! - `MutateFreeze`: Mutator functions for frozen balance.
 //! - `Balanced`: One-sided mutator functions for regular balances, which return imbalance objects
 //!   which guarantee eventual book-keeping. May be useful for some sophisticated operations where
 //!   funds must be removed from an account before it is known precisely what should be done with
 //!   them.
 
 pub mod conformance_tests;
-pub mod freeze;
 pub mod hold;
 mod imbalance;
 mod item_of;
 mod regular;
 
-pub use freeze::{Inspect as InspectFreeze, Mutate as MutateFreeze};
 pub use hold::{
 	Balanced as BalancedHold, Inspect as InspectHold, Mutate as MutateHold,
 	Unbalanced as UnbalancedHold,
