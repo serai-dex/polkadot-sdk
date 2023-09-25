@@ -116,8 +116,3 @@ pub fn keccak_256(data: &[u8]) -> [u8; 32] {
 pub fn keccak_512(data: &[u8]) -> [u8; 64] {
 	sha3::Keccak512::digest(data).into()
 }
-
-/// Do a sha2 256-bit hash and return result.
-pub fn sha2_256(data: &[u8]) -> [u8; 32] {
-	sha2::Sha256::digest(data).into()
-}

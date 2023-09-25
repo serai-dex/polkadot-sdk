@@ -42,11 +42,6 @@ mod test {
 	}
 
 	#[test]
-	fn sha2() {
-		assert_eq!(sp_core_hashing_proc_macro::sha2_256!(b"test"), sha2_256(b"test")[..]);
-	}
-
-	#[test]
 	fn twox() {
 		assert_eq!(sp_core_hashing_proc_macro::twox_128!(b"test"), twox_128(b"test")[..]);
 		assert_eq!(sp_core_hashing_proc_macro::twox_64!(b""), twox_64(b"")[..]);

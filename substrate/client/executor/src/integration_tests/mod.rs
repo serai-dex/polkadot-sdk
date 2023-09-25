@@ -259,27 +259,6 @@ fn blake2_128_should_work(wasm_method: WasmExecutionMethod) {
 	);
 }
 
-test_wasm_execution!(sha2_256_should_work);
-fn sha2_256_should_work(wasm_method: WasmExecutionMethod) {
-	let mut ext = TestExternalities::default();
-	let mut ext = ext.ext();
-	assert_eq!(
-		call_in_wasm("test_sha2_256", &[0], wasm_method, &mut ext,).unwrap(),
-		array_bytes::hex2bytes_unchecked(
-			"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-		)
-		.encode(),
-	);
-	assert_eq!(
-		call_in_wasm("test_sha2_256", &b"Hello world!".to_vec().encode(), wasm_method, &mut ext,)
-			.unwrap(),
-		array_bytes::hex2bytes_unchecked(
-			"c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
-		)
-		.encode(),
-	);
-}
-
 test_wasm_execution!(twox_256_should_work);
 fn twox_256_should_work(wasm_method: WasmExecutionMethod) {
 	let mut ext = TestExternalities::default();

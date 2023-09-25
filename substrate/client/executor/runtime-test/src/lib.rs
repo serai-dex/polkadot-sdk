@@ -39,7 +39,7 @@ use sp_core::{ed25519, sr25519};
 #[cfg(not(feature = "std"))]
 use sp_io::{
 	crypto::{ed25519_verify, sr25519_verify},
-	hashing::{blake2_128, blake2_256, sha2_256, twox_128, twox_256},
+	hashing::{blake2_128, blake2_256, twox_128, twox_256},
 	storage, wasm_tracing,
 };
 #[cfg(not(feature = "std"))]
@@ -159,10 +159,6 @@ sp_core::wasm_export_functions! {
 
 	fn test_blake2_128(input: Vec<u8>) -> Vec<u8> {
 		blake2_128(&input).to_vec()
-	}
-
-	fn test_sha2_256(input: Vec<u8>) -> Vec<u8> {
-		sha2_256(&input).to_vec()
 	}
 
 	fn test_twox_256(input: Vec<u8>) -> Vec<u8> {
