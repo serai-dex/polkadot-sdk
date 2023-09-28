@@ -18,7 +18,7 @@
 
 //! Console informant. Prints sync progress and block events. Runs on the calling thread.
 
-use ansi_term::Colour;
+use anstyle::{AnsiColor, Reset};
 use futures::prelude::*;
 use futures_timer::Delay;
 use log::{debug, info, trace};
@@ -117,11 +117,26 @@ where
 				match maybe_ancestor {
 					Ok(ref ancestor) if ancestor.hash != *last_hash => info!(
 						"Reorg on #{},{} to #{},{}, common ancestor #{},{}",
-						Colour::Red.bold().paint(format!("{}", last_num)),
+						format!(
+							"{}{}{}",
+							AnsiColor::Red.on_default().bold().render(),
+							last_num,
+							Reset.render()
+						),
 						last_hash,
-						Colour::Green.bold().paint(format!("{}", n.header.number())),
+						format!(
+							"{}{}{}",
+							AnsiColor::Green.on_default().bold().render(),
+							n.header.number(),
+							Reset.render()
+						),
 						n.hash,
-						Colour::White.bold().paint(format!("{}", ancestor.number)),
+						format!(
+							"{}{}{}",
+							AnsiColor::White.on_default().bold().render(),
+							ancestor.number,
+							Reset.render()
+						),
 						ancestor.hash,
 					),
 					Ok(_) => {},
@@ -146,7 +161,7 @@ where
 			info!(
 				target: "substrate",
 				"Imported #{} ({})",
-				Colour::White.bold().paint(format!("{}", n.header.number())),
+				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), n.header.number(), Reset.render()),
 				n.hash,
 			);
 		}

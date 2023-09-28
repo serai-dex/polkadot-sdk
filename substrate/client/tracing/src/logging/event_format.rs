@@ -17,7 +17,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::logging::fast_local_time::FastLocalTime;
-use ansi_term::Colour;
+use anstyle::{AnsiColor, Reset};
 use regex::Regex;
 use std::fmt::{self, Write};
 use tracing::{Event, Level, Subscriber};
@@ -167,12 +167,16 @@ impl<'a> fmt::Display for FmtLevel<'a> {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		if self.ansi {
 			match *self.level {
-				Level::TRACE => write!(f, "{}", Colour::Purple.paint(TRACE_STR)),
-				Level::DEBUG => write!(f, "{}", Colour::Blue.paint(DEBUG_STR)),
-				Level::INFO => write!(f, "{}", Colour::Green.paint(INFO_STR)),
-				Level::WARN => write!(f, "{}", Colour::Yellow.paint(WARN_STR)),
-				Level::ERROR => write!(f, "{}", Colour::Red.paint(ERROR_STR)),
+				Level::TRACE =>
+					write!(f, "{}{}", AnsiColor::Magenta.on_default().render(), TRACE_STR)?,
+				Level::DEBUG =>
+					write!(f, "{}{}", AnsiColor::Blue.on_default().render(), DEBUG_STR)?,
+				Level::INFO => write!(f, "{}{}", AnsiColor::Green.on_default().render(), INFO_STR)?,
+				Level::WARN =>
+					write!(f, "{}{}", AnsiColor::Yellow.on_default().render(), WARN_STR)?,
+				Level::ERROR => write!(f, "{}{}", AnsiColor::Red.on_default().render(), ERROR_STR)?,
 			}
+			write!(f, "{}", Reset.render())
 		} else {
 			match *self.level {
 				Level::TRACE => f.pad(TRACE_STR),
@@ -235,7 +239,7 @@ impl<'a> fmt::Display for FmtThreadName<'a> {
 //
 //       https://github.com/tokio-rs/tracing/blob/2f59b32/tracing-subscriber/src/fmt/time/mod.rs#L252
 mod time {
-	use ansi_term::Style;
+	use anstyle::Style;
 	use std::fmt;
 	use tracing_subscriber::fmt::time::FormatTime;
 
@@ -245,9 +249,9 @@ mod time {
 	{
 		if with_ansi {
 			let style = Style::new().dimmed();
-			write!(writer, "{}", style.prefix())?;
+			write!(writer, "{}", style.render())?;
 			timer.format_time(writer)?;
-			write!(writer, "{}", style.suffix())?;
+			write!(writer, "{}", style.render_reset())?;
 		} else {
 			timer.format_time(writer)?;
 		}

@@ -17,7 +17,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::OutputFormat;
-use ansi_term::Colour;
+use anstyle::{AnsiColor, Reset};
 use log::info;
 use sc_client_api::ClientInfo;
 use sc_network::NetworkStatus;
@@ -149,15 +149,15 @@ impl<B: BlockT> InformantDisplay<B> {
 				target: "substrate",
 				"{} {}{} ({} peers), best: #{} ({}), finalized #{} ({}), {} {}",
 				level,
-				Colour::White.bold().paint(&status),
+				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), &status, Reset.render()),
 				target,
-				Colour::White.bold().paint(format!("{}", num_connected_peers)),
-				Colour::White.bold().paint(format!("{}", best_number)),
+				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), num_connected_peers, Reset.render()),
+				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), best_number, Reset.render()),
 				best_hash,
-				Colour::White.bold().paint(format!("{}", finalized_number)),
+				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), finalized_number, Reset.render()),
 				info.chain.finalized_hash,
-				Colour::Green.paint(format!("⬇ {}", TransferRateFormat(avg_bytes_per_sec_inbound))),
-				Colour::Red.paint(format!("⬆ {}", TransferRateFormat(avg_bytes_per_sec_outbound))),
+				format!("{}⬇ {}{}", AnsiColor::Green.on_default().render(), TransferRateFormat(avg_bytes_per_sec_inbound), Reset.render()),
+				format!("{}⬆ {}{}", AnsiColor::Red.on_default().render(), TransferRateFormat(avg_bytes_per_sec_outbound), Reset.render()),
 			)
 		} else {
 			info!(

@@ -1246,7 +1246,7 @@ dependencies = [
 name = "chain-spec-builder"
 version = "2.0.0"
 dependencies = [
- "ansi_term",
+ "anstyle",
  "clap 4.4.4",
  "node-cli",
  "rand 0.8.5",
@@ -8409,7 +8409,7 @@ dependencies = [
 name = "sc-informant"
 version = "0.10.0-dev"
 dependencies = [
- "ansi_term",
+ "anstyle",
  "futures",
  "futures-timer",
  "log",
@@ -9000,7 +9000,7 @@ dependencies = [
 name = "sc-tracing"
 version = "4.0.0-dev"
 dependencies = [
- "ansi_term",
+ "anstyle",
  "chrono",
  "criterion",
  "lazy_static",
@@ -10823,7 +10823,7 @@ version = "4.0.0-dev"
 name = "substrate-wasm-builder"
 version = "5.0.0-dev"
 dependencies = [
- "ansi_term",
+ "anstyle",
  "build-helper",
  "cargo_metadata",
  "filetime",

@@ -487,7 +487,12 @@ mod tests {
 	fn do_not_write_with_colors_on_tty_entrypoint() {
 		if env::var("ENABLE_LOGGING").is_ok() {
 			let _guard = init_logger("");
-			log::info!("{}", ansi_term::Colour::Yellow.paint(EXPECTED_LOG_MESSAGE));
+			log::info!(
+				"{}{}{}",
+				anstyle::AnsiColor::Yellow.on_default().render(),
+				EXPECTED_LOG_MESSAGE,
+				anstyle::Reset.render()
+			);
 		}
 	}
 

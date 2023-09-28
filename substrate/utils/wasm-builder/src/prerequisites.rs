@@ -19,13 +19,13 @@ use crate::{write_file_if_changed, CargoCommand, CargoCommandVersioned};
 
 use std::{fs, path::Path};
 
-use ansi_term::Color;
+use anstyle::{AnsiColor, Reset};
 use tempfile::tempdir;
 
 /// Print an error message.
 fn print_error_message(message: &str) -> String {
 	if super::color_output_enabled() {
-		Color::Red.bold().paint(message).to_string()
+		format!("{}{}{}", AnsiColor::Red.on_default().bold().render(), message, Reset.render())
 	} else {
 		message.into()
 	}
@@ -168,10 +168,25 @@ fn check_wasm_toolchain_installed(
 				Ok(ref err) => Err(format!(
 					"{}\n\n{}\n{}\n{}{}\n",
 					err_msg,
-					Color::Yellow.bold().paint("Further error information:"),
-					Color::Yellow.bold().paint("-".repeat(60)),
+					format!(
+						"{}{}{}",
+						AnsiColor::Yellow.on_default().bold().render(),
+						"Further error information:",
+						Reset.render()
+					),
+					format!(
+						"{}{}{}",
+						AnsiColor::Yellow.on_default().bold().render(),
+						"-".repeat(60),
+						Reset.render()
+					),
 					err,
-					Color::Yellow.bold().paint("-".repeat(60)),
+					format!(
+						"{}{}{}",
+						AnsiColor::Yellow.on_default().bold().render(),
+						"-".repeat(60),
+						Reset.render()
+					),
 				)),
 				Err(_) => Err(err_msg),
 			}

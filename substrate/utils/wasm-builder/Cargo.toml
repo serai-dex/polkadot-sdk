@@ -13,7 +13,7 @@ homepage = "https://substrate.io"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-ansi_term = "0.12.1"
+anstyle = "1"
 build-helper = "0.1.1"
 cargo_metadata = "0.17"
 strum = { version = "0.25", features = ["derive"] }
