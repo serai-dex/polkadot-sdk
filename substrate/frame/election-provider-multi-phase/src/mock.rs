@@ -205,7 +205,6 @@ pub fn witness() -> SolutionOrSnapshotSize {
 }
 
 impl frame_system::Config for Runtime {
-	type SS58Prefix = ();
 	type BaseCallFilter = frame_support::traits::Everything;
 	type RuntimeOrigin = RuntimeOrigin;
 	type Nonce = u64;

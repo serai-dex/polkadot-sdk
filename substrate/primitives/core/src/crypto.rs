@@ -398,20 +398,6 @@ pub fn unwrap_or_default_ss58_version(network: Option<Ss58AddressFormat>) -> Ss5
 	network.unwrap_or_else(default_ss58_version)
 }
 
-/// Set the default SS58 "version".
-///
-/// This SS58 version/format will be used when encoding/decoding SS58 addresses.
-///
-/// If you want to support a custom SS58 prefix (that isn't yet registered in the `ss58-registry`),
-/// you are required to call this function with your desired prefix [`Ss58AddressFormat::custom`].
-/// This will enable the node to decode ss58 addresses with this prefix.
-///
-/// This SS58 version/format is also only used by the node and not by the runtime.
-#[cfg(feature = "serde")]
-pub fn set_default_ss58_version(new_default: Ss58AddressFormat) {
-	DEFAULT_VERSION.store(new_default.into(), core::sync::atomic::Ordering::Relaxed);
-}
-
 #[cfg(feature = "std")]
 lazy_static::lazy_static! {
 	static ref SS58_REGEX: Regex = Regex::new(r"^(?P<ss58>[\w\d ]+)?(?P<path>(//?[^/]+)*)$")

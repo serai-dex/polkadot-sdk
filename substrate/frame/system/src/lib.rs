@@ -227,7 +227,6 @@ pub mod pallet {
 			type OnNewAccount = ();
 			type OnKilledAccount = ();
 			type SystemWeightInfo = ();
-			type SS58Prefix = ();
 			type Version = ();
 			type BlockWeights = ();
 			type BlockLength = ();
@@ -380,14 +379,6 @@ pub mod pallet {
 		type OnKilledAccount: OnKilledAccount<Self::AccountId>;
 
 		type SystemWeightInfo: WeightInfo;
-
-		/// The designated SS58 prefix of this chain.
-		///
-		/// This replaces the "ss58Format" property declared in the chain spec. Reason is
-		/// that the runtime should know about the prefix in order to make use of it as
-		/// an identifier of the chain.
-		#[pallet::constant]
-		type SS58Prefix: Get<u16>;
 
 		/// What to do if the runtime wants to change the code to something new.
 		///
