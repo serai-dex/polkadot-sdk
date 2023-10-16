@@ -22,7 +22,7 @@
 
 use renamed_frame_support::{
 	construct_runtime, parameter_types,
-	traits::{ConstU16, ConstU32, ConstU64, Everything},
+	traits::{ConstU32, ConstU64, Everything},
 };
 use sp_core::{sr25519, H256};
 use sp_runtime::{

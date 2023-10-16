@@ -42,6 +42,12 @@ mod imbalance;
 mod item_of;
 mod regular;
 
+use codec::{Decode, Encode, MaxEncodedLen};
+use frame_support_procedural::{CloneNoBound, EqNoBound, PartialEqNoBound, RuntimeDebugNoBound};
+use scale_info::TypeInfo;
+use sp_std::marker::PhantomData;
+
+use super::{Fortitude::Force, Precision::BestEffort};
 pub use hold::{
 	Balanced as BalancedHold, Inspect as InspectHold, Mutate as MutateHold,
 	Unbalanced as UnbalancedHold,
@@ -51,3 +57,97 @@ pub use item_of::ItemOf;
 pub use regular::{
 	Balanced, DecreaseIssuance, Dust, IncreaseIssuance, Inspect, Mutate, Unbalanced,
 };
+use sp_arithmetic::traits::Zero;
+use sp_core::Get;
+use sp_runtime::{traits::Convert, DispatchError};
+
+use crate::{
+	ensure,
+	traits::{Consideration, Footprint},
+};
+
+/// Consideration method using a `fungible` balance frozen as the cost exacted for the footprint.
+#[derive(
+	CloneNoBound,
+	EqNoBound,
+	PartialEqNoBound,
+	Encode,
+	Decode,
+	TypeInfo,
+	MaxEncodedLen,
+	RuntimeDebugNoBound,
+)]
+#[scale_info(skip_type_params(A, F, R, D))]
+#[codec(mel_bound())]
+pub struct HoldConsideration<A, F, R, D>(F::Balance, PhantomData<fn() -> (A, R, D)>)
+where
+	F: MutateHold<A>;
+impl<
+		A: 'static,
+		F: 'static + MutateHold<A>,
+		R: 'static + Get<F::Reason>,
+		D: 'static + Convert<Footprint, F::Balance>,
+	> Consideration<A> for HoldConsideration<A, F, R, D>
+{
+	fn new(who: &A, footprint: Footprint) -> Result<Self, DispatchError> {
+		let new = D::convert(footprint);
+		F::hold(&R::get(), who, new)?;
+		Ok(Self(new, PhantomData))
+	}
+	fn update(self, who: &A, footprint: Footprint) -> Result<Self, DispatchError> {
+		let new = D::convert(footprint);
+		if self.0 > new {
+			F::release(&R::get(), who, self.0 - new, BestEffort)?;
+		} else if new > self.0 {
+			F::hold(&R::get(), who, new - self.0)?;
+		}
+		Ok(Self(new, PhantomData))
+	}
+	fn drop(self, who: &A) -> Result<(), DispatchError> {
+		F::release(&R::get(), who, self.0, BestEffort).map(|_| ())
+	}
+	fn burn(self, who: &A) {
+		let _ = F::burn_held(&R::get(), who, self.0, BestEffort, Force);
+	}
+}
+
+/// Basic consideration method using a `fungible` balance placed on hold as the cost exacted for the
+/// footprint.
+///
+/// NOTE: This is an optimized implementation, which can only be used for systems where each
+/// account has only a single active ticket associated with it since individual tickets do not
+/// track the specific balance which is held.
+#[derive(
+	CloneNoBound,
+	EqNoBound,
+	PartialEqNoBound,
+	Encode,
+	Decode,
+	TypeInfo,
+	MaxEncodedLen,
+	RuntimeDebugNoBound,
+)]
+#[scale_info(skip_type_params(A, Fx, Rx, D))]
+#[codec(mel_bound())]
+pub struct LoneHoldConsideration<A, Fx, Rx, D>(PhantomData<fn() -> (A, Fx, Rx, D)>);
+impl<
+		A: 'static,
+		F: 'static + MutateHold<A>,
+		R: 'static + Get<F::Reason>,
+		D: 'static + Convert<Footprint, F::Balance>,
+	> Consideration<A> for LoneHoldConsideration<A, F, R, D>
+{
+	fn new(who: &A, footprint: Footprint) -> Result<Self, DispatchError> {
+		ensure!(F::balance_on_hold(&R::get(), who).is_zero(), DispatchError::Unavailable);
+		F::set_on_hold(&R::get(), who, D::convert(footprint)).map(|_| Self(PhantomData))
+	}
+	fn update(self, who: &A, footprint: Footprint) -> Result<Self, DispatchError> {
+		F::set_on_hold(&R::get(), who, D::convert(footprint)).map(|_| Self(PhantomData))
+	}
+	fn drop(self, who: &A) -> Result<(), DispatchError> {
+		F::release_all(&R::get(), who, BestEffort).map(|_| ())
+	}
+	fn burn(self, who: &A) {
+		let _ = F::burn_all_held(&R::get(), who, BestEffort, Force);
+	}
+}

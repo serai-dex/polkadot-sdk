@@ -39,8 +39,8 @@ log = { version = "0.4.17", default-features = false }
 sp-core-hashing-proc-macro = { path = "../../primitives/core/hashing/proc-macro" }
 environmental = { version = "1.1.4", default-features = false }
 sp-genesis-builder = { path = "../../primitives/genesis-builder", default-features=false}
-serde_json = { version = "1.0.85", default-features = false, features = ["alloc"] }
-docify = "0.2.1"
+serde_json = { version = "1.0.107", default-features = false, features = ["alloc"] }
+docify = "0.2.4"
 static_assertions = "1.1.0"
 
 aquamarine = { version = "0.3.2" }
