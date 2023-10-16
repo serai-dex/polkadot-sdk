@@ -24,26 +24,6 @@ rules:
     teams:
       - core-devs
 
-  # cumulus
-  - name: Runtime files cumulus
-    check_type: changed_files
-    condition: ^cumulus/parachains/runtimes/assets/(asset-hub-kusama|asset-hub-polkadot)/src/[^/]+\.rs$|^cumulus/parachains/runtimes/bridge-hubs/(bridge-hub-kusama|bridge-hub-polkadot)/src/[^/]+\.rs$|^cumulus/parachains/runtimes/collectives/collectives-polkadot/src/[^/]+\.rs$|^cumulus/parachains/common/src/[^/]+\.rs$
-    all_distinct:
-      - min_approvals: 1
-        teams:
-          - locks-review
-      - min_approvals: 1
-        teams:
-          - polkadot-review
-
-  # if there are any changes in the bridges subtree (in case of backport changes back to bridges repo)
-  - name: Bridges subtree files
-    check_type: changed_files
-    condition: ^bridges/.*
-    min_approvals: 1
-    teams:
-      - bridges-core
-
   # substrate
 
   - name: FRAME coders substrate

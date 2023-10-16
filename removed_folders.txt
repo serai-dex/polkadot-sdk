@@ -1,3 +1,5 @@
+./bridges
+./BRIDGES.md
 ./cumulus
 ./docker/staking-miner
 ./docker/collator*
