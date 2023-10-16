@@ -610,6 +610,8 @@ where
 		let gap_block =
 			info.block_gap.map_or(false, |gap| *import_headers.post().number() == gap.start);
 
+		assert!((justifications.is_some() && finalized) || justifications.is_none() || gap_block);
+
 		// the block is lower than our last finalized block so it must revert
 		// finality, refusing import.
 		if status == blockchain::BlockStatus::Unknown &&
