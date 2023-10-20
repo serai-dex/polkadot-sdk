@@ -36,7 +36,6 @@ members = [
 	"substrate/client/consensus/epochs",
 	"substrate/client/consensus/grandpa",
 	"substrate/client/consensus/grandpa/rpc",
-	"substrate/client/consensus/manual-seal",
 	"substrate/client/consensus/slots",
 	"substrate/client/db",
 	"substrate/client/executor",
@@ -93,11 +92,9 @@ members = [
 	"substrate/frame/glutton",
 	"substrate/frame/grandpa",
 	"substrate/frame/im-online",
-	"substrate/frame/message-queue",
 	"substrate/frame/offences",
 	"substrate/frame/offences/benchmarking",
 	"substrate/frame/preimage",
-	"substrate/frame/referenda",
 	"substrate/frame/remark",
 	"substrate/frame/root-testing",
 	"substrate/frame/safe-mode",
@@ -257,7 +254,6 @@ hmac = { opt-level = 3 }
 httparse = { opt-level = 3 }
 integer-sqrt = { opt-level = 3 }
 keccak = { opt-level = 3 }
-libm = { opt-level = 3 }
 librocksdb-sys = { opt-level = 3 }
 libz-sys = { opt-level = 3 }
 mio = { opt-level = 3 }

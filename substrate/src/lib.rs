@@ -171,9 +171,6 @@
 //!     - [`sc-consensus-aura`]
 //!     - [`sc-consensus-babe`]
 //!     - [`sc-consensus-grandpa`]
-//!     - [`sc-consensus-beefy`]
-//!     - [`sc-consensus-manual-seal`]
-//!     - [`sc-consensus-pow`]
 //!
 //! Additional noteworthy external resources:
 //!
@@ -211,9 +208,6 @@
 //! [`sc-consensus-aura`]: ../sc_consensus_aura/index.html
 //! [`sc-consensus-babe`]: ../sc_consensus_babe/index.html
 //! [`sc-consensus-grandpa`]: ../sc_consensus_grandpa/index.html
-//! [`sc-consensus-beefy`]: ../sc_consensus_beefy/index.html
-//! [`sc-consensus-manual-seal`]: ../sc_consensus_manual_seal/index.html
-//! [`sc-consensus-pow`]: ../sc_consensus_pow/index.html
 //! [`node`]: ../node_cli/index.html
 //! [`node-template`]: ../node_template/index.html
 //! [`kitchensink_runtime`]: ../kitchensink_runtime/index.html

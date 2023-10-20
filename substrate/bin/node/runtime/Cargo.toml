@@ -72,7 +72,6 @@ pallet-offences = { path = "../../../frame/offences", default-features = false}
 pallet-offences-benchmarking = { path = "../../../frame/offences/benchmarking", default-features = false, optional = true }
 pallet-glutton = { path = "../../../frame/glutton", default-features = false}
 pallet-preimage = { path = "../../../frame/preimage", default-features = false}
-pallet-referenda = { path = "../../../frame/referenda", default-features = false}
 pallet-remark = { path = "../../../frame/remark", default-features = false}
 pallet-root-testing = { path = "../../../frame/root-testing", default-features = false}
 pallet-session = { path = "../../../frame/session", default-features = false , features = [ "historical" ]}
@@ -129,7 +128,6 @@ std = [
 	"pallet-offences-benchmarking?/std",
 	"pallet-offences/std",
 	"pallet-preimage/std",
-	"pallet-referenda/std",
 	"pallet-remark/std",
 	"pallet-root-testing/std",
 	"pallet-safe-mode/std",
@@ -187,7 +185,6 @@ runtime-benchmarks = [
 	"pallet-offences-benchmarking/runtime-benchmarks",
 	"pallet-offences/runtime-benchmarks",
 	"pallet-preimage/runtime-benchmarks",
-	"pallet-referenda/runtime-benchmarks",
 	"pallet-remark/runtime-benchmarks",
 	"pallet-safe-mode/runtime-benchmarks",
 	"pallet-scheduler/runtime-benchmarks",
@@ -224,7 +221,6 @@ try-runtime = [
 	"pallet-im-online/try-runtime",
 	"pallet-offences/try-runtime",
 	"pallet-preimage/try-runtime",
-	"pallet-referenda/try-runtime",
 	"pallet-remark/try-runtime",
 	"pallet-root-testing/try-runtime",
 	"pallet-safe-mode/try-runtime",

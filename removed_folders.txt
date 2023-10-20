@@ -51,6 +51,7 @@
 ./substrate/frame/proxy
 ./substrate/frame/ranked-collective
 ./substrate/frame/recovery
+./substrate/frame/referenda
 ./substrate/frame/root-offences
 ./substrate/frame/salary
 ./substrate/frame/scored-pool
@@ -62,6 +63,7 @@
 ./substrate/frame/vesting
 ./substrate/frame/whitelist
 ./substrate/primitives/consensus/beefy
+./substrate/primitives/consensus/manual-seal
 ./substrate/primitives/consensus/pow
 ./substrate/primitives/merkle-mountain-range
 ./substrate/primitives/statement-store

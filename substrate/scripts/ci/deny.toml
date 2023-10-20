@@ -56,7 +56,6 @@ exceptions = [
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-consensus-epochs" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-consensus-grandpa" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-consensus-grandpa-rpc" },
-    { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-consensus-manual-seal" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-consensus-slots" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-executor" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-executor-common" },
