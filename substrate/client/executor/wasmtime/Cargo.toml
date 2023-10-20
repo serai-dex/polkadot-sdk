@@ -19,7 +19,7 @@ libc = "0.2.121"
 
 # When bumping wasmtime do not forget to also bump rustix
 # to exactly the same version as used by wasmtime!
-wasmtime = { version = "13.0.0", default-features = false, features = [
+wasmtime = { version = "14.0.0", default-features = false, features = [
 	"cache",
 	"cranelift",
 	"jitdump",
@@ -41,7 +41,7 @@ sp-wasm-interface = { path = "../../../primitives/wasm-interface", features = ["
 rustix = { version = "0.38.8", default-features = false, features = ["std", "mm", "fs", "param", "use-libc"] }
 
 [dev-dependencies]
-wat = "1.0"
+wat = "=1.0.71"
 sc-runtime-test = { path = "../runtime-test" }
 sp-io = { path = "../../../primitives/io" }
 tempfile = "3.3.0"
