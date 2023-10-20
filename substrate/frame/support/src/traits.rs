@@ -110,12 +110,6 @@ pub use voting::{ClassCountOf, PollStatus, Polling, VoteTally};
 mod preimages;
 pub use preimages::{Bounded, BoundedInline, FetchResult, QueryPreimage, StorePreimage};
 
-mod messages;
-pub use messages::{
-	EnqueueMessage, EnqueueWithOrigin, ExecuteOverweightError, HandleMessage, NoopServiceQueues,
-	ProcessMessage, ProcessMessageError, QueuePausedQuery, ServiceQueues, TransformOrigin,
-};
-
 mod safe_mode;
 pub use safe_mode::{SafeMode, SafeModeError, SafeModeNotify};
 

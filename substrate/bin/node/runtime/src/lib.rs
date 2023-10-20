@@ -866,26 +866,6 @@ impl pallet_remark::Config for Runtime {
 
 impl pallet_root_testing::Config for Runtime {}
 
-parameter_types! {
-	/// Allocate at most 20% of each block for message processing.
-	///
-	/// Is set to 20% since the scheduler can already consume a maximum of 80%.
-	pub MessageQueueServiceWeight: Option<Weight> = Some(Perbill::from_percent(20) * RuntimeBlockWeights::get().max_block);
-}
-
-impl pallet_message_queue::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type WeightInfo = ();
-	/// NOTE: Always set this to `NoopMessageProcessor` for benchmarking.
-	type MessageProcessor = pallet_message_queue::mock_helpers::NoopMessageProcessor<u32>;
-	type Size = u32;
-	type QueueChangeHandler = ();
-	type QueuePausedQuery = ();
-	type HeapSize = ConstU32<{ 64 * 1024 }>;
-	type MaxStale = ConstU32<128>;
-	type ServiceWeight = MessageQueueServiceWeight;
-}
-
 impl pallet_sudo::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
@@ -1170,7 +1150,6 @@ construct_runtime!(
 		RootTesting: pallet_root_testing,
 		RankedPolls: pallet_referenda::<Instance2>,
 		AssetConversion: pallet_asset_conversion,
-		MessageQueue: pallet_message_queue,
 		Pov: frame_benchmarking_pallet_pov,
 		TxPause: pallet_tx_pause,
 		SafeMode: pallet_safe_mode,
@@ -1238,7 +1217,6 @@ mod benches {
 		[pallet_election_provider_support_benchmarking, EPSBench::<Runtime>]
 		[pallet_grandpa, Grandpa]
 		[pallet_im_online, ImOnline]
-		[pallet_message_queue, MessageQueue]
 		[pallet_offences, OffencesBench::<Runtime>]
 		[pallet_preimage, Preimage]
 		[pallet_referenda, Referenda]

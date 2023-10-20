@@ -39,6 +39,7 @@
 ./substrate/frame/lottery
 ./substrate/frame/membership
 ./substrate/frame/merkle-mountain-range
+./substrate/frame/message-queue
 ./substrate/frame/multisig
 ./substrate/frame/nfts
 ./substrate/frame/nft-fractionalization

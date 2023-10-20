@@ -68,7 +68,6 @@ pallet-election-provider-multi-phase = { path = "../../../frame/election-provide
 pallet-election-provider-support-benchmarking = { path = "../../../frame/election-provider-support/benchmarking", default-features = false, optional = true }
 pallet-grandpa = { path = "../../../frame/grandpa", default-features = false}
 pallet-im-online = { path = "../../../frame/im-online", default-features = false}
-pallet-message-queue = { path = "../../../frame/message-queue", default-features = false}
 pallet-offences = { path = "../../../frame/offences", default-features = false}
 pallet-offences-benchmarking = { path = "../../../frame/offences/benchmarking", default-features = false, optional = true }
 pallet-glutton = { path = "../../../frame/glutton", default-features = false}
@@ -127,7 +126,6 @@ std = [
 	"pallet-glutton/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
-	"pallet-message-queue/std",
 	"pallet-offences-benchmarking?/std",
 	"pallet-offences/std",
 	"pallet-preimage/std",
@@ -186,7 +184,6 @@ runtime-benchmarks = [
 	"pallet-glutton/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
-	"pallet-message-queue/runtime-benchmarks",
 	"pallet-offences-benchmarking/runtime-benchmarks",
 	"pallet-offences/runtime-benchmarks",
 	"pallet-preimage/runtime-benchmarks",
@@ -225,7 +222,6 @@ try-runtime = [
 	"pallet-glutton/try-runtime",
 	"pallet-grandpa/try-runtime",
 	"pallet-im-online/try-runtime",
-	"pallet-message-queue/try-runtime",
 	"pallet-offences/try-runtime",
 	"pallet-preimage/try-runtime",
 	"pallet-referenda/try-runtime",
