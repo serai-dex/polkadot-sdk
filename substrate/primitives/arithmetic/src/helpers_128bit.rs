@@ -1,6 +1,7 @@
-// This file is part of Substrate.
+// This file is part of a fork of Substrate which has had various changes.
 
 // Copyright (C) Parity Technologies (UK) Ltd.
+// Copyright (C) 2022-2023 Luke Parker
 // Some code is based upon Derek Dreery's IntegerSquareRoot impl, used under license.
 // SPDX-License-Identifier: Apache-2.0
 

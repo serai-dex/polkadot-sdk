@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This file is part of Substrate.
+# This file is part of a fork of Substrate which has had various changes.
 # Copyright (C) Parity Technologies (UK) Ltd.
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 (the "License");
