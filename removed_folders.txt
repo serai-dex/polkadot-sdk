@@ -47,6 +47,7 @@
 ./substrate/frame/nis
 ./substrate/frame/node-authorization
 ./substrate/frame/nomination-pools
+./substrate/frame/paged-list
 ./substrate/frame/proxy
 ./substrate/frame/ranked-collective
 ./substrate/frame/recovery

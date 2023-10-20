@@ -96,8 +96,6 @@ members = [
 	"substrate/frame/message-queue",
 	"substrate/frame/offences",
 	"substrate/frame/offences/benchmarking",
-	"substrate/frame/paged-list",
-	"substrate/frame/paged-list/fuzzer",
 	"substrate/frame/preimage",
 	"substrate/frame/referenda",
 	"substrate/frame/remark",
