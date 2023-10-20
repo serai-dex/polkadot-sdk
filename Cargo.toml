@@ -82,8 +82,6 @@ members = [
 	"substrate/frame/balances",
 	"substrate/frame/benchmarking",
 	"substrate/frame/benchmarking/pov",
-	"substrate/frame/election-provider-multi-phase",
-	"substrate/frame/election-provider-multi-phase/test-staking-e2e",
 	"substrate/frame/election-provider-support",
 	"substrate/frame/election-provider-support/benchmarking",
 	"substrate/frame/election-provider-support/solution-type",

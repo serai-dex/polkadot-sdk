@@ -30,6 +30,7 @@
 ./substrate/frame/conviction-voting
 ./substrate/frame/core-fellowship
 ./substrate/frame/democracy
+./substrate/frame/election-provider-multi-phase
 ./substrate/frame/elections-phragmen
 ./substrate/frame/examples
 ./substrate/frame/fast-unstake

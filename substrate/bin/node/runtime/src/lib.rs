@@ -26,7 +26,7 @@
 use codec::{Decode, Encode};
 use frame_election_provider_support::{
 	bounds::{ElectionBounds, ElectionBoundsBuilder},
-	onchain, BalancingConfig, ElectionDataProvider, SequentialPhragmen, VoteWeight,
+	onchain, BalancingConfig, SequentialPhragmen, VoteWeight,
 };
 use frame_support::{
 	construct_runtime,
@@ -55,7 +55,6 @@ use frame_system::{
 pub use node_primitives::{AccountId, Signature};
 use node_primitives::{Balance, BlockNumber, Hash, Moment, Nonce};
 use pallet_asset_conversion::{NativeOrAssetId, NativeOrAssetIdConverter};
-use pallet_election_provider_multi_phase::{GeometricDepositBase, SolutionAccuracyOf};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_session::historical as pallet_session_historical;
 pub use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
@@ -532,8 +531,8 @@ impl pallet_staking::Config for Runtime {
 	type NextNewSession = Session;
 	type MaxNominatorRewardedPerValidator = MaxNominatorRewardedPerValidator;
 	type OffendingValidatorsThreshold = OffendingValidatorsThreshold;
-	type ElectionProvider = ElectionProviderMultiPhase;
-	type GenesisElectionProvider = onchain::OnChainExecution<OnChainSeqPhragmen>;
+	type ElectionProvider = onchain::OnChainExecution<OnChainElection>;
+	type GenesisElectionProvider = onchain::OnChainExecution<OnChainElection>;
 	type VoterList = VoterList;
 	type NominationsQuota = pallet_staking::FixedNominationsQuota<MAX_QUOTA_NOMINATIONS>;
 	// This a placeholder, to be introduced in the next PR as an instance of bags-list
@@ -596,20 +595,6 @@ parameter_types! {
 	pub MaxActiveValidators: u32 = 1000;
 }
 
-/// The numbers configured here could always be more than the the maximum limits of staking pallet
-/// to ensure election snapshot will not run out of memory. For now, we set them to smaller values
-/// since the staking is bounded and the weight pipeline takes hours for this single pallet.
-pub struct ElectionProviderBenchmarkConfig;
-impl pallet_election_provider_multi_phase::BenchmarkingConfig for ElectionProviderBenchmarkConfig {
-	const VOTERS: [u32; 2] = [1000, 2000];
-	const TARGETS: [u32; 2] = [500, 1000];
-	const ACTIVE_VOTERS: [u32; 2] = [500, 800];
-	const DESIRED_TARGETS: [u32; 2] = [200, 400];
-	const SNAPSHOT_MAXIMUM_VOTERS: u32 = 1000;
-	const MINER_MAXIMUM_VOTERS: u32 = 1000;
-	const MAXIMUM_TARGETS: u32 = 300;
-}
-
 /// Maximum number of iterations for balancing that will be executed in the embedded OCW
 /// miner of election provider multi phase.
 pub const MINER_MAX_ITERATIONS: u32 = 10;
@@ -635,69 +620,14 @@ impl Get<Option<BalancingConfig>> for OffchainRandomBalancing {
 	}
 }
 
-pub struct OnChainSeqPhragmen;
-impl onchain::Config for OnChainSeqPhragmen {
+pub struct OnChainElection;
+impl onchain::Config for OnChainElection {
 	type System = Runtime;
-	type Solver = SequentialPhragmen<
-		AccountId,
-		pallet_election_provider_multi_phase::SolutionAccuracyOf<Runtime>,
-	>;
-	type DataProvider = <Runtime as pallet_election_provider_multi_phase::Config>::DataProvider;
-	type WeightInfo = frame_election_provider_support::weights::SubstrateWeight<Runtime>;
-	type MaxWinners = <Runtime as pallet_election_provider_multi_phase::Config>::MaxWinners;
-	type Bounds = ElectionBoundsOnChain;
-}
-
-impl pallet_election_provider_multi_phase::MinerConfig for Runtime {
-	type AccountId = AccountId;
-	type MaxLength = MinerMaxLength;
-	type MaxWeight = MinerMaxWeight;
-	type Solution = NposSolution16;
-	type MaxVotesPerVoter =
-	<<Self as pallet_election_provider_multi_phase::Config>::DataProvider as ElectionDataProvider>::MaxVotesPerVoter;
-	type MaxWinners = MaxActiveValidators;
-
-	// The unsigned submissions have to respect the weight of the submit_unsigned call, thus their
-	// weight estimate function is wired to this call's weight.
-	fn solution_weight(v: u32, t: u32, a: u32, d: u32) -> Weight {
-		<
-			<Self as pallet_election_provider_multi_phase::Config>::WeightInfo
-			as
-			pallet_election_provider_multi_phase::WeightInfo
-		>::submit_unsigned(v, t, a, d)
-	}
-}
-
-impl pallet_election_provider_multi_phase::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type Currency = Balances;
-	type EstimateCallFee = TransactionPayment;
-	type SignedPhase = SignedPhase;
-	type UnsignedPhase = UnsignedPhase;
-	type BetterUnsignedThreshold = BetterUnsignedThreshold;
-	type BetterSignedThreshold = ();
-	type OffchainRepeat = OffchainRepeat;
-	type MinerTxPriority = MultiPhaseUnsignedPriority;
-	type MinerConfig = Self;
-	type SignedMaxSubmissions = ConstU32<10>;
-	type SignedRewardBase = SignedRewardBase;
-	type SignedDepositBase =
-		GeometricDepositBase<Balance, SignedFixedDeposit, SignedDepositIncreaseFactor>;
-	type SignedDepositByte = SignedDepositByte;
-	type SignedMaxRefunds = ConstU32<3>;
-	type SignedDepositWeight = ();
-	type SignedMaxWeight = MinerMaxWeight;
-	type SlashHandler = (); // burn slashes
-	type RewardHandler = (); // nothing to do upon rewards
+	type Solver = SequentialPhragmen<AccountId, Perbill>;
 	type DataProvider = Staking;
-	type Fallback = onchain::OnChainExecution<OnChainSeqPhragmen>;
-	type GovernanceFallback = onchain::OnChainExecution<OnChainSeqPhragmen>;
-	type Solver = SequentialPhragmen<AccountId, SolutionAccuracyOf<Self>, OffchainRandomBalancing>;
-	type ForceOrigin = EnsureRoot<AccountId>;
+	type WeightInfo = frame_election_provider_support::weights::SubstrateWeight<Runtime>;
 	type MaxWinners = MaxActiveValidators;
-	type ElectionBounds = ElectionBoundsMultiPhase;
-	type BenchmarkingConfig = ElectionProviderBenchmarkConfig;
-	type WeightInfo = pallet_election_provider_multi_phase::weights::SubstrateWeight<Self>;
+	type Bounds = ElectionBoundsOnChain;
 }
 
 parameter_types! {
@@ -998,7 +928,6 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment,
 		AssetTxPayment: pallet_asset_tx_payment,
 		AssetConversionTxPayment: pallet_asset_conversion_tx_payment,
-		ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
 		Staking: pallet_staking,
 		Session: pallet_session,
 		Grandpa: pallet_grandpa,
@@ -1081,7 +1010,6 @@ mod benches {
 		[pallet_bags_list, VoterList]
 		[pallet_balances, Balances]
 		[pallet_asset_conversion, AssetConversion]
-		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
 		[pallet_election_provider_support_benchmarking, EPSBench::<Runtime>]
 		[pallet_grandpa, Grandpa]
 		[pallet_im_online, ImOnline]
@@ -1441,9 +1369,7 @@ impl_runtime_apis! {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use frame_election_provider_support::NposSolution;
 	use frame_system::offchain::CreateSignedTransaction;
-	use sp_runtime::UpperOf;
 
 	#[test]
 	fn validate_transaction_submitter_bounds() {
@@ -1454,17 +1380,6 @@ mod tests {
 		}
 
 		is_submit_signed_transaction::<Runtime>();
-	}
-
-	#[test]
-	fn perbill_as_onchain_accuracy() {
-		type OnChainAccuracy =
-			<<Runtime as pallet_election_provider_multi_phase::MinerConfig>::Solution as NposSolution>::Accuracy;
-		let maximum_chain_accuracy: Vec<UpperOf<OnChainAccuracy>> = (0..MaxNominations::get())
-			.map(|_| <UpperOf<OnChainAccuracy>>::from(OnChainAccuracy::one().deconstruct()))
-			.collect();
-		let _: UpperOf<OnChainAccuracy> =
-			maximum_chain_accuracy.iter().fold(0, |acc, x| acc.checked_add(*x).unwrap());
 	}
 
 	#[test]

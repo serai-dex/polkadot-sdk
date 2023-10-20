@@ -44,32 +44,20 @@
 
 # FRAME
 /substrate/frame/ @paritytech/frame-coders @paritytech/docs-audit
-/substrate/frame/nfts/ @jsidorenko @paritytech/docs-audit
 /substrate/frame/state-trie-migration/ @paritytech/frame-coders @cheme
 /substrate/frame/uniques/ @jsidorenko @paritytech/docs-audit
 
 # GRANDPA, BABE, consensus stuff
 /substrate/client/consensus/babe/ @andresilva
 /substrate/client/consensus/grandpa/ @andresilva
-/substrate/client/consensus/pow/ @sorpaas
 /substrate/client/consensus/slots/ @andresilva
 /substrate/frame/babe/ @andresilva
 /substrate/frame/grandpa/ @andresilva
-/substrate/primitives/consensus/pow/ @sorpaas
-
-# BEEFY, MMR
-/substrate/frame/beefy/ @acatangiu
-/substrate/frame/beefy-mmr/ @acatangiu
-/substrate/frame/merkle-mountain-range/ @acatangiu
-/substrate/primitives/merkle-mountain-range/ @acatangiu
 
 # Contracts
 /substrate/frame/contracts/ @athei @paritytech/docs-audit
 
 # NPoS and election
-/substrate/frame/election-provider-multi-phase/ @paritytech/staking-core @paritytech/docs-audit
 /substrate/frame/election-provider-support/ @paritytech/staking-core @paritytech/docs-audit
-/substrate/frame/elections-phragmen/ @paritytech/staking-core @paritytech/docs-audit
-/substrate/frame/nomination-pools/ @paritytech/staking-core @paritytech/docs-audit
 /substrate/frame/staking/ @paritytech/staking-core @paritytech/docs-audit
 /substrate/primitives/npos-elections/ @paritytech/staking-core @paritytech/docs-audit
