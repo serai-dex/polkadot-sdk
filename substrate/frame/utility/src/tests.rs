@@ -125,7 +125,6 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type AccountData = pallet_balances::AccountData<u64>;
 	type SystemWeightInfo = frame_system::weights::SubstrateWeight<Test>;
-	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;
 }
 

@@ -106,7 +106,6 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type AccountData = super::AccountData<u64>;
 	type SystemWeightInfo = ();
-	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 

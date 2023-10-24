@@ -138,7 +138,6 @@ impl system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type AccountData = ();
 	type SystemWeightInfo = ();
-	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;
 }
 impl logger::Config for Test {

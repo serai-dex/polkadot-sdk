@@ -309,7 +309,6 @@ impl frame_system::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type PalletInfo = PalletInfo;
-	type OnSetCode = ();
 }
 
 impl module1::Config<module1::Instance1> for Runtime {

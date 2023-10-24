@@ -180,7 +180,6 @@ impl frame_system::Config for RuntimeOriginTest {
 	type RuntimeCall = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type PalletInfo = PalletInfo;
-	type OnSetCode = ();
 }
 
 impl nested::module::Config for RuntimeOriginTest {

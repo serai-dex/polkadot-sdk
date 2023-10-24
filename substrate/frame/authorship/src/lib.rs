@@ -139,7 +139,6 @@ mod tests {
 		type PalletInfo = PalletInfo;
 		type AccountData = ();
 		type SystemWeightInfo = ();
-		type OnSetCode = ();
 		type MaxConsumers = ConstU32<16>;
 	}
 

@@ -35,7 +35,6 @@ impl frame_system::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type PalletInfo = PalletInfo;
-	type OnSetCode = ();
 }
 
 impl common::outer_enums::pallet::Config for Runtime {

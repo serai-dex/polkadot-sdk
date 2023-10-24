@@ -358,7 +358,6 @@ impl frame_system::pallet::Config for Runtime {
 	type PalletInfo = PalletInfo;
 	type AccountData = pallet_balances::AccountData<Balance>;
 	type SystemWeightInfo = ();
-	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;
 }
 

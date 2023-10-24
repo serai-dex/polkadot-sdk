@@ -94,7 +94,6 @@ impl Config for Test {
 	type PalletInfo = PalletInfo;
 	type AccountData = u32;
 	type SystemWeightInfo = ();
-	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;
 }
 

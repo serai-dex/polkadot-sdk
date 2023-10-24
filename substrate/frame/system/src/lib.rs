@@ -156,19 +156,6 @@ pub type ConsumedWeight = PerDispatchClass<Weight>;
 
 pub use pallet::*;
 
-/// Do something when we should be setting the code.
-pub trait SetCode<T: Config> {
-	/// Set the code to the given blob.
-	fn set_code(code: Vec<u8>) -> DispatchResult;
-}
-
-impl<T: Config> SetCode<T> for () {
-	fn set_code(code: Vec<u8>) -> DispatchResult {
-		<Pallet<T>>::update_code_in_storage(&code)?;
-		Ok(())
-	}
-}
-
 /// Numeric limits over the ability to add a consumer ref using `inc_consumers`.
 pub trait ConsumerLimits {
 	/// The number of consumers over which `inc_consumers` will cease to work.
@@ -240,7 +227,6 @@ pub mod pallet {
 			type PalletInfo = ();
 			type BaseCallFilter = frame_support::traits::Everything;
 			type BlockHashCount = frame_support::traits::ConstU64<10>;
-			type OnSetCode = ();
 		}
 	}
 
@@ -371,16 +357,6 @@ pub mod pallet {
 
 		type SystemWeightInfo: WeightInfo;
 
-		/// What to do if the runtime wants to change the code to something new.
-		///
-		/// The default (`()`) implementation is responsible for setting the correct storage
-		/// entry and emitting corresponding event and log item. (see
-		/// [`Pallet::update_code_in_storage`]).
-		/// It's unlikely that this needs to be customized, unless you are writing a parachain using
-		/// `Cumulus`, where the actual code change is deferred.
-		#[pallet::no_default_bounds]
-		type OnSetCode: SetCode<Self>;
-
 		/// The maximum number of consumers allowed on a single account.
 		type MaxConsumers: ConsumerLimits;
 	}
@@ -413,7 +389,7 @@ pub mod pallet {
 		pub fn set_code(origin: OriginFor<T>, code: Vec<u8>) -> DispatchResultWithPostInfo {
 			ensure_root(origin)?;
 			Self::can_set_code(&code)?;
-			T::OnSetCode::set_code(code)?;
+			<Pallet<T>>::update_code_in_storage(&code)?;
 			// consume the rest of the block to prevent further transactions
 			Ok(Some(T::BlockWeights::get().max_block).into())
 		}
@@ -945,10 +921,6 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Write code to the storage and emit related events and digest items.
-	///
-	/// Note this function almost never should be used directly. It is exposed
-	/// for `OnSetCode` implementations that defer actual code being written to
-	/// the storage (for instance in case of parachains).
 	pub fn update_code_in_storage(code: &[u8]) -> DispatchResult {
 		storage::unhashed::put_raw(well_known_keys::CODE, code);
 		Self::deposit_log(generic::DigestItem::RuntimeEnvironmentUpdated);

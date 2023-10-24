@@ -69,7 +69,6 @@ use sp_storage::{StorageData, StorageKey};
 /// # 	type PalletInfo = PalletInfo;
 /// # 	type AccountData = ();
 /// # 	type SystemWeightInfo = ();
-/// # 	type OnSetCode = ();
 /// # 	type MaxConsumers = ConstU32<16>;
 /// # }
 /// #

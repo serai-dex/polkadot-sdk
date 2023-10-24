@@ -89,7 +89,6 @@ impl frame_system::Config for Test {
 	type RuntimeCall = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type PalletInfo = PalletInfo;
-	type OnSetCode = ();
 }
 
 impl pallet::Config for Test {}

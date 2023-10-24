@@ -884,7 +884,6 @@ mod tests {
 		type PalletInfo = PalletInfo;
 		type AccountData = pallet_balances::AccountData<Balance>;
 		type SystemWeightInfo = ();
-		type OnSetCode = ();
 		type MaxConsumers = ConstU32<16>;
 	}
 

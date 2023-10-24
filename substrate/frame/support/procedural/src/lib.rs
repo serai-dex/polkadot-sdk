@@ -638,7 +638,6 @@ pub fn storage_alias(attributes: TokenStream, input: TokenStream) -> TokenStream
 ///     type RuntimeEvent = RuntimeEvent;
 ///     type RuntimeCall = RuntimeCall;
 ///     type RuntimeOrigin = RuntimeOrigin;
-///     type OnSetCode = ();
 ///     type PalletInfo = PalletInfo;
 ///     type Block = Block;
 ///     // We decide to override this one.
@@ -681,7 +680,6 @@ pub fn storage_alias(attributes: TokenStream, input: TokenStream) -> TokenStream
 ///     type RuntimeEvent = RuntimeEvent;
 ///     type RuntimeCall = RuntimeCall;
 ///     type RuntimeOrigin = RuntimeOrigin;
-///     type OnSetCode = ();
 ///     type PalletInfo = PalletInfo;
 ///     type Block = Block;
 ///     type AccountData = pallet_balances::AccountData<u64>;
