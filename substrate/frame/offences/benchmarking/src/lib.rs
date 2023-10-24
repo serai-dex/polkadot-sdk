@@ -368,7 +368,6 @@ benchmarks! {
 						let reward_events = reporters.iter()
 							.flat_map(|reporter| vec![
 							 Box::new(balance_deposit(reporter.clone(), reward).into()),
-							 Box::new(frame_system::Event::<T>::NewAccount { account: reporter.clone() }.into()),
 							 Box::new(<T as BalancesConfig>::RuntimeEvent::from(
 								 pallet_balances::Event::<T>::Endowed{ account: reporter.clone(), free_balance: reward.into() }
 							 ).into()),

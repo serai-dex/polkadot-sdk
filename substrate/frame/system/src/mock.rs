@@ -75,17 +75,6 @@ parameter_types! {
 		limits::BlockLength::max_with_normal_ratio(1024, NORMAL_DISPATCH_RATIO);
 }
 
-parameter_types! {
-	pub static Killed: Vec<u64> = vec![];
-}
-
-pub struct RecordKilled;
-impl OnKilledAccount<u64> for RecordKilled {
-	fn on_killed_account(who: &u64) {
-		Killed::mutate(|r| r.push(*who))
-	}
-}
-
 impl Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type BlockWeights = RuntimeBlockWeights;
@@ -104,8 +93,6 @@ impl Config for Test {
 	type Version = Version;
 	type PalletInfo = PalletInfo;
 	type AccountData = u32;
-	type OnNewAccount = ();
-	type OnKilledAccount = RecordKilled;
 	type SystemWeightInfo = ();
 	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;

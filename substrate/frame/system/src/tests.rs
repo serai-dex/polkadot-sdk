@@ -114,11 +114,6 @@ fn stored_map_works() {
 
 		System::dec_consumers(&0);
 		assert!(!System::is_provider_required(&0));
-
-		assert!(Killed::get().is_empty());
-		assert_ok!(System::remove(&0));
-		assert_ok!(System::dec_providers(&0));
-		assert_eq!(Killed::get(), vec![0u64]);
 	});
 }
 
@@ -237,27 +232,14 @@ fn deposit_event_should_work() {
 
 		System::reset_events();
 		System::initialize(&2, &[0u8; 32].into(), &Default::default());
-		System::deposit_event(SysEvent::NewAccount { account: 32 });
 		System::note_finished_initialize();
-		System::deposit_event(SysEvent::KilledAccount { account: 42 });
 		System::note_applied_extrinsic(&Ok(().into()), Default::default());
 		System::note_applied_extrinsic(&Err(DispatchError::BadOrigin.into()), Default::default());
 		System::note_finished_extrinsics();
-		System::deposit_event(SysEvent::NewAccount { account: 3 });
 		System::finalize();
 		assert_eq!(
 			System::events(),
 			vec![
-				EventRecord {
-					phase: Phase::Initialization,
-					event: SysEvent::NewAccount { account: 32 }.into(),
-					topics: vec![],
-				},
-				EventRecord {
-					phase: Phase::ApplyExtrinsic(0),
-					event: SysEvent::KilledAccount { account: 42 }.into(),
-					topics: vec![]
-				},
 				EventRecord {
 					phase: Phase::ApplyExtrinsic(0),
 					event: SysEvent::ExtrinsicSuccess {
@@ -273,11 +255,6 @@ fn deposit_event_should_work() {
 						dispatch_info: DispatchInfo { weight: normal_base, ..Default::default() }
 					}
 					.into(),
-					topics: vec![]
-				},
-				EventRecord {
-					phase: Phase::Finalization,
-					event: SysEvent::NewAccount { account: 3 }.into(),
 					topics: vec![]
 				},
 			]
@@ -522,9 +499,9 @@ fn deposit_event_topics() {
 		let topics = vec![H256::repeat_byte(1), H256::repeat_byte(2), H256::repeat_byte(3)];
 
 		// We deposit a few events with different sets of topics.
-		System::deposit_event_indexed(&topics[0..3], SysEvent::NewAccount { account: 1 }.into());
-		System::deposit_event_indexed(&topics[0..1], SysEvent::NewAccount { account: 2 }.into());
-		System::deposit_event_indexed(&topics[1..2], SysEvent::NewAccount { account: 3 }.into());
+		System::deposit_event_indexed(&topics[0..3], SysEvent::CodeUpdated.into());
+		System::deposit_event_indexed(&topics[0..1], SysEvent::CodeUpdated.into());
+		System::deposit_event_indexed(&topics[1..2], SysEvent::CodeUpdated.into());
 
 		System::finalize();
 
@@ -534,17 +511,17 @@ fn deposit_event_topics() {
 			vec![
 				EventRecord {
 					phase: Phase::Finalization,
-					event: SysEvent::NewAccount { account: 1 }.into(),
+					event: SysEvent::CodeUpdated.into(),
 					topics: topics[0..3].to_vec(),
 				},
 				EventRecord {
 					phase: Phase::Finalization,
-					event: SysEvent::NewAccount { account: 2 }.into(),
+					event: SysEvent::CodeUpdated.into(),
 					topics: topics[0..1].to_vec(),
 				},
 				EventRecord {
 					phase: Phase::Finalization,
-					event: SysEvent::NewAccount { account: 3 }.into(),
+					event: SysEvent::CodeUpdated.into(),
 					topics: topics[1..2].to_vec(),
 				}
 			]

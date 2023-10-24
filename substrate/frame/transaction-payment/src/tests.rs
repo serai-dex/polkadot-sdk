@@ -31,7 +31,6 @@ use frame_support::{
 	traits::Currency,
 	weights::Weight,
 };
-use frame_system as system;
 use mock::*;
 use pallet_balances::Call as BalancesCall;
 
@@ -554,10 +553,6 @@ fn refund_does_not_recreate_account() {
 				from: 2,
 				to: 3,
 				amount: 80,
-			}));
-			// Killed Event
-			System::assert_has_event(RuntimeEvent::System(system::Event::KilledAccount {
-				account: 2,
 			}));
 		});
 }

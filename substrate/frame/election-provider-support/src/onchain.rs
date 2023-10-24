@@ -219,8 +219,6 @@ mod tests {
 		type Version = ();
 		type PalletInfo = PalletInfo;
 		type AccountData = ();
-		type OnNewAccount = ();
-		type OnKilledAccount = ();
 		type SystemWeightInfo = ();
 		type OnSetCode = ();
 		type MaxConsumers = frame_support::traits::ConstU32<16>;

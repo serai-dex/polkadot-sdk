@@ -665,8 +665,6 @@ pub fn storage_alias(attributes: TokenStream, input: TokenStream) -> TokenStream
 ///     type Lookup = IdentityLookup<AccountId>;
 ///     type BlockHashCount = frame_support::traits::ConstU64<10>;
 ///     type AccountData = u32;
-///     type OnNewAccount = ();
-///     type OnKilledAccount = ();
 ///     type SystemWeightInfo = ();
 ///     type MaxConsumers = frame_support::traits::ConstU32<16>;
 /// }
@@ -698,8 +696,6 @@ pub fn storage_alias(attributes: TokenStream, input: TokenStream) -> TokenStream
 ///     type AccountId = <TestDefaultConfig as DefaultConfig>::AccountId;
 ///     type Lookup = <TestDefaultConfig as DefaultConfig>::Lookup;
 ///     type BlockHashCount = <TestDefaultConfig as DefaultConfig>::BlockHashCount;
-///     type OnNewAccount = <TestDefaultConfig as DefaultConfig>::OnNewAccount;
-///     type OnKilledAccount = <TestDefaultConfig as DefaultConfig>::OnKilledAccount;
 ///     type SystemWeightInfo = <TestDefaultConfig as DefaultConfig>::SystemWeightInfo;
 ///     type MaxConsumers = <TestDefaultConfig as DefaultConfig>::MaxConsumers;
 /// }

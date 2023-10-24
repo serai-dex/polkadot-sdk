@@ -676,24 +676,6 @@ impl<A, B> SameOrOther<A, B> {
 	}
 }
 
-/// Handler for when a new account has been created.
-#[cfg_attr(all(not(feature = "tuples-96"), not(feature = "tuples-128")), impl_for_tuples(64))]
-#[cfg_attr(all(feature = "tuples-96", not(feature = "tuples-128")), impl_for_tuples(96))]
-#[cfg_attr(feature = "tuples-128", impl_for_tuples(128))]
-pub trait OnNewAccount<AccountId> {
-	/// A new account `who` has been registered.
-	fn on_new_account(who: &AccountId);
-}
-
-/// The account with the given id was reaped.
-#[cfg_attr(all(not(feature = "tuples-96"), not(feature = "tuples-128")), impl_for_tuples(64))]
-#[cfg_attr(all(feature = "tuples-96", not(feature = "tuples-128")), impl_for_tuples(96))]
-#[cfg_attr(feature = "tuples-128", impl_for_tuples(128))]
-pub trait OnKilledAccount<AccountId> {
-	/// The account with the given id was reaped.
-	fn on_killed_account(who: &AccountId);
-}
-
 /// A simple, generic one-parameter event notifier/handler.
 pub trait HandleLifetime<T> {
 	/// An account was created.

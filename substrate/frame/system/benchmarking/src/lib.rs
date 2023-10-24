@@ -21,15 +21,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg(feature = "runtime-benchmarks")]
 
-use codec::Encode;
 use frame_benchmarking::{
 	v1::{benchmarks, whitelisted_caller},
 	BenchmarkError,
 };
-use frame_support::{dispatch::DispatchClass, storage, traits::Get};
+use frame_support::{dispatch::DispatchClass, traits::Get};
 use frame_system::{Call, Pallet as System, RawOrigin};
-use sp_core::storage::well_known_keys;
-use sp_runtime::traits::Hash;
 use sp_std::{prelude::*, vec};
 
 mod mock;

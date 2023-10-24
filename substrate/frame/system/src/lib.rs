@@ -96,8 +96,8 @@ use frame_support::{
 	impl_ensure_origin_with_arg_ignoring_arg,
 	storage::{self, StorageStreamIter},
 	traits::{
-		ConstU32, Contains, EnsureOrigin, EnsureOriginWithArg, Get, HandleLifetime,
-		OnKilledAccount, OnNewAccount, OriginTrait, PalletInfo, SortedMembers, StoredMap, TypedGet,
+		ConstU32, Contains, EnsureOrigin, EnsureOriginWithArg, Get, HandleLifetime, OriginTrait,
+		PalletInfo, SortedMembers, StoredMap, TypedGet,
 	},
 	Parameter,
 };
@@ -225,8 +225,6 @@ pub mod pallet {
 			type Lookup = sp_runtime::traits::IdentityLookup<u64>;
 			type MaxConsumers = frame_support::traits::ConstU32<16>;
 			type AccountData = ();
-			type OnNewAccount = ();
-			type OnKilledAccount = ();
 			type SystemWeightInfo = ();
 			type Version = ();
 			type BlockWeights = ();
@@ -371,14 +369,6 @@ pub mod pallet {
 		/// pallet does regardless).
 		type AccountData: Member + FullCodec + Clone + Default + TypeInfo + MaxEncodedLen;
 
-		/// Handler for when a new account has just been created.
-		type OnNewAccount: OnNewAccount<Self::AccountId>;
-
-		/// A function that is invoked when an account has been determined to be dead.
-		///
-		/// All resources should be cleaned up associated with the given account.
-		type OnKilledAccount: OnKilledAccount<Self::AccountId>;
-
 		type SystemWeightInfo: WeightInfo;
 
 		/// What to do if the runtime wants to change the code to something new.
@@ -438,10 +428,6 @@ pub mod pallet {
 		ExtrinsicFailed { dispatch_error: DispatchError, dispatch_info: DispatchInfo },
 		/// `:code` was updated.
 		CodeUpdated,
-		/// A new account was created.
-		NewAccount { account: T::AccountId },
-		/// An account was reaped.
-		KilledAccount { account: T::AccountId },
 	}
 
 	/// Error for the System pallet
@@ -1001,7 +987,6 @@ impl<T: Config> Pallet<T> {
 			if a.providers == 0 && a.sufficients == 0 {
 				// Account is being created.
 				a.providers = 1;
-				Self::on_created_account(who.clone(), a);
 				IncRefStatus::Created
 			} else {
 				a.providers = a.providers.saturating_add(1);
@@ -1027,8 +1012,6 @@ impl<T: Config> Pallet<T> {
 				match (account.providers, account.consumers, account.sufficients) {
 					(1, 0, 0) => {
 						// No providers left (and no consumers) and no sufficients. Account dead.
-
-						Pallet::<T>::on_killed_account(who.clone());
 						Ok(DecRefStatus::Reaped)
 					},
 					(1, c, _) if c > 0 => {
@@ -1059,7 +1042,6 @@ impl<T: Config> Pallet<T> {
 			if a.providers + a.sufficients == 0 {
 				// Account is being created.
 				a.sufficients = 1;
-				Self::on_created_account(who.clone(), a);
 				IncRefStatus::Created
 			} else {
 				a.sufficients = a.sufficients.saturating_add(1);
@@ -1082,10 +1064,7 @@ impl<T: Config> Pallet<T> {
 					);
 				}
 				match (account.sufficients, account.providers) {
-					(0, 0) | (1, 0) => {
-						Pallet::<T>::on_killed_account(who.clone());
-						DecRefStatus::Reaped
-					},
+					(0, 0) | (1, 0) => DecRefStatus::Reaped,
 					(x, _) => {
 						account.sufficients = x - 1;
 						*maybe_account = Some(account);
@@ -1533,18 +1512,6 @@ impl<T: Config> Pallet<T> {
 	/// (e.g., called `on_initialize` for all pallets).
 	pub fn note_finished_initialize() {
 		ExecutionPhase::<T>::put(Phase::ApplyExtrinsic(0))
-	}
-
-	/// An account is being created.
-	pub fn on_created_account(who: T::AccountId, _a: &mut AccountInfo<T::Nonce, T::AccountData>) {
-		T::OnNewAccount::on_new_account(&who);
-		Self::deposit_event(Event::NewAccount { account: who });
-	}
-
-	/// Do anything that needs to be done after an account has been killed.
-	fn on_killed_account(who: T::AccountId) {
-		T::OnKilledAccount::on_killed_account(&who);
-		Self::deposit_event(Event::KilledAccount { account: who });
 	}
 
 	/// Determine whether or not it is possible to update the code.

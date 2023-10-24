@@ -1096,8 +1096,6 @@ mod mock {
 		type Version = ();
 		type PalletInfo = PalletInfo;
 		type AccountData = pallet_balances::AccountData<u64>;
-		type OnNewAccount = ();
-		type OnKilledAccount = ();
 		type SystemWeightInfo = ();
 		type OnSetCode = ();
 		type MaxConsumers = ConstU32<16>;

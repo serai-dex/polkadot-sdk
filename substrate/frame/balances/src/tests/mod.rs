@@ -32,7 +32,7 @@ use frame_support::{
 	},
 	weights::{IdentityFee, Weight},
 };
-use frame_system::{self as system, RawOrigin};
+use frame_system::RawOrigin;
 use pallet_transaction_payment::{ChargeTransactionPayment, CurrencyAdapter, Multiplier};
 use scale_info::TypeInfo;
 use sp_core::{hexdisplay::HexDisplay, H256};
@@ -105,8 +105,6 @@ impl frame_system::Config for Test {
 	type Version = ();
 	type PalletInfo = PalletInfo;
 	type AccountData = super::AccountData<u64>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
 	type SystemWeightInfo = ();
 	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
