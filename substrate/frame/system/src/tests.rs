@@ -677,23 +677,6 @@ fn set_code_with_real_wasm_blob() {
 }
 
 #[test]
-fn runtime_upgraded_with_set_storage() {
-	let executor = substrate_test_runtime_client::new_native_or_wasm_executor();
-	let mut ext = new_test_ext();
-	ext.register_extension(sp_core::traits::ReadRuntimeVersionExt::new(executor));
-	ext.execute_with(|| {
-		System::set_storage(
-			RawOrigin::Root.into(),
-			vec![(
-				well_known_keys::CODE.to_vec(),
-				substrate_test_runtime_client::runtime::wasm_binary_unwrap().to_vec(),
-			)],
-		)
-		.unwrap();
-	});
-}
-
-#[test]
 fn extrinsics_root_is_calculated_correctly() {
 	new_test_ext().execute_with(|| {
 		System::reset_events();
@@ -708,16 +691,6 @@ fn extrinsics_root_is_calculated_correctly() {
 
 		let ext_root = extrinsics_data_root::<BlakeTwo256>(vec![vec![1], vec![2]]);
 		assert_eq!(ext_root, *header.extrinsics_root());
-	});
-}
-
-#[test]
-fn runtime_updated_digest_emitted_when_heap_pages_changed() {
-	new_test_ext().execute_with(|| {
-		System::reset_events();
-		System::initialize(&1, &[0u8; 32].into(), &Default::default());
-		System::set_heap_pages(RawOrigin::Root.into(), 5).unwrap();
-		assert_runtime_updated_digest(1);
 	});
 }
 

@@ -231,7 +231,7 @@ benchmarks! {
 		let periodic = Some((BlockNumberFor::<T>::one(), 100));
 		let priority = 0;
 		// Essentially a no-op call.
-		let call = Box::new(SystemCall::set_storage { items: vec![] }.into());
+		let call = Box::new(SystemCall::remark { remark: vec![] }.into());
 
 		fill_schedule::<T>(when, s)?;
 	}: _(RawOrigin::Root, when, periodic, priority, call)
@@ -274,7 +274,7 @@ benchmarks! {
 		let periodic = Some((BlockNumberFor::<T>::one(), 100));
 		let priority = 0;
 		// Essentially a no-op call.
-		let call = Box::new(SystemCall::set_storage { items: vec![] }.into());
+		let call = Box::new(SystemCall::remark { remark: vec![] }.into());
 
 		fill_schedule::<T>(when, s)?;
 	}: _(RawOrigin::Root, id, when, periodic, priority, call)

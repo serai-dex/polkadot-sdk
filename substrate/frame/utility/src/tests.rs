@@ -27,7 +27,7 @@ use frame_support::{
 	assert_err_ignore_postinfo, assert_noop, assert_ok,
 	dispatch::{DispatchErrorWithPostInfo, Pays},
 	error::BadOrigin,
-	parameter_types, storage,
+	parameter_types,
 	traits::{ConstU32, ConstU64, Contains},
 	weights::Weight,
 };
@@ -331,32 +331,25 @@ fn as_derivative_filters() {
 #[test]
 fn batch_with_root_works() {
 	new_test_ext().execute_with(|| {
-		let k = b"a".to_vec();
-		let call = RuntimeCall::System(frame_system::Call::set_storage {
-			items: vec![(k.clone(), k.clone())],
-		});
+		let call =
+			RuntimeCall::Balances(BalancesCall::force_transfer { source: 1, dest: 2, value: 5 });
 		assert!(!TestBaseCallFilter::contains(&call));
 		assert_eq!(Balances::free_balance(1), 10);
 		assert_eq!(Balances::free_balance(2), 10);
 		assert_ok!(Utility::batch(
 			RuntimeOrigin::root(),
 			vec![
+				// These calls aren't in the filter, checking the filter was correctly bypassed
+				call,
 				RuntimeCall::Balances(BalancesCall::force_transfer {
 					source: 1,
 					dest: 2,
 					value: 5
 				}),
-				RuntimeCall::Balances(BalancesCall::force_transfer {
-					source: 1,
-					dest: 2,
-					value: 5
-				}),
-				call, // Check filters are correctly bypassed
 			]
 		));
 		assert_eq!(Balances::free_balance(1), 0);
 		assert_eq!(Balances::free_balance(2), 20);
-		assert_eq!(storage::unhashed::get_raw(&k), Some(k));
 	});
 }
 
@@ -761,29 +754,26 @@ fn batch_all_doesnt_work_with_inherents() {
 fn with_weight_works() {
 	new_test_ext().execute_with(|| {
 		use frame_system::WeightInfo;
-		let upgrade_code_call =
-			Box::new(RuntimeCall::System(frame_system::Call::set_code_without_checks {
-				code: vec![],
-			}));
+		let remark_call = Box::new(RuntimeCall::System(frame_system::Call::remark {
+			remark: b"remark".to_vec(),
+		}));
 		// Weight before is max.
 		assert_eq!(
-			upgrade_code_call.get_dispatch_info().weight,
-			<Test as frame_system::Config>::SystemWeightInfo::set_code()
+			remark_call.get_dispatch_info().weight,
+			<Test as frame_system::Config>::SystemWeightInfo::remark(6)
 		);
 		assert_eq!(
-			upgrade_code_call.get_dispatch_info().class,
-			frame_support::dispatch::DispatchClass::Operational
+			remark_call.get_dispatch_info().class,
+			frame_support::dispatch::DispatchClass::Normal
 		);
 
-		let with_weight_call = Call::<Test>::with_weight {
-			call: upgrade_code_call,
-			weight: Weight::from_parts(123, 456),
-		};
+		let with_weight_call =
+			Call::<Test>::with_weight { call: remark_call, weight: Weight::from_parts(123, 456) };
 		// Weight after is set by Root.
 		assert_eq!(with_weight_call.get_dispatch_info().weight, Weight::from_parts(123, 456));
 		assert_eq!(
 			with_weight_call.get_dispatch_info().class,
-			frame_support::dispatch::DispatchClass::Operational
+			frame_support::dispatch::DispatchClass::Normal
 		);
 	})
 }

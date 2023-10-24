@@ -417,18 +417,8 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		/// Set the number of pages in the WebAssembly environment's heap.
-		#[pallet::call_index(1)]
-		#[pallet::weight((T::SystemWeightInfo::set_heap_pages(), DispatchClass::Operational))]
-		pub fn set_heap_pages(origin: OriginFor<T>, pages: u64) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-			storage::unhashed::put_raw(well_known_keys::HEAP_PAGES, &pages.encode());
-			Self::deposit_log(generic::DigestItem::RuntimeEnvironmentUpdated);
-			Ok(().into())
-		}
-
 		/// Set the new runtime code.
-		#[pallet::call_index(2)]
+		#[pallet::call_index(1)]
 		#[pallet::weight((T::SystemWeightInfo::set_code(), DispatchClass::Operational))]
 		pub fn set_code(origin: OriginFor<T>, code: Vec<u8>) -> DispatchResultWithPostInfo {
 			ensure_root(origin)?;
@@ -436,81 +426,6 @@ pub mod pallet {
 			T::OnSetCode::set_code(code)?;
 			// consume the rest of the block to prevent further transactions
 			Ok(Some(T::BlockWeights::get().max_block).into())
-		}
-
-		/// Set the new runtime code without doing any checks of the given `code`.
-		#[pallet::call_index(3)]
-		#[pallet::weight((T::SystemWeightInfo::set_code(), DispatchClass::Operational))]
-		pub fn set_code_without_checks(
-			origin: OriginFor<T>,
-			code: Vec<u8>,
-		) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-			T::OnSetCode::set_code(code)?;
-			Ok(Some(T::BlockWeights::get().max_block).into())
-		}
-
-		/// Set some items of storage.
-		#[pallet::call_index(4)]
-		#[pallet::weight((
-			T::SystemWeightInfo::set_storage(items.len() as u32),
-			DispatchClass::Operational,
-		))]
-		pub fn set_storage(
-			origin: OriginFor<T>,
-			items: Vec<KeyValue>,
-		) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-			for i in &items {
-				storage::unhashed::put_raw(&i.0, &i.1);
-			}
-			Ok(().into())
-		}
-
-		/// Kill some items from storage.
-		#[pallet::call_index(5)]
-		#[pallet::weight((
-			T::SystemWeightInfo::kill_storage(keys.len() as u32),
-			DispatchClass::Operational,
-		))]
-		pub fn kill_storage(origin: OriginFor<T>, keys: Vec<Key>) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-			for key in &keys {
-				storage::unhashed::kill(key);
-			}
-			Ok(().into())
-		}
-
-		/// Kill all storage items with a key that starts with the given prefix.
-		///
-		/// **NOTE:** We rely on the Root origin to provide us the number of subkeys under
-		/// the prefix we are removing to accurately calculate the weight of this function.
-		#[pallet::call_index(6)]
-		#[pallet::weight((
-			T::SystemWeightInfo::kill_prefix(_subkeys.saturating_add(1)),
-			DispatchClass::Operational,
-		))]
-		pub fn kill_prefix(
-			origin: OriginFor<T>,
-			prefix: Key,
-			_subkeys: u32,
-		) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-			let _ = storage::unhashed::clear_prefix(&prefix, None, None);
-			Ok(().into())
-		}
-
-		/// Make some on-chain remark and emit event.
-		#[pallet::call_index(7)]
-		#[pallet::weight(T::SystemWeightInfo::remark_with_event(remark.len() as u32))]
-		pub fn remark_with_event(
-			origin: OriginFor<T>,
-			remark: Vec<u8>,
-		) -> DispatchResultWithPostInfo {
-			let who = ensure_signed(origin)?;
-			let hash = T::Hashing::hash(&remark[..]);
-			Self::deposit_event(Event::Remarked { sender: who, hash });
-			Ok(().into())
 		}
 	}
 
@@ -527,8 +442,6 @@ pub mod pallet {
 		NewAccount { account: T::AccountId },
 		/// An account was reaped.
 		KilledAccount { account: T::AccountId },
-		/// On on-chain remark happened.
-		Remarked { sender: T::AccountId, hash: T::Hash },
 	}
 
 	/// Error for the System pallet
