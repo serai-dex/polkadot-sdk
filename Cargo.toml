@@ -277,3 +277,7 @@ zeroize = { opt-level = 3 }
 [patch.crates-io]
 # https://github.com/rust-lang-nursery/lazy-static.rs/issues/201
 lazy_static = { git = "https://github.com/rust-lang-nursery/lazy-static.rs", rev = "5735630d46572f1e5377c8f2ba0f79d18f53b10c" }
+
+# This is used by the substrate-curves GitHub repository which is then used here
+# substrate-curves really should be lifted into the monorepo...
+sp-crypto-ec-utils = { path = "./substrate/primitives/crypto/ec-utils" }

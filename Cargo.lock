@@ -1148,9 +1148,9 @@ dependencies = [
 
 [[package]]
 name = "cargo_metadata"
-version = "0.17.0"
+version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7daec1a2a2129eeba1644b220b4647ec537b0b5d4bfd6876fcc5a540056b592"
+checksum = "2d886547e41f740c616ae73108f6eb70afe6d940c7bc697cb30f13daec073037"
 dependencies = [
  "camino",
  "cargo-platform",
@@ -2625,9 +2625,9 @@ dependencies = [
 
 [[package]]
 name = "fraction"
-version = "0.13.1"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3027ae1df8d41b4bed2241c8fdad4acc1e7af60c8e17743534b545e77182d678"
+checksum = "59a78dd758a47a7305478e0e054f9fde4e983b9f9eccda162bf7ca03b79e9d40"
 dependencies = [
  "lazy_static",
  "num",
@@ -3032,9 +3032,9 @@ dependencies = [
 
 [[package]]
 name = "fs4"
-version = "0.6.6"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2eeb4ed9e12f43b7fa0baae3f9cdda28352770132ef2e09a23760c29cae8bd47"
+checksum = "29f9df8a11882c4e3335eb2d18a0137c505d9ca927470b0cac9c6f0ae07d28f7"
 dependencies = [
  "rustix 0.38.21",
  "windows-sys 0.48.0",
@@ -4759,9 +4759,9 @@ dependencies = [
 
 [[package]]
 name = "macro_magic"
-version = "0.4.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aee866bfee30d2d7e83835a4574aad5b45adba4cc807f2a3bbba974e5d4383c9"
+checksum = "e03844fc635e92f3a0067e25fa4bf3e3dbf3f2927bf3aa01bb7bc8f1c428949d"
 dependencies = [
  "macro_magic_core",
  "macro_magic_macros",
@@ -4771,9 +4771,9 @@ dependencies = [
 
 [[package]]
 name = "macro_magic_core"
-version = "0.4.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e766a20fd9c72bab3e1e64ed63f36bd08410e75803813df210d1ce297d7ad00"
+checksum = "468155613a44cfd825f1fb0ffa532b018253920d404e6fca1e8d43155198a46d"
 dependencies = [
  "const-random",
  "derive-syn-parse",
@@ -4785,9 +4785,9 @@ dependencies = [
 
 [[package]]
 name = "macro_magic_core_macros"
-version = "0.4.3"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d710e1214dffbab3b5dacb21475dde7d6ed84c69ff722b3a47a782668d44fbac"
+checksum = "9ea73aa640dc01d62a590d48c0c3521ed739d53b27f919b25c3551e233481654"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4796,9 +4796,9 @@ dependencies = [
 
 [[package]]
 name = "macro_magic_macros"
-version = "0.4.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8fb85ec1620619edf2984a7693497d4ec88a9665d8b87e942856884c92dbf2a"
+checksum = "ef9d79ae96aaba821963320eb2b6e34d17df1e5a83d8a1985c29cc5be59577b3"
 dependencies = [
  "macro_magic_core",
  "quote",
@@ -4878,9 +4878,9 @@ dependencies = [
 
 [[package]]
 name = "memmap2"
-version = "0.7.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f49388d20533534cd19360ad3d6a7dadc885944aa802ba3995040c5ec11288c6"
+checksum = "deaba38d7abf1d4cca21cc89e932e542ba2b9258664d2a9ef0e61512039c9375"
 dependencies = [
  "libc",
 ]
@@ -6294,7 +6294,7 @@ dependencies = [
  "substrate-state-trie-migration-rpc",
  "thousands",
  "tokio",
- "zstd 0.12.4",
+ "zstd 0.13.0",
 ]
 
 [[package]]
@@ -7799,7 +7799,7 @@ dependencies = [
 name = "sc-chain-spec"
 version = "4.0.0-dev"
 dependencies = [
- "memmap2 0.7.1",
+ "memmap2 0.9.0",
  "sc-chain-spec-derive",
  "sc-client-api",
  "sc-executor",
@@ -9879,7 +9879,7 @@ name = "sp-maybe-compressed-blob"
 version = "4.1.0-dev"
 dependencies = [
  "thiserror",
- "zstd 0.12.4",
+ "zstd 0.13.0",
 ]
 
 [[package]]
@@ -9970,7 +9970,7 @@ dependencies = [
  "sp-tracing",
  "sp-weights",
  "substrate-test-runtime-client",
- "zstd 0.12.4",
+ "zstd 0.13.0",
 ]
 
 [[package]]
@@ -11357,7 +11357,7 @@ dependencies = [
  "substrate-rpc-client",
  "tempfile",
  "tokio",
- "zstd 0.12.4",
+ "zstd 0.13.0",
 ]
 
 [[package]]
@@ -11409,7 +11409,7 @@ checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
 dependencies = [
  "cfg-if",
  "digest 0.10.7",
- "rand 0.7.3",
+ "rand 0.8.5",
  "static_assertions",
 ]
 
@@ -11738,9 +11738,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-opt"
-version = "0.114.2"
+version = "0.116.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "effbef3bd1dde18acb401f73e740a6f3d4a1bc651e9773bddc512fe4d8d68f67"
+checksum = "fc942673e7684671f0c5708fc18993569d184265fd5223bb51fc8e5b9b6cfd52"
 dependencies = [
  "anyhow",
  "libc",
@@ -11754,9 +11754,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-opt-cxx-sys"
-version = "0.114.2"
+version = "0.116.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c09e24eb283919ace2ed5733bda4842a59ce4c8de110ef5c6d98859513d17047"
+checksum = "8c57b28207aa724318fcec6575fe74803c23f6f266fce10cbc9f3f116762f12e"
 dependencies = [
  "anyhow",
  "cxx",
@@ -11766,9 +11766,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-opt-sys"
-version = "0.114.2"
+version = "0.116.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36f2f817bed2e8d65eb779fa37317e74de15585751f903c9118342d1970703a4"
+checksum = "8a1cce564dc768dacbdb718fc29df2dba80bd21cb47d8f77ae7e3d95ceb98cbe"
 dependencies = [
  "anyhow",
  "cc",
@@ -12692,11 +12692,11 @@ dependencies = [
 
 [[package]]
 name = "zstd"
-version = "0.12.4"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a27595e173641171fc74a1232b7b1c7a7cb6e18222c11e9dfb9888fa424c53c"
+checksum = "bffb3309596d527cfcba7dfc6ed6052f1d39dfbd7c867aa2e865e4a449c10110"
 dependencies = [
- "zstd-safe 6.0.6",
+ "zstd-safe 7.0.0",
 ]
 
 [[package]]
@@ -12711,11 +12711,10 @@ dependencies = [
 
 [[package]]
 name = "zstd-safe"
-version = "6.0.6"
+version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee98ffd0b48ee95e6c5168188e44a54550b1564d9d530ee21d5f0eaed1069581"
+checksum = "43747c7422e2924c11144d5229878b98180ef8b06cca4ab5af37afc8a8d8ea3e"
 dependencies = [
- "libc",
  "zstd-sys",
 ]
 
