@@ -23,8 +23,7 @@
 pub mod tokens;
 pub use tokens::{
 	currency::{
-		ActiveIssuanceOf, Currency, LockIdentifier, LockableCurrency, NamedReservableCurrency,
-		ReservableCurrency, TotalIssuanceOf, VestingSchedule,
+		Currency, LockIdentifier, LockableCurrency, NamedReservableCurrency, ReservableCurrency,
 	},
 	fungible, fungibles,
 	imbalance::{Imbalance, OnUnbalanced, SignedImbalance},
@@ -103,9 +102,6 @@ pub use dispatch::{
 	EnsureOriginEqualOrHigherPrivilege, EnsureOriginWithArg, MapSuccess, NeverEnsureOrigin,
 	OriginTrait, TryMapSuccess, TryWithMorphedArg, UnfilteredDispatchable,
 };
-
-mod voting;
-pub use voting::{ClassCountOf, PollStatus, Polling, VoteTally};
 
 mod preimages;
 pub use preimages::{Bounded, BoundedInline, FetchResult, QueryPreimage, StorePreimage};

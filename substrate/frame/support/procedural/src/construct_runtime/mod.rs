@@ -404,17 +404,19 @@ fn construct_runtime_final_expansion(
 	let integrity_test = decl_integrity_test(&scrate);
 	let static_assertions = decl_static_assertions(&name, &pallets, &scrate);
 
-	let warning =
-		where_section.map_or(None, |where_section| {
-			Some(proc_macro_warning::Warning::new_deprecated("WhereSection")
-			.old("use a `where` clause in `construct_runtime`")
-			.new("use `frame_system::Config` to set the `Block` type and delete this clause. 
-				It is planned to be removed in December 2023")
-			.help_links(&["https://github.com/paritytech/substrate/pull/14437"])
-			.span(where_section.span)
-			.build(),
+	let warning = where_section.map_or(None, |where_section| {
+		Some(
+			proc_macro_warning::Warning::new_deprecated("WhereSection")
+				.old("use a `where` clause in `construct_runtime`")
+				.new(
+					"use `frame_system::Config` to set the `Block` type and delete this clause.
+				It is planned to be removed in December 2023",
+				)
+				.help_links(&["https://github.com/paritytech/substrate/pull/14437"])
+				.span(where_section.span)
+				.build(),
 		)
-		});
+	});
 
 	let res = quote!(
 		#warning
@@ -598,43 +600,6 @@ fn decl_all_pallets<'a>(
 		}
 	});
 
-	let all_pallets_without_system_reversed = attribute_to_names.iter().map(|(attr, names)| {
-		let names = names.iter().filter(|n| **n != SYSTEM_PALLET_NAME).rev();
-		quote! {
-			#attr
-			/// All pallets included in the runtime as a nested tuple of types in reversed order.
-			/// Excludes the System pallet.
-			#[deprecated(note = "Using reverse pallet orders is deprecated. use only \
-			`AllPalletsWithSystem or AllPalletsWithoutSystem`")]
-			pub type AllPalletsWithoutSystemReversed = ( #(#names,)* );
-		}
-	});
-
-	let all_pallets_with_system_reversed = attribute_to_names.iter().map(|(attr, names)| {
-		let names = names.iter().rev();
-		quote! {
-			#attr
-			/// All pallets included in the runtime as a nested tuple of types in reversed order.
-			#[deprecated(note = "Using reverse pallet orders is deprecated. use only \
-			`AllPalletsWithSystem or AllPalletsWithoutSystem`")]
-			pub type AllPalletsWithSystemReversed = ( #(#names,)* );
-		}
-	});
-
-	let all_pallets_reversed_with_system_first = attribute_to_names.iter().map(|(attr, names)| {
-		let system = quote::format_ident!("{}", SYSTEM_PALLET_NAME);
-		let names = std::iter::once(&system)
-			.chain(names.iter().rev().filter(|n| **n != SYSTEM_PALLET_NAME).cloned());
-		quote! {
-			#attr
-			/// All pallets included in the runtime as a nested tuple of types in reversed order.
-			/// With the system pallet first.
-			#[deprecated(note = "Using reverse pallet orders is deprecated. use only \
-			`AllPalletsWithSystem or AllPalletsWithoutSystem`")]
-			pub type AllPalletsReversedWithSystemFirst = ( #(#names,)* );
-		}
-	});
-
 	quote!(
 		#types
 
@@ -642,22 +607,14 @@ fn decl_all_pallets<'a>(
 		#[deprecated(note = "The type definition has changed from representing all pallets \
 			excluding system, in reversed order to become the representation of all pallets \
 			including system pallet in regular order. For this reason it is encouraged to use \
-			explicitly one of `AllPalletsWithSystem`, `AllPalletsWithoutSystem`, \
-			`AllPalletsWithSystemReversed`, `AllPalletsWithoutSystemReversed`. \
-			Note that the type `frame_executive::Executive` expects one of `AllPalletsWithSystem` \
-			, `AllPalletsWithSystemReversed`, `AllPalletsReversedWithSystemFirst`. More details in \
-			https://github.com/paritytech/substrate/pull/10043")]
+			explicitly one of `AllPalletsWithSystem`, `AllPalletsWithoutSystem`. \
+			Note that the type `frame_executive::Executive` expects one of `AllPalletsWithSystem`. \
+			More details in https://github.com/paritytech/substrate/pull/10043")]
 		pub type AllPallets = AllPalletsWithSystem;
 
 		#( #all_pallets_with_system )*
 
 		#( #all_pallets_without_system )*
-
-		#( #all_pallets_with_system_reversed )*
-
-		#( #all_pallets_without_system_reversed )*
-
-		#( #all_pallets_reversed_with_system_first )*
 	)
 }
 

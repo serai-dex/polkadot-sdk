@@ -25,8 +25,7 @@
 //! For an NFT API which has dual-level namespacing, the traits in `nonfungibles` are better to
 //! use.
 
-use super::nonfungibles;
-use crate::{dispatch::DispatchResult, traits::Get};
+use crate::dispatch::DispatchResult;
 use codec::{Decode, Encode};
 use sp_runtime::TokenError;
 use sp_std::prelude::*;
@@ -118,87 +117,4 @@ pub trait Mutate<AccountId>: Inspect<AccountId> {
 pub trait Transfer<AccountId>: Inspect<AccountId> {
 	/// Transfer `item` into `destination` account.
 	fn transfer(item: &Self::ItemId, destination: &AccountId) -> DispatchResult;
-}
-
-/// Convert a `fungibles` trait implementation into a `fungible` trait implementation by identifying
-/// a single item.
-pub struct ItemOf<
-	F: nonfungibles::Inspect<AccountId>,
-	A: Get<<F as nonfungibles::Inspect<AccountId>>::CollectionId>,
-	AccountId,
->(sp_std::marker::PhantomData<(F, A, AccountId)>);
-
-impl<
-		F: nonfungibles::Inspect<AccountId>,
-		A: Get<<F as nonfungibles::Inspect<AccountId>>::CollectionId>,
-		AccountId,
-	> Inspect<AccountId> for ItemOf<F, A, AccountId>
-{
-	type ItemId = <F as nonfungibles::Inspect<AccountId>>::ItemId;
-	fn owner(item: &Self::ItemId) -> Option<AccountId> {
-		<F as nonfungibles::Inspect<AccountId>>::owner(&A::get(), item)
-	}
-	fn attribute(item: &Self::ItemId, key: &[u8]) -> Option<Vec<u8>> {
-		<F as nonfungibles::Inspect<AccountId>>::attribute(&A::get(), item, key)
-	}
-	fn typed_attribute<K: Encode, V: Decode>(item: &Self::ItemId, key: &K) -> Option<V> {
-		<F as nonfungibles::Inspect<AccountId>>::typed_attribute(&A::get(), item, key)
-	}
-	fn can_transfer(item: &Self::ItemId) -> bool {
-		<F as nonfungibles::Inspect<AccountId>>::can_transfer(&A::get(), item)
-	}
-}
-
-impl<
-		F: nonfungibles::InspectEnumerable<AccountId>,
-		A: Get<<F as nonfungibles::Inspect<AccountId>>::CollectionId>,
-		AccountId,
-	> InspectEnumerable<AccountId> for ItemOf<F, A, AccountId>
-{
-	type ItemsIterator = <F as nonfungibles::InspectEnumerable<AccountId>>::ItemsIterator;
-	type OwnedIterator =
-		<F as nonfungibles::InspectEnumerable<AccountId>>::OwnedInCollectionIterator;
-
-	fn items() -> Self::ItemsIterator {
-		<F as nonfungibles::InspectEnumerable<AccountId>>::items(&A::get())
-	}
-
-	fn owned(who: &AccountId) -> Self::OwnedIterator {
-		<F as nonfungibles::InspectEnumerable<AccountId>>::owned_in_collection(&A::get(), who)
-	}
-}
-
-impl<
-		F: nonfungibles::Mutate<AccountId>,
-		A: Get<<F as nonfungibles::Inspect<AccountId>>::CollectionId>,
-		AccountId,
-	> Mutate<AccountId> for ItemOf<F, A, AccountId>
-{
-	fn mint_into(item: &Self::ItemId, who: &AccountId) -> DispatchResult {
-		<F as nonfungibles::Mutate<AccountId>>::mint_into(&A::get(), item, who)
-	}
-	fn burn(item: &Self::ItemId, maybe_check_owner: Option<&AccountId>) -> DispatchResult {
-		<F as nonfungibles::Mutate<AccountId>>::burn(&A::get(), item, maybe_check_owner)
-	}
-	fn set_attribute(item: &Self::ItemId, key: &[u8], value: &[u8]) -> DispatchResult {
-		<F as nonfungibles::Mutate<AccountId>>::set_attribute(&A::get(), item, key, value)
-	}
-	fn set_typed_attribute<K: Encode, V: Encode>(
-		item: &Self::ItemId,
-		key: &K,
-		value: &V,
-	) -> DispatchResult {
-		<F as nonfungibles::Mutate<AccountId>>::set_typed_attribute(&A::get(), item, key, value)
-	}
-}
-
-impl<
-		F: nonfungibles::Transfer<AccountId>,
-		A: Get<<F as nonfungibles::Inspect<AccountId>>::CollectionId>,
-		AccountId,
-	> Transfer<AccountId> for ItemOf<F, A, AccountId>
-{
-	fn transfer(item: &Self::ItemId, destination: &AccountId) -> DispatchResult {
-		<F as nonfungibles::Transfer<AccountId>>::transfer(&A::get(), item, destination)
-	}
 }

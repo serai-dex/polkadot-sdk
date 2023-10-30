@@ -24,9 +24,6 @@
 //!
 //! For an NFT API which has single-level namespacing, the traits in `nonfungible` are better to
 //! use.
-//!
-//! Implementations of these traits may be converted to implementations of corresponding
-//! `nonfungible` traits by using the `nonfungible::ItemOf` type adapter.
 
 use crate::dispatch::DispatchResult;
 use codec::{Decode, Encode};

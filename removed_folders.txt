@@ -58,6 +58,9 @@
 ./substrate/frame/scored-pool
 ./substrate/frame/society
 ./substrate/frame/statement
+./substrate/frame/support/src/traits/tokens/fungible/freeze.rs
+./substrate/frame/support/src/traits/tokens/fungible/item_of.rs
+./substrate/frame/support/src/traits/voting.rs
 ./substrate/frame/tips
 ./substrate/frame/transaction-storage
 ./substrate/frame/treasury

@@ -40,7 +40,6 @@
 pub mod conformance_tests;
 pub mod hold;
 mod imbalance;
-mod item_of;
 mod regular;
 
 use codec::{Decode, Encode, MaxEncodedLen};
@@ -54,7 +53,6 @@ pub use hold::{
 	Unbalanced as UnbalancedHold,
 };
 pub use imbalance::{Credit, Debt, HandleImbalanceDrop, Imbalance};
-pub use item_of::ItemOf;
 pub use regular::{
 	Balanced, DecreaseIssuance, Dust, IncreaseIssuance, Inspect, Mutate, Unbalanced,
 };
