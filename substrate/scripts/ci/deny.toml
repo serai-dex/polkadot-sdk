@@ -1,3 +1,17 @@
+[advisories]
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+
+vulnerability = "deny"
+yanked = "deny"
+notice = "warn"
+unmaintained = "warn"
+
+ignore = [
+  "RUSTSEC-2021-0139", # https://github.com/serai-dex/serai/228
+  "RUSTSEC-2022-0061", # https://github.com/serai-dex/serai/227
+]
+
 [licenses]
 # The lint level for crates which do not have a detectable license
 unlicensed = "deny"
@@ -59,7 +73,6 @@ exceptions = [
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-consensus-slots" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-executor" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-executor-common" },
-    { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-executor-wasmi" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-executor-wasmtime" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-informant" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-keystore" },
@@ -72,7 +85,6 @@ exceptions = [
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-network-test" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-network-transactions" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-offchain" },
-    { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-peerset" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-proposer-metrics" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-rpc" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-rpc-api" },
@@ -89,7 +101,6 @@ exceptions = [
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-transaction-pool" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "sc-transaction-pool-api" },
     { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "subkey" },
-    { allow = ["GPL-3.0 WITH Classpath-exception-2.0"], name = "substrate" },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
@@ -108,4 +119,21 @@ expression = "MIT AND ISC AND OpenSSL"
 license-files = [
     # Each entry is a crate relative path, and the (opaque) hash of its contents
     { path = "LICENSE", hash = 0xbd0eed23 }
+]
+
+[bans]
+multiple-versions = "allow"
+wildcards = "allow"
+highlight = "all"
+deny = [ { name = "serde_derive", version = ">=1.0.172, <1.0.185" } ]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = [
+  "https://github.com/rust-lang-nursery/lazy-static.rs",
+  "https://github.com/w3f/fflonk",
+  "https://github.com/w3f/ring-proof",
+  "https://github.com/w3f/ring-vrf",
 ]
