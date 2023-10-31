@@ -58,8 +58,8 @@ use libp2p::{
 	kad::{
 		self,
 		record::store::{MemoryStore, RecordStore},
-		GetClosestPeersError, GetRecordOk, Kademlia, KademliaBucketInserts, KademliaConfig,
-		KademliaEvent, QueryId, QueryResult, Quorum, Record, RecordKey,
+		Behaviour as Kademlia, BucketInserts, Config as KademliaConfig, Event as KademliaEvent,
+		GetClosestPeersError, GetRecordOk, QueryId, QueryResult, Quorum, Record, RecordKey,
 	},
 	mdns::{self, tokio::Behaviour as TokioMdns},
 	multiaddr::Protocol,
@@ -223,7 +223,7 @@ impl DiscoveryConfig {
 			// By default Kademlia attempts to insert all peers into its routing table once a
 			// dialing attempt succeeds. In order to control which peer is added, disable the
 			// auto-insertion and instead add peers manually.
-			config.set_kbucket_inserts(KademliaBucketInserts::Manual);
+			config.set_kbucket_inserts(BucketInserts::Manual);
 			config.disjoint_query_paths(kademlia_disjoint_query_paths);
 
 			let store = MemoryStore::new(local_peer_id);
@@ -1021,7 +1021,7 @@ mod tests {
 		},
 		identity::Keypair,
 		noise,
-		swarm::{Executor, Swarm, SwarmBuilder, SwarmEvent},
+		swarm::{Executor, Swarm, SwarmEvent},
 		yamux, Multiaddr,
 	};
 	use sp_core::hash::H256;
@@ -1067,7 +1067,8 @@ mod tests {
 				};
 
 				let runtime = tokio::runtime::Runtime::new().unwrap();
-				let mut swarm = SwarmBuilder::with_executor(
+				#[allow(deprecated)]
+				let mut swarm = libp2p::swarm::SwarmBuilder::with_executor(
 					transport,
 					behaviour,
 					keypair.public().to_peer_id(),
