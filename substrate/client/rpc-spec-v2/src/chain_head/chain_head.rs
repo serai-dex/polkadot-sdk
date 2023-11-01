@@ -212,8 +212,7 @@ where
 			debug!(target: LOG_TARGET, "[follow][id={:?}] Subscription removed", sub_id);
 		};
 
-		self.executor
-			.spawn("substrate-rpc-subscription", Some("rpc"), fut.boxed());
+		self.executor.spawn("substrate-rpc-subscription", Some("rpc"), fut.boxed());
 	}
 
 	fn chain_head_unstable_body(
