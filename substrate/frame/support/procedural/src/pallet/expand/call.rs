@@ -78,7 +78,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 				"https://github.com/paritytech/substrate/pull/11381"
 			])
 			.span(method.name.span())
-			.build();
+			.build_or_panic();
 		call_index_warnings.push(warning);
 	}
 
@@ -94,7 +94,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 					.new("benchmark all calls or put the pallet into `dev` mode")
 					.help_link("https://github.com/paritytech/substrate/pull/13798")
 					.span(lit.span())
-					.build();
+					.build_or_panic();
 				weight_warnings.push(warning);
 				fn_weight.push(e.into_token_stream());
 			},
