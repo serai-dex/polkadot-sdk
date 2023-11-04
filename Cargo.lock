@@ -8217,8 +8217,6 @@ version = "0.10.0-dev"
 dependencies = [
  "anyhow",
  "cargo_metadata",
- "cfg-if",
- "libc",
  "log",
  "parity-scale-codec",
  "paste",
