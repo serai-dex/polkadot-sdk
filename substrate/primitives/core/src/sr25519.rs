@@ -842,7 +842,7 @@ mod tests {
 		let pair = Pair::from_string(&format!("{}/Alice", DEV_PHRASE), None).unwrap();
 		// known address of DEV_PHRASE with 1.1
 		let known = array_bytes::hex2bytes_unchecked(
-			"d6c71059dbbe9ad2b0ed3f289738b800836eb425544ce694825285b958ca755e",
+			"28383b2aade69999d6f83f17fd9acd35e87a6238bc9d1679f91d49fe8edb6548",
 		);
 		assert_eq!(pair.public().to_raw_vec(), known);
 	}
@@ -852,7 +852,7 @@ mod tests {
 		let pair = Pair::from_string(&format!("{}//Alice", DEV_PHRASE), None).unwrap();
 		// known address of DEV_PHRASE with 1.1
 		let known = array_bytes::hex2bytes_unchecked(
-			"d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
+			"ca3d80680e0e3d0f937c0b122983ff001dd99c59945338364bd5a49f1c085712",
 		);
 		assert_eq!(pair.public().to_raw_vec(), known);
 	}

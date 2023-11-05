@@ -872,7 +872,7 @@ mod tests {
 	#[test]
 	fn derive_works() {
 		let pair = Pair::from_string(&format!("{}//Alice//Hard", DEV_PHRASE), None).unwrap();
-		let known = h2b("2b340c18b94dc1916979cb83daf3ed4ac106742ddc06afc42cf26be3b18a523f80");
+		let known = h2b("146d3d2db3b661cf15e438145d53a7df8cb12c1b08a80672aa58e7fe6b54fa3c00");
 		assert_eq!(pair.public().as_ref(), known);
 
 		// Soft derivation not supported

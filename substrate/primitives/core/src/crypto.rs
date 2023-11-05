@@ -20,7 +20,7 @@
 
 use crate::{ed25519, sr25519};
 #[cfg(feature = "std")]
-use bip39::{Language, Mnemonic, MnemonicType};
+use bip39::{Language, Mnemonic, MnemonicType, Seed};
 use codec::{Decode, Encode, MaxEncodedLen};
 #[cfg(feature = "std")]
 use rand::{rngs::OsRng, RngCore};
@@ -47,7 +47,7 @@ pub const DEV_PHRASE: &str =
 	"bottom drive obey lake curtain smoke basket hold race lonely fit walk";
 
 /// The address of the associated root phrase for our publicly known keys.
-pub const DEV_ADDRESS: &str = "5DfhGyQdFobKM8NsWvEeAKk5EQQgYe9AydgJ7rMB6E1EqRzV";
+pub const DEV_ADDRESS: &str = "5CVErj9Cghbj6E62SytQzVNepGz7y3ThyaBgEo56iDedfuYG";
 
 /// The length of the junction identifier. Note that this is also referred to as the
 /// `CHAIN_CODE_LENGTH` in the context of Schnorrkel.
@@ -865,9 +865,8 @@ pub trait Pair: CryptoType + Sized {
 	) -> Result<(Self, Self::Seed), SecretStringError> {
 		let mnemonic = Mnemonic::from_phrase(phrase, Language::English)
 			.map_err(|_| SecretStringError::InvalidPhrase)?;
-		let big_seed =
-			substrate_bip39::seed_from_entropy(mnemonic.entropy(), password.unwrap_or(""))
-				.map_err(|_| SecretStringError::InvalidSeed)?;
+		let big_seed_buf = Seed::new(&mnemonic, password.unwrap_or(""));
+		let big_seed = big_seed_buf.as_ref();
 		let mut seed = Self::Seed::default();
 		let seed_slice = seed.as_mut();
 		let seed_len = seed_slice.len();

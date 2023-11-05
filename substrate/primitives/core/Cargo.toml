@@ -24,7 +24,6 @@ hash-db = { version = "0.16.0", default-features = false }
 hash256-std-hasher = { version = "0.15.2", default-features = false }
 bs58 = { version = "0.5.0", default-features = false, optional = true }
 rand = { version = "0.8.5", features = ["small_rng"],  optional = true }
-substrate-bip39 = { version = "0.4.4", optional = true }
 tiny-bip39 = { version = "1.0.0", optional = true }
 regex = { version = "1.6.0", optional = true }
 zeroize = { version = "1.4.3", default-features = false }
@@ -107,7 +106,6 @@ std = [
 	"sp-std/std",
 	"sp-storage/std",
 	"ss58-registry/std",
-	"substrate-bip39",
 	"thiserror",
 	"tiny-bip39",
 	"tracing",
