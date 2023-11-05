@@ -287,10 +287,13 @@ mod execution {
 				"Call",
 			);
 
-			let result = self
-				.exec
-				.call(&mut ext, self.runtime_code, self.method, self.call_data, false, self.context)
-				.0;
+			let result = self.exec.call(
+				&mut ext,
+				self.runtime_code,
+				self.method,
+				self.call_data,
+				self.context,
+			);
 
 			self.overlay
 				.exit_runtime()
@@ -1105,11 +1108,7 @@ mod tests {
 	use std::collections::{BTreeMap, HashMap};
 
 	#[derive(Clone)]
-	struct DummyCodeExecutor {
-		native_available: bool,
-		native_succeeds: bool,
-		fallback_succeeds: bool,
-	}
+	struct DummyCodeExecutor;
 
 	impl CodeExecutor for DummyCodeExecutor {
 		type Error = u8;
@@ -1120,19 +1119,9 @@ mod tests {
 			_: &RuntimeCode,
 			_method: &str,
 			_data: &[u8],
-			use_native: bool,
 			_: CallContext,
-		) -> (CallResult<Self::Error>, bool) {
-			let using_native = use_native && self.native_available;
-			match (using_native, self.native_succeeds, self.fallback_succeeds) {
-				(true, true, _) | (false, _, true) => (
-					Ok(vec![
-						ext.storage(b"value1").unwrap()[0] + ext.storage(b"value2").unwrap()[0],
-					]),
-					using_native,
-				),
-				_ => (Err(0), using_native),
-			}
+		) -> CallResult<Self::Error> {
+			Ok(vec![ext.storage(b"value1").unwrap()[0] + ext.storage(b"value2").unwrap()[0]])
 		}
 	}
 
@@ -1160,11 +1149,7 @@ mod tests {
 		let mut state_machine = StateMachine::new(
 			&backend,
 			&mut overlayed_changes,
-			&DummyCodeExecutor {
-				native_available: true,
-				native_succeeds: true,
-				fallback_succeeds: true,
-			},
+			&DummyCodeExecutor,
 			"test",
 			&[],
 			&mut execution_extensions,
@@ -1189,11 +1174,7 @@ mod tests {
 		let mut state_machine = StateMachine::new(
 			&backend,
 			&mut overlayed_changes,
-			&DummyCodeExecutor {
-				native_available: true,
-				native_succeeds: true,
-				fallback_succeeds: true,
-			},
+			&DummyCodeExecutor,
 			"test",
 			&[],
 			&mut execution_extensions,
@@ -1210,11 +1191,7 @@ mod tests {
 		prove_execution_and_proof_check_works_inner(StateVersion::V1);
 	}
 	fn prove_execution_and_proof_check_works_inner(state_version: StateVersion) {
-		let executor = DummyCodeExecutor {
-			native_available: true,
-			native_succeeds: true,
-			fallback_succeeds: true,
-		};
+		let executor = DummyCodeExecutor;
 
 		// fetch execution proof from 'remote' full node
 		let mut remote_backend = trie_backend::tests::test_trie(state_version, None, None);

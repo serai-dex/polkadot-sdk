@@ -58,12 +58,6 @@ const HEAP_PAGES: u64 = 20;
 
 type TestExternalities<H> = CoreTestExternalities<H>;
 
-#[derive(Debug)]
-enum ExecutionMethod {
-	Native,
-	Wasm(WasmExecutionMethod),
-}
-
 fn sign(xt: CheckedExtrinsic) -> UncheckedExtrinsic {
 	node_testing::keyring::sign(xt, SPEC_VERSION, TRANSACTION_VERSION, GENESIS_HASH)
 }
@@ -113,15 +107,7 @@ fn construct_block<E: Externalities>(
 
 	// execute the block to get the real header.
 	executor
-		.call(
-			ext,
-			&runtime_code,
-			"Core_initialize_block",
-			&header.encode(),
-			true,
-			CallContext::Offchain,
-		)
-		.0
+		.call(ext, &runtime_code, "Core_initialize_block", &header.encode(), CallContext::Offchain)
 		.unwrap();
 
 	for i in extrinsics.iter() {
@@ -131,10 +117,8 @@ fn construct_block<E: Externalities>(
 				&runtime_code,
 				"BlockBuilder_apply_extrinsic",
 				&i.encode(),
-				true,
 				CallContext::Offchain,
 			)
-			.0
 			.unwrap();
 	}
 
@@ -145,10 +129,8 @@ fn construct_block<E: Externalities>(
 				&runtime_code,
 				"BlockBuilder_finalize_block",
 				&[0u8; 0],
-				true,
 				CallContext::Offchain,
 			)
-			.0
 			.unwrap()[..],
 	)
 	.unwrap();
@@ -181,20 +163,13 @@ fn test_blocks(
 
 fn bench_execute_block(c: &mut Criterion) {
 	let mut group = c.benchmark_group("execute blocks");
-	let execution_methods = vec![
-		ExecutionMethod::Native,
-		ExecutionMethod::Wasm(WasmExecutionMethod::Compiled {
-			instantiation_strategy: WasmtimeInstantiationStrategy::PoolingCopyOnWrite,
-		}),
-	];
+	let execution_methods = vec![WasmExecutionMethod::Compiled {
+		instantiation_strategy: WasmtimeInstantiationStrategy::PoolingCopyOnWrite,
+	}];
 
 	for strategy in execution_methods {
 		group.bench_function(format!("{:?}", strategy), |b| {
 			let genesis_config = node_testing::genesis::config(Some(compact_code_unwrap()));
-			let use_native = match strategy {
-				ExecutionMethod::Native => true,
-				ExecutionMethod::Wasm(..) => false,
-			};
 
 			let executor = WasmExecutor::builder().build();
 			let runtime_code = RuntimeCode {
@@ -221,10 +196,8 @@ fn bench_execute_block(c: &mut Criterion) {
 								&runtime_code,
 								"Core_execute_block",
 								&block.0,
-								use_native,
 								CallContext::Offchain,
 							)
-							.0
 							.unwrap();
 					}
 				},

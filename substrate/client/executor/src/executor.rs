@@ -478,9 +478,8 @@ where
 		runtime_code: &RuntimeCode,
 		method: &str,
 		data: &[u8],
-		_use_native: bool,
 		context: CallContext,
-	) -> (Result<Vec<u8>>, bool) {
+	) -> Result<Vec<u8>> {
 		tracing::trace!(
 			target: "executor",
 			%method,
@@ -510,7 +509,7 @@ where
 			},
 		);
 
-		(result, false)
+		result
 	}
 }
 

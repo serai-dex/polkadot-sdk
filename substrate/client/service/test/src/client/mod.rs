@@ -165,38 +165,7 @@ fn finality_notification_check(
 }
 
 #[test]
-fn construct_genesis_should_work_with_native() {
-	let mut storage = GenesisStorageBuilder::new(
-		vec![Sr25519Keyring::One.public().into(), Sr25519Keyring::Two.public().into()],
-		vec![AccountKeyring::One.into(), AccountKeyring::Two.into()],
-		1000 * DOLLARS,
-	)
-	.build();
-	let genesis_hash = insert_genesis_block(&mut storage);
-
-	let backend = InMemoryBackend::from((storage, StateVersion::default()));
-	let (b1data, _b1hash) = block1(genesis_hash, &backend);
-	let backend_runtime_code = sp_state_machine::backend::BackendRuntimeCode::new(&backend);
-	let runtime_code = backend_runtime_code.runtime_code().expect("Code is part of the backend");
-
-	let mut overlay = OverlayedChanges::default();
-
-	let _ = StateMachine::new(
-		&backend,
-		&mut overlay,
-		&new_wasm_executor(),
-		"Core_execute_block",
-		&b1data,
-		&mut Default::default(),
-		&runtime_code,
-		CallContext::Onchain,
-	)
-	.execute()
-	.unwrap();
-}
-
-#[test]
-fn construct_genesis_should_work_with_wasm() {
+fn construct_genesis_should_work() {
 	let mut storage = GenesisStorageBuilder::new(
 		vec![Sr25519Keyring::One.public().into(), Sr25519Keyring::Two.public().into()],
 		vec![AccountKeyring::One.into(), AccountKeyring::Two.into()],

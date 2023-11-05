@@ -39,7 +39,7 @@ use kitchensink_runtime::{
 	constants::currency::*, Block, BuildStorage, CheckedExtrinsic, Header, Runtime,
 	UncheckedExtrinsic,
 };
-use node_executor::ExtendHostFunctionspatch;
+use node_executor::ExtendHostFunctions;
 use node_primitives::{BlockNumber, Hash};
 use node_testing::keyring::*;
 use sp_externalities::Externalities;
@@ -106,8 +106,7 @@ pub fn executor_call(
 	t: &mut TestExternalities<BlakeTwo256>,
 	method: &str,
 	data: &[u8],
-	use_native: bool,
-) -> (Result<Vec<u8>>, bool) {
+) -> Result<Vec<u8>> {
 	let mut t = t.ext();
 
 	let code = t.storage(sp_core::storage::well_known_keys::CODE).unwrap();
@@ -118,7 +117,7 @@ pub fn executor_call(
 		heap_pages: heap_pages.and_then(|hp| Decode::decode(&mut &hp[..]).ok()),
 	};
 	sp_tracing::try_init_simple();
-	executor().call(&mut t, &runtime_code, method, data, use_native, CallContext::Onchain)
+	executor().call(&mut t, &runtime_code, method, data, CallContext::Onchain)
 }
 
 pub fn new_test_ext(code: &[u8]) -> TestExternalities<BlakeTwo256> {
@@ -169,13 +168,12 @@ pub fn construct_block(
 	};
 
 	// execute the block to get the real header.
-	executor_call(env, "Core_initialize_block", &header.encode(), true).0.unwrap();
+	executor_call(env, "Core_initialize_block", &header.encode()).unwrap();
 
 	for extrinsic in extrinsics.iter() {
 		// Try to apply the `extrinsic`. It should be valid, in the sense that it passes
 		// all pre-inclusion checks.
-		let r = executor_call(env, "BlockBuilder_apply_extrinsic", &extrinsic.encode(), true)
-			.0
+		let r = executor_call(env, "BlockBuilder_apply_extrinsic", &extrinsic.encode())
 			.expect("application of an extrinsic failed");
 
 		match ApplyExtrinsicResult::decode(&mut &r[..])
@@ -187,7 +185,7 @@ pub fn construct_block(
 	}
 
 	let header = Header::decode(
-		&mut &executor_call(env, "BlockBuilder_finalize_block", &[0u8; 0], true).0.unwrap()[..],
+		&mut &executor_call(env, "BlockBuilder_finalize_block", &[0u8; 0]).unwrap()[..],
 	)
 	.unwrap();
 
