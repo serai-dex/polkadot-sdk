@@ -19,7 +19,7 @@
 use codec::{Decode, Encode};
 use frame_support::Hashable;
 use frame_system::offchain::AppCrypto;
-use sc_executor::{error::Result, NativeElseWasmExecutor, WasmExecutor};
+use sc_executor::{error::Result, WasmExecutor};
 use sp_consensus_babe::{
 	digests::{PreDigest, SecondaryPlainPreDigest},
 	Slot, BABE_ENGINE_ID,
@@ -39,7 +39,7 @@ use kitchensink_runtime::{
 	constants::currency::*, Block, BuildStorage, CheckedExtrinsic, Header, Runtime,
 	UncheckedExtrinsic,
 };
-use node_executor::ExecutorDispatch;
+use node_executor::ExtendHostFunctionspatch;
 use node_primitives::{BlockNumber, Hash};
 use node_testing::keyring::*;
 use sp_externalities::Externalities;
@@ -98,8 +98,8 @@ pub fn from_block_number(n: u32) -> Header {
 	Header::new(n, Default::default(), Default::default(), [69; 32].into(), Default::default())
 }
 
-pub fn executor() -> NativeElseWasmExecutor<ExecutorDispatch> {
-	NativeElseWasmExecutor::new_with_wasm_executor(WasmExecutor::builder().build())
+pub fn executor() -> WasmExecutor<ExtendHostFunctions> {
+	WasmExecutor::builder().build()
 }
 
 pub fn executor_call(

@@ -43,7 +43,7 @@ use sp_trie::{LayoutV0, TrieConfiguration};
 use std::{collections::HashSet, sync::Arc};
 use substrate_test_runtime::TestAPI;
 use substrate_test_runtime_client::{
-	new_native_or_wasm_executor,
+	new_wasm_executor,
 	prelude::*,
 	runtime::{
 		currency::DOLLARS,
@@ -85,7 +85,7 @@ fn construct_block(
 	StateMachine::new(
 		backend,
 		&mut overlay,
-		&new_native_or_wasm_executor(),
+		&new_wasm_executor(),
 		"Core_initialize_block",
 		&header.encode(),
 		&mut Default::default(),
@@ -99,7 +99,7 @@ fn construct_block(
 		StateMachine::new(
 			backend,
 			&mut overlay,
-			&new_native_or_wasm_executor(),
+			&new_wasm_executor(),
 			"BlockBuilder_apply_extrinsic",
 			&tx.encode(),
 			&mut Default::default(),
@@ -113,7 +113,7 @@ fn construct_block(
 	let ret_data = StateMachine::new(
 		backend,
 		&mut overlay,
-		&new_native_or_wasm_executor(),
+		&new_wasm_executor(),
 		"BlockBuilder_finalize_block",
 		&[],
 		&mut Default::default(),
@@ -184,7 +184,7 @@ fn construct_genesis_should_work_with_native() {
 	let _ = StateMachine::new(
 		&backend,
 		&mut overlay,
-		&new_native_or_wasm_executor(),
+		&new_wasm_executor(),
 		"Core_execute_block",
 		&b1data,
 		&mut Default::default(),
@@ -215,7 +215,7 @@ fn construct_genesis_should_work_with_wasm() {
 	let _ = StateMachine::new(
 		&backend,
 		&mut overlay,
-		&new_native_or_wasm_executor(),
+		&new_wasm_executor(),
 		"Core_execute_block",
 		&b1data,
 		&mut Default::default(),
@@ -1821,7 +1821,7 @@ fn cleans_up_closed_notification_sinks_on_block_import() {
 	use substrate_test_runtime_client::GenesisInit;
 
 	let backend = Arc::new(sc_client_api::in_mem::Backend::new());
-	let executor = new_native_or_wasm_executor();
+	let executor = new_wasm_executor();
 	let client_config = sc_service::ClientConfig::default();
 
 	let genesis_block_builder = sc_service::GenesisBlockBuilder::new(
@@ -1851,7 +1851,7 @@ fn cleans_up_closed_notification_sinks_on_block_import() {
 		LocalCallExecutor<
 			Block,
 			in_mem::Backend<Block>,
-			sc_executor::NativeElseWasmExecutor<LocalExecutorDispatch>,
+			sc_executor::WasmExecutor<ExtendHostFunctions>,
 		>,
 		Block,
 		RuntimeApi,

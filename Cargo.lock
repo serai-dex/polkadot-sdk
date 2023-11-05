@@ -5361,6 +5361,7 @@ dependencies = [
  "sp-blockchain",
  "sp-core",
  "sp-runtime",
+ "sp-wasm-interface",
  "thiserror",
 ]
 
@@ -8187,7 +8188,6 @@ dependencies = [
  "sp-maybe-compressed-blob",
  "sp-panic-handler",
  "sp-runtime",
- "sp-runtime-interface",
  "sp-state-machine",
  "sp-tracing",
  "sp-trie",
@@ -10564,6 +10564,7 @@ dependencies = [
  "sp-keyring",
  "sp-keystore",
  "sp-runtime",
+ "sp-wasm-interface",
 ]
 
 [[package]]

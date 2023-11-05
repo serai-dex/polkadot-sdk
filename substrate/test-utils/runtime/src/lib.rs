@@ -64,8 +64,6 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
 	ApplyExtrinsicResult, Perbill,
 };
-#[cfg(any(feature = "std", test))]
-use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 pub use sp_consensus_babe::{AllowedSlots, BabeEpochConfiguration, Slot};
@@ -120,12 +118,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 
 fn version() -> RuntimeVersion {
 	VERSION
-}
-
-/// Native version.
-#[cfg(any(feature = "std", test))]
-pub fn native_version() -> NativeVersion {
-	NativeVersion { runtime_version: VERSION, can_author_with: Default::default() }
 }
 
 /// Transfer data extracted from Extrinsic containing `Balances::transfer_allow_death`.

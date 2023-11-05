@@ -19,7 +19,7 @@
 
 use crate::{
 	arg_enums::{
-		ExecutionStrategy, WasmExecutionMethod, WasmtimeInstantiationStrategy,
+		WasmExecutionMethod, WasmtimeInstantiationStrategy,
 		DEFAULT_WASMTIME_INSTANTIATION_STRATEGY, DEFAULT_WASM_EXECUTION_METHOD,
 	},
 	params::{DatabaseParams, PruningParams},
@@ -70,10 +70,6 @@ pub struct ImportParams {
 	#[arg(long, value_name = "PATH")]
 	pub wasm_runtime_overrides: Option<PathBuf>,
 
-	#[allow(missing_docs)]
-	#[clap(flatten)]
-	pub execution_strategies: ExecutionStrategiesParams,
-
 	/// Specify the state cache size.
 	/// Providing `0` will disable the cache.
 	#[arg(long, value_name = "Bytes", default_value_t = 67108864)]
@@ -101,8 +97,6 @@ impl ImportParams {
 
 	/// Get the WASM execution method from the parameters
 	pub fn wasm_method(&self) -> sc_service::config::WasmExecutionMethod {
-		self.execution_strategies.check_usage_and_print_deprecation_warning();
-
 		crate::execution_method_from_cli(self.wasmtime_instantiation_strategy)
 	}
 
@@ -110,68 +104,5 @@ impl ImportParams {
 	/// by specifying the path where local WASM is stored.
 	pub fn wasm_runtime_overrides(&self) -> Option<PathBuf> {
 		self.wasm_runtime_overrides.clone()
-	}
-}
-
-/// Execution strategies parameters.
-#[derive(Debug, Clone, Args)]
-pub struct ExecutionStrategiesParams {
-	/// The means of execution used when calling into the runtime for importing blocks as
-	/// part of an initial sync.
-	#[arg(long, value_name = "STRATEGY", value_enum, ignore_case = true)]
-	pub execution_syncing: Option<ExecutionStrategy>,
-
-	/// The means of execution used when calling into the runtime for general block import
-	/// (including locally authored blocks).
-	#[arg(long, value_name = "STRATEGY", value_enum, ignore_case = true)]
-	pub execution_import_block: Option<ExecutionStrategy>,
-
-	/// The means of execution used when calling into the runtime while constructing blocks.
-	#[arg(long, value_name = "STRATEGY", value_enum, ignore_case = true)]
-	pub execution_block_construction: Option<ExecutionStrategy>,
-
-	/// The means of execution used when calling into the runtime while using an off-chain worker.
-	#[arg(long, value_name = "STRATEGY", value_enum, ignore_case = true)]
-	pub execution_offchain_worker: Option<ExecutionStrategy>,
-
-	/// The means of execution used when calling into the runtime while not syncing, importing or
-	/// constructing blocks.
-	#[arg(long, value_name = "STRATEGY", value_enum, ignore_case = true)]
-	pub execution_other: Option<ExecutionStrategy>,
-
-	/// The execution strategy that should be used by all execution contexts.
-	#[arg(
-		long,
-		value_name = "STRATEGY",
-		value_enum,
-		ignore_case = true,
-		conflicts_with_all = &[
-			"execution_other",
-			"execution_offchain_worker",
-			"execution_block_construction",
-			"execution_import_block",
-			"execution_syncing",
-		]
-	)]
-	pub execution: Option<ExecutionStrategy>,
-}
-
-impl ExecutionStrategiesParams {
-	/// Check if one of the parameters is still passed and print a warning if so.
-	fn check_usage_and_print_deprecation_warning(&self) {
-		for (param, name) in [
-			(&self.execution_syncing, "execution-syncing"),
-			(&self.execution_import_block, "execution-import-block"),
-			(&self.execution_block_construction, "execution-block-construction"),
-			(&self.execution_offchain_worker, "execution-offchain-worker"),
-			(&self.execution_other, "execution-other"),
-			(&self.execution, "execution"),
-		] {
-			if param.is_some() {
-				eprintln!(
-					"CLI parameter `--{name}` has no effect anymore and will be removed in the future!"
-				);
-			}
-		}
 	}
 }

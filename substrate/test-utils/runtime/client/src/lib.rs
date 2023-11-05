@@ -43,28 +43,15 @@ pub mod prelude {
 	};
 	// Client structs
 	pub use super::{
-		Backend, ExecutorDispatch, LocalExecutorDispatch, NativeElseWasmExecutor, TestClient,
-		TestClientBuilder, WasmExecutionMethod,
+		Backend, ExecutorDispatch, ExtendHostFunctions, TestClient, TestClientBuilder,
+		WasmExecutionMethod,
 	};
 	// Keyring
 	pub use super::{AccountKeyring, Sr25519Keyring};
 }
 
-/// A unit struct which implements `NativeExecutionDispatch` feeding in the
-/// hard-coded runtime.
-pub struct LocalExecutorDispatch;
-
-impl sc_executor::NativeExecutionDispatch for LocalExecutorDispatch {
-	type ExtendHostFunctions = ();
-
-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		substrate_test_runtime::api::dispatch(method, data)
-	}
-
-	fn native_version() -> sc_executor::NativeVersion {
-		substrate_test_runtime::native_version()
-	}
-}
+/// HostFunctions to be used with the WasmExecutor.
+pub type ExtendHostFunctions = ();
 
 /// Test client database backend.
 pub type Backend = substrate_test_client::Backend<substrate_test_runtime::Block>;
@@ -73,7 +60,7 @@ pub type Backend = substrate_test_client::Backend<substrate_test_runtime::Block>
 pub type ExecutorDispatch = client::LocalCallExecutor<
 	substrate_test_runtime::Block,
 	Backend,
-	NativeElseWasmExecutor<LocalExecutorDispatch>,
+	WasmExecutor<ExtendHostFunctions>,
 >;
 
 /// Parameters of test-client builder with test-runtime.
@@ -114,14 +101,10 @@ pub type TestClientBuilder<E, B> = substrate_test_client::TestClientBuilder<
 	GenesisParameters,
 >;
 
-/// Test client type with `LocalExecutorDispatch` and generic Backend.
+/// Test client type with `ExtendHostFunctions` and generic Backend.
 pub type Client<B> = client::Client<
 	B,
-	client::LocalCallExecutor<
-		substrate_test_runtime::Block,
-		B,
-		NativeElseWasmExecutor<LocalExecutorDispatch>,
-	>,
+	client::LocalCallExecutor<substrate_test_runtime::Block, B, WasmExecutor<ExtendHostFunctions>>,
 	substrate_test_runtime::Block,
 	substrate_test_runtime::RuntimeApi,
 >;
@@ -211,7 +194,7 @@ impl<B> TestClientBuilderExt<B>
 		client::LocalCallExecutor<
 			substrate_test_runtime::Block,
 			B,
-			NativeElseWasmExecutor<LocalExecutorDispatch>,
+			WasmExecutor<ExtendHostFunctions>,
 		>,
 		B,
 	> where
@@ -239,6 +222,6 @@ pub fn new() -> Client<Backend> {
 }
 
 /// Create a new native executor.
-pub fn new_native_or_wasm_executor() -> NativeElseWasmExecutor<LocalExecutorDispatch> {
-	NativeElseWasmExecutor::new_with_wasm_executor(WasmExecutor::builder().build())
+pub fn new_wasm_executor() -> WasmExecutor<ExtendHostFunctions> {
+	WasmExecutor::builder().build()
 }

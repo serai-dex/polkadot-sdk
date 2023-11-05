@@ -26,7 +26,6 @@ sp-core = { path = "../../primitives/core" }
 sp-externalities = { path = "../../primitives/externalities" }
 sp-io = { path = "../../primitives/io" }
 sp-panic-handler = { path = "../../primitives/panic-handler" }
-sp-runtime-interface = { path = "../../primitives/runtime-interface" }
 sp-trie = { path = "../../primitives/trie" }
 sp-version = { path = "../../primitives/version" }
 sp-wasm-interface = { path = "../../primitives/wasm-interface" }
@@ -63,7 +62,6 @@ std = [
 	"sp-core/std",
 	"sp-externalities/std",
 	"sp-io/std",
-	"sp-runtime-interface/std",
 	"sp-runtime/std",
 	"sp-state-machine/std",
 	"sp-tracing/std",

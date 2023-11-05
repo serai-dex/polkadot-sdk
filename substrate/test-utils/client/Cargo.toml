@@ -34,3 +34,4 @@ sp-core = { path = "../../primitives/core" }
 sp-keyring = { path = "../../primitives/keyring" }
 sp-keystore = { path = "../../primitives/keystore" }
 sp-runtime = { path = "../../primitives/runtime" }
+sp-wasm-interface = { path = "../../primitives/wasm-interface" }

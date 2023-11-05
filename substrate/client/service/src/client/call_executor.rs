@@ -322,37 +322,24 @@ where
 	}
 }
 
-impl<Block, B, E> sp_version::GetNativeVersion for LocalCallExecutor<Block, B, E>
-where
-	B: backend::Backend<Block>,
-	E: CodeExecutor + sp_version::GetNativeVersion + Clone + 'static,
-	Block: BlockT,
-{
-	fn native_version(&self) -> &sp_version::NativeVersion {
-		self.executor.native_version()
-	}
-}
-
 #[cfg(test)]
 mod tests {
 	use super::*;
 	use backend::Backend;
 	use sc_client_api::in_mem;
-	use sc_executor::{NativeElseWasmExecutor, WasmExecutor};
+	use sc_executor::WasmExecutor;
 	use sp_core::{
 		testing::TaskExecutor,
 		traits::{FetchRuntimeCode, WrappedRuntimeCode},
 	};
 	use std::collections::HashMap;
-	use substrate_test_runtime_client::{runtime, GenesisInit, LocalExecutorDispatch};
+	use substrate_test_runtime_client::{runtime, ExtendHostFunctions, GenesisInit};
 
-	fn executor() -> NativeElseWasmExecutor<LocalExecutorDispatch> {
-		NativeElseWasmExecutor::new_with_wasm_executor(
-			WasmExecutor::builder()
-				.with_max_runtime_instances(1)
-				.with_runtime_cache_size(2)
-				.build(),
-		)
+	fn executor() -> WasmExecutor<ExtendHostFunctions> {
+		WasmExecutor::builder()
+			.with_max_runtime_instances(1)
+			.with_runtime_cache_size(2)
+			.build()
 	}
 
 	#[test]

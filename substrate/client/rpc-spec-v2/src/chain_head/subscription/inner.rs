@@ -825,7 +825,7 @@ mod tests {
 		Arc<Client<sc_client_api::in_mem::Backend<Block>>>,
 	) {
 		let backend = Arc::new(sc_client_api::in_mem::Backend::new());
-		let executor = substrate_test_runtime_client::new_native_or_wasm_executor();
+		let executor = substrate_test_runtime_client::new_wasm_executor();
 		let client_config = sc_service::ClientConfig::default();
 		let genesis_block_builder = sc_service::GenesisBlockBuilder::new(
 			&substrate_test_runtime_client::GenesisParameters::default().genesis_storage(),
