@@ -49,9 +49,6 @@ pub const DEFAULT_WASMTIME_INSTANTIATION_STRATEGY: WasmtimeInstantiationStrategy
 #[derive(Debug, Clone, Copy, ValueEnum)]
 #[value(rename_all = "kebab-case")]
 pub enum WasmExecutionMethod {
-	/// Uses an interpreter which now is deprecated.
-	#[clap(name = "interpreted-i-know-what-i-do")]
-	Interpreted,
 	/// Uses a compiled runtime.
 	Compiled,
 }
@@ -59,7 +56,6 @@ pub enum WasmExecutionMethod {
 impl std::fmt::Display for WasmExecutionMethod {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			Self::Interpreted => write!(f, "Interpreted"),
 			Self::Compiled => write!(f, "Compiled"),
 		}
 	}
@@ -68,15 +64,8 @@ impl std::fmt::Display for WasmExecutionMethod {
 /// Converts the execution method and instantiation strategy command line arguments
 /// into an execution method which can be used internally.
 pub fn execution_method_from_cli(
-	execution_method: WasmExecutionMethod,
 	instantiation_strategy: WasmtimeInstantiationStrategy,
 ) -> sc_service::config::WasmExecutionMethod {
-	if let WasmExecutionMethod::Interpreted = execution_method {
-		log::warn!(
-			"`interpreted-i-know-what-i-do` is deprecated and will be removed in the future. Defaults to `compiled` execution mode."
-		);
-	}
-
 	sc_service::config::WasmExecutionMethod::Compiled {
 		instantiation_strategy: match instantiation_strategy {
 			WasmtimeInstantiationStrategy::PoolingCopyOnWrite =>
@@ -188,9 +177,6 @@ pub enum Database {
 	/// Detect whether there is an existing database. Use it, if there is, if not, create new
 	/// instance of ParityDb
 	Auto,
-	/// ParityDb. <https://github.com/paritytech/parity-db/>
-	#[value(name = "paritydb-experimental")]
-	ParityDbDeprecated,
 }
 
 impl Database {

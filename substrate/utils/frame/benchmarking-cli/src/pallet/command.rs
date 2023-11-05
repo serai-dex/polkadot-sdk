@@ -217,8 +217,7 @@ impl PalletCmd {
 			false,
 		)?;
 
-		let method =
-			execution_method_from_cli(self.wasm_method, self.wasmtime_instantiation_strategy);
+		let method = execution_method_from_cli(self.wasmtime_instantiation_strategy);
 
 		let executor = WasmExecutor::<(
 			sp_io::SubstrateHostFunctions,

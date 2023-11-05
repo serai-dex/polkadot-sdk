@@ -103,7 +103,7 @@ impl ImportParams {
 	pub fn wasm_method(&self) -> sc_service::config::WasmExecutionMethod {
 		self.execution_strategies.check_usage_and_print_deprecation_warning();
 
-		crate::execution_method_from_cli(self.wasm_method, self.wasmtime_instantiation_strategy)
+		crate::execution_method_from_cli(self.wasmtime_instantiation_strategy)
 	}
 
 	/// Enable overriding on-chain WASM with locally-stored WASM

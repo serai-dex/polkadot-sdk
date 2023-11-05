@@ -503,10 +503,7 @@ pub(crate) fn build_executor<H: HostFunctions>(shared: &SharedParams) -> WasmExe
 		.map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |p| HeapAllocStrategy::Static { extra_pages: p as _ });
 
 	WasmExecutor::builder()
-		.with_execution_method(execution_method_from_cli(
-			shared.wasm_method,
-			shared.wasmtime_instantiation_strategy,
-		))
+		.with_execution_method(execution_method_from_cli(shared.wasmtime_instantiation_strategy))
 		.with_onchain_heap_alloc_strategy(heap_pages)
 		.with_offchain_heap_alloc_strategy(heap_pages)
 		.build()
