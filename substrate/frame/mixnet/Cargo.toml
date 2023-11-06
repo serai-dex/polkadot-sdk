@@ -14,7 +14,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive", "max-encoded-len"] }
-frame-benchmarking = { default-features = false, optional = true, path = "../benchmarking" }
 frame-support = { default-features = false, path = "../support" }
 frame-system = { default-features = false, path = "../system" }
 log = { version = "0.4.17", default-features = false }
@@ -31,7 +30,6 @@ sp-std = { default-features = false, path = "../../primitives/std" }
 default = [ "std" ]
 std = [
 	"codec/std",
-	"frame-benchmarking?/std",
 	"frame-support/std",
 	"frame-system/std",
 	"log/std",
@@ -45,7 +43,6 @@ std = [
 	"sp-std/std",
 ]
 runtime-benchmarks = [
-	"frame-benchmarking/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
