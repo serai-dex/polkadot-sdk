@@ -72,7 +72,6 @@ pub use randomness::{
 pub use pallet::*;
 
 pub trait WeightInfo {
-	fn plan_config_change() -> Weight;
 	fn report_equivocation(validator_count: u32, max_nominators_per_validator: u32) -> Weight;
 }
 
@@ -453,18 +452,14 @@ pub mod pallet {
 			)?;
 			Ok(Pays::No.into())
 		}
+	}
 
+	impl<T: Config> Pallet<T> {
 		/// Plan an epoch config change. The epoch config change is recorded and will be enacted on
 		/// the next call to `enact_epoch_change`. The config will be activated one epoch after.
 		/// Multiple calls to this method will replace any existing planned config change that had
 		/// not been enacted yet.
-		#[pallet::call_index(2)]
-		#[pallet::weight(<T as Config>::WeightInfo::plan_config_change())]
-		pub fn plan_config_change(
-			origin: OriginFor<T>,
-			config: NextConfigDescriptor,
-		) -> DispatchResult {
-			ensure_root(origin)?;
+		pub fn plan_config_change(config: NextConfigDescriptor) -> DispatchResult {
 			match config {
 				NextConfigDescriptor::V1 { c, allowed_slots } => {
 					ensure!(

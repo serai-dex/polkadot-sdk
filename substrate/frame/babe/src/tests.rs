@@ -20,7 +20,7 @@
 
 use super::{Call, *};
 use frame_support::{
-	assert_err, assert_noop, assert_ok,
+	assert_err, assert_ok,
 	dispatch::{GetDispatchInfo, Pays},
 	traits::{Currency, EstimateNextSessionRotation, KeyOwnerProofSystem, OnFinalize},
 };
@@ -292,13 +292,10 @@ fn can_enact_next_config() {
 
 		assert_eq!(NextEpochConfig::<Test>::get(), Some(next_config.clone()));
 
-		Babe::plan_config_change(
-			RuntimeOrigin::root(),
-			NextConfigDescriptor::V1 {
-				c: next_next_config.c,
-				allowed_slots: next_next_config.allowed_slots,
-			},
-		)
+		Babe::plan_config_change(NextConfigDescriptor::V1 {
+			c: next_next_config.c,
+			allowed_slots: next_next_config.allowed_slots,
+		})
 		.unwrap();
 
 		progress_to_block(4);
@@ -316,28 +313,6 @@ fn can_enact_next_config() {
 		let consensus_digest = DigestItem::Consensus(BABE_ENGINE_ID, consensus_log.encode());
 
 		assert_eq!(header.digest.logs[2], consensus_digest.clone())
-	});
-}
-
-#[test]
-fn only_root_can_enact_config_change() {
-	use sp_runtime::DispatchError;
-
-	new_test_ext(1).execute_with(|| {
-		let next_config =
-			NextConfigDescriptor::V1 { c: (1, 4), allowed_slots: AllowedSlots::PrimarySlots };
-
-		let res = Babe::plan_config_change(RuntimeOrigin::none(), next_config.clone());
-
-		assert_noop!(res, DispatchError::BadOrigin);
-
-		let res = Babe::plan_config_change(RuntimeOrigin::signed(1), next_config.clone());
-
-		assert_noop!(res, DispatchError::BadOrigin);
-
-		let res = Babe::plan_config_change(RuntimeOrigin::root(), next_config);
-
-		assert!(res.is_ok());
 	});
 }
 
