@@ -72,7 +72,7 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
+	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 
 	/// The current storage version.
@@ -238,31 +238,6 @@ pub mod pallet {
 			)?;
 			Ok(Pays::No.into())
 		}
-
-		/// Note that the current authority set of the GRANDPA finality gadget has stalled.
-		///
-		/// This will trigger a forced authority set change at the beginning of the next session, to
-		/// be enacted `delay` blocks after that. The `delay` should be high enough to safely assume
-		/// that the block signalling the forced change will not be re-orged e.g. 1000 blocks.
-		/// The block production rate (which may be slowed down because of finality lagging) should
-		/// be taken into account when choosing the `delay`. The GRANDPA voters based on the new
-		/// authority will start voting on top of `best_finalized_block_number` for new finalized
-		/// blocks. `best_finalized_block_number` should be the highest of the latest finalized
-		/// block of all validators of the new authority set.
-		///
-		/// Only callable by root.
-		#[pallet::call_index(2)]
-		#[pallet::weight(T::WeightInfo::note_stalled())]
-		pub fn note_stalled(
-			origin: OriginFor<T>,
-			delay: BlockNumberFor<T>,
-			best_finalized_block_number: BlockNumberFor<T>,
-		) -> DispatchResult {
-			ensure_root(origin)?;
-
-			Self::on_stalled(delay, best_finalized_block_number);
-			Ok(())
-		}
 	}
 
 	#[pallet::event]
@@ -318,11 +293,6 @@ pub mod pallet {
 	#[pallet::getter(fn next_forced)]
 	pub(super) type NextForced<T: Config> = StorageValue<_, BlockNumberFor<T>>;
 
-	/// `true` if we are currently stalled.
-	#[pallet::storage]
-	#[pallet::getter(fn stalled)]
-	pub(super) type Stalled<T: Config> = StorageValue<_, (BlockNumberFor<T>, BlockNumberFor<T>)>;
-
 	/// The number of changes (both in terms of keys and underlying economic responsibilities)
 	/// in the "set" of Grandpa validators from genesis.
 	#[pallet::storage]
@@ -375,7 +345,6 @@ pub mod pallet {
 
 pub trait WeightInfo {
 	fn report_equivocation(validator_count: u32, max_nominators_per_validator: u32) -> Weight;
-	fn note_stalled() -> Weight;
 }
 
 /// Bounded version of `AuthorityList`, `Limit` being the bound
@@ -545,13 +514,6 @@ impl<T: Config> Pallet<T> {
 	) -> Option<()> {
 		T::EquivocationReportSystem::publish_evidence((equivocation_proof, key_owner_proof)).ok()
 	}
-
-	fn on_stalled(further_wait: BlockNumberFor<T>, median: BlockNumberFor<T>) {
-		// when we record old authority sets we could try to figure out _who_
-		// failed. until then, we can't meaningfully guard against
-		// `next == last` the way that normal session changes do.
-		<Stalled<T>>::put((further_wait, median));
-	}
 }
 
 impl<T: Config> sp_runtime::BoundToRuntimeAppPublic for Pallet<T> {
@@ -579,14 +541,10 @@ where
 		// Always issue a change if `session` says that the validators have changed.
 		// Even if their session keys are the same as before, the underlying economic
 		// identities have changed.
-		let current_set_id = if changed || <Stalled<T>>::exists() {
+		let current_set_id = if changed {
 			let next_authorities = validators.map(|(_, k)| (k, 1)).collect::<Vec<_>>();
 
-			let res = if let Some((further_wait, median)) = <Stalled<T>>::take() {
-				Self::schedule_change(next_authorities, further_wait, Some(median))
-			} else {
-				Self::schedule_change(next_authorities, Zero::zero(), None)
-			};
+			let res = Self::schedule_change(next_authorities, Zero::zero(), None);
 
 			if res.is_ok() {
 				let current_set_id = CurrentSetId::<T>::mutate(|s| {

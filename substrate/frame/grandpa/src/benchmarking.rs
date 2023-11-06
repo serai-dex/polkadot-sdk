@@ -18,9 +18,8 @@
 
 //! Benchmarks for the GRANDPA pallet.
 
-use super::{Pallet as Grandpa, *};
+use super::*;
 use frame_benchmarking::v1::benchmarks;
-use frame_system::RawOrigin;
 use sp_core::H256;
 
 benchmarks! {
@@ -59,15 +58,6 @@ benchmarks! {
 		sp_consensus_grandpa::check_equivocation_proof(equivocation_proof1);
 	} verify {
 		assert!(sp_consensus_grandpa::check_equivocation_proof(equivocation_proof2));
-	}
-
-	note_stalled {
-		let delay = 1000u32.into();
-		let best_finalized_block_number = 1u32.into();
-
-	}: _(RawOrigin::Root, delay, best_finalized_block_number)
-	verify {
-		assert!(Grandpa::<T>::stalled().is_some());
 	}
 
 	impl_benchmark_test_suite!(
