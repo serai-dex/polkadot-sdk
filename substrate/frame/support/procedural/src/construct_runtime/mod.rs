@@ -212,9 +212,10 @@
 mod expand;
 mod parse;
 
+use crate::pallet::parse::helper::two128_str;
 use cfg_expr::Predicate;
 use frame_support_procedural_tools::{
-	generate_crate_access, generate_crate_access_2018, generate_hidden_includes,
+	generate_access_from_frame_or_crate, generate_crate_access, generate_hidden_includes,
 };
 use itertools::Itertools;
 use parse::{ExplicitRuntimeDeclaration, ImplicitRuntimeDeclaration, Pallet, RuntimeDeclaration};
@@ -272,7 +273,7 @@ fn construct_runtime_implicit_to_explicit(
 	input: TokenStream2,
 	definition: ImplicitRuntimeDeclaration,
 ) -> Result<TokenStream2> {
-	let frame_support = generate_crate_access_2018("frame-support")?;
+	let frame_support = generate_access_from_frame_or_crate("frame-support")?;
 	let mut expansion = quote::quote!(
 		#frame_support::construct_runtime! { #input }
 	);
@@ -283,7 +284,7 @@ fn construct_runtime_implicit_to_explicit(
 		expansion = quote::quote!(
 			#frame_support::__private::tt_call! {
 				macro = [{ #pallet_path::tt_default_parts }]
-				frame_support = [{ #frame_support }]
+				your_tt_return = [{ #frame_support::__private::tt_return }]
 				~~> #frame_support::match_and_insert! {
 					target = [{ #expansion }]
 					pattern = [{ #pallet_name: #pallet_path #pallet_instance }]
@@ -308,7 +309,7 @@ fn construct_runtime_explicit_to_explicit_expanded(
 	input: TokenStream2,
 	definition: ExplicitRuntimeDeclaration,
 ) -> Result<TokenStream2> {
-	let frame_support = generate_crate_access_2018("frame-support")?;
+	let frame_support = generate_access_from_frame_or_crate("frame-support")?;
 	let mut expansion = quote::quote!(
 		#frame_support::construct_runtime! { #input }
 	);
@@ -319,7 +320,7 @@ fn construct_runtime_explicit_to_explicit_expanded(
 		expansion = quote::quote!(
 			#frame_support::__private::tt_call! {
 				macro = [{ #pallet_path::tt_extra_parts }]
-				frame_support = [{ #frame_support }]
+				your_tt_return = [{ #frame_support::__private::tt_return }]
 				~~> #frame_support::match_and_insert! {
 					target = [{ #expansion }]
 					pattern = [{ #pallet_name: #pallet_path #pallet_instance }]
@@ -372,7 +373,7 @@ fn construct_runtime_final_expansion(
 	let scrate = generate_crate_access(hidden_crate_name, "frame-support");
 	let scrate_decl = generate_hidden_includes(hidden_crate_name, "frame-support");
 
-	let frame_system = generate_crate_access_2018("frame-system")?;
+	let frame_system = generate_access_from_frame_or_crate("frame-system")?;
 	let block = quote!(<#name as #frame_system::Config>::Block);
 	let unchecked_extrinsic = quote!(<#block as #scrate::sp_runtime::traits::Block>::Extrinsic);
 
@@ -617,7 +618,6 @@ fn decl_all_pallets<'a>(
 		#( #all_pallets_without_system )*
 	)
 }
-
 fn decl_pallet_runtime_setup(
 	runtime: &Ident,
 	pallet_declarations: &[Pallet],
@@ -625,6 +625,7 @@ fn decl_pallet_runtime_setup(
 ) -> TokenStream2 {
 	let names = pallet_declarations.iter().map(|d| &d.name).collect::<Vec<_>>();
 	let name_strings = pallet_declarations.iter().map(|d| d.name.to_string());
+	let name_hashes = pallet_declarations.iter().map(|d| two128_str(&d.name.to_string()));
 	let module_names = pallet_declarations.iter().map(|d| d.path.module_name());
 	let indices = pallet_declarations.iter().map(|pallet| pallet.index as usize);
 	let pallet_structs = pallet_declarations
@@ -657,6 +658,7 @@ fn decl_pallet_runtime_setup(
 		pub struct PalletInfo;
 
 		impl #scrate::traits::PalletInfo for PalletInfo {
+
 			fn index<P: 'static>() -> Option<usize> {
 				let type_id = #scrate::__private::sp_std::any::TypeId::of::<P>();
 				#(
@@ -675,6 +677,18 @@ fn decl_pallet_runtime_setup(
 					#pallet_attrs
 					if type_id == #scrate::__private::sp_std::any::TypeId::of::<#names>() {
 						return Some(#name_strings)
+					}
+				)*
+
+				None
+			}
+
+			fn name_hash<P: 'static>() -> Option<[u8; 16]> {
+				let type_id = #scrate::__private::sp_std::any::TypeId::of::<P>();
+				#(
+					#pallet_attrs
+					if type_id == #scrate::__private::sp_std::any::TypeId::of::<#names>() {
+						return Some(#name_hashes)
 					}
 				)*
 
@@ -741,7 +755,7 @@ fn decl_static_assertions(
 		quote! {
 			#scrate::__private::tt_call! {
 				macro = [{ #path::tt_error_token }]
-				frame_support = [{ #scrate }]
+				your_tt_return = [{ #scrate::__private::tt_return }]
 				~~> #scrate::assert_error_encoded_size! {
 					path = [{ #path }]
 					runtime = [{ #runtime }]

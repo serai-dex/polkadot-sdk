@@ -27,14 +27,15 @@ pub use tokens::{
 	},
 	fungible, fungibles,
 	imbalance::{Imbalance, OnUnbalanced, SignedImbalance},
-	nonfungible, nonfungibles, BalanceStatus, ExistenceRequirement, Locker, WithdrawReasons,
+	nonfungible, nonfungible_v2, nonfungibles, nonfungibles_v2, BalanceStatus,
+	ExistenceRequirement, Locker, WithdrawReasons,
 };
 
 mod members;
 #[allow(deprecated)]
 pub use members::{AllowAll, DenyAll, Filter};
 pub use members::{
-	AsContains, Contains, ContainsLengthBound, ContainsPair, Everything, EverythingBut,
+	AsContains, Contains, ContainsLengthBound, ContainsPair, Equals, Everything, EverythingBut,
 	FromContainsPair, InsideBoth, IsInVec, Nothing, SortedMembers, TheseExcept,
 };
 
@@ -59,7 +60,7 @@ pub use misc::{
 	DefensiveTruncateFrom, EnsureInherentsAreFirst, EqualPrivilegeOnly, EstimateCallFee,
 	ExecuteBlock, ExtrinsicCall, Get, GetBacking, GetDefault, HandleLifetime, IsSubType, IsType,
 	Len, OffchainWorker, PrivilegeCmp, SameOrOther, Time, TryCollect, TryDrop, TypedGet, UnixTime,
-	WrapperKeepOpaque, WrapperOpaque,
+	VariantCount, WrapperKeepOpaque, WrapperOpaque,
 };
 #[allow(deprecated)]
 pub use misc::{PreimageProvider, PreimageRecipient};

@@ -49,7 +49,7 @@ use codec::{Decode, Encode};
 use frame_support::{
 	dispatch::{DispatchInfo, DispatchResult, PostDispatchInfo},
 	traits::{
-		tokens::fungibles::{Balanced, Inspect},
+		fungibles::{Balanced, Inspect},
 		IsType,
 	},
 	DefaultNoBound,

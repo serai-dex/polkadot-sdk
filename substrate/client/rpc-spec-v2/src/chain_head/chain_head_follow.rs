@@ -159,7 +159,7 @@ where
 		let parent = match parent {
 			Some(parent) => parent,
 			// Nothing to compare against, always report.
-			None => return Some(RuntimeEvent::Valid(RuntimeVersionEvent { spec: block_rt })),
+			None => return Some(RuntimeEvent::Valid(RuntimeVersionEvent { spec: block_rt.into() })),
 		};
 
 		let parent_rt = match self.client.runtime_version_at(parent) {
@@ -169,7 +169,7 @@ where
 
 		// Report the runtime version change.
 		if block_rt != parent_rt {
-			Some(RuntimeEvent::Valid(RuntimeVersionEvent { spec: block_rt }))
+			Some(RuntimeEvent::Valid(RuntimeVersionEvent { spec: block_rt.into() }))
 		} else {
 			None
 		}

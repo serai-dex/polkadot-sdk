@@ -101,6 +101,11 @@ mod imbalances {
 			mem::forget(self);
 			(Self(first), Self(second))
 		}
+		fn extract(&mut self, amount: T::Balance) -> Self {
+			let new = self.0.min(amount);
+			self.0 = self.0 - new;
+			Self(new)
+		}
 		fn merge(mut self, other: Self) -> Self {
 			self.0 = self.0.saturating_add(other.0);
 			mem::forget(other);
@@ -159,6 +164,11 @@ mod imbalances {
 
 			mem::forget(self);
 			(Self(first), Self(second))
+		}
+		fn extract(&mut self, amount: T::Balance) -> Self {
+			let new = self.0.min(amount);
+			self.0 = self.0 - new;
+			Self(new)
 		}
 		fn merge(mut self, other: Self) -> Self {
 			self.0 = self.0.saturating_add(other.0);

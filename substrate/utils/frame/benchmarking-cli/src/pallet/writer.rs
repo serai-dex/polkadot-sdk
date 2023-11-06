@@ -780,6 +780,7 @@ fn worst_case_pov(
 
 /// A simple match statement which outputs the log 16 of some value.
 fn easy_log_16(i: u32) -> u32 {
+	#[allow(clippy::redundant_guards)]
 	match i {
 		0 => 0,
 		i if i <= 16 => 1,

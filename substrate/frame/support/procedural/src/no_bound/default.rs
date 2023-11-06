@@ -33,7 +33,7 @@ pub fn derive_default_no_bound(input: proc_macro::TokenStream) -> proc_macro::To
 			Fields::Named(named) => {
 				let fields = named.named.iter().map(|field| &field.ident).map(|ident| {
 					quote_spanned! {ident.span() =>
-						#ident: core::default::Default::default()
+						#ident: ::core::default::Default::default()
 					}
 				});
 
@@ -42,7 +42,7 @@ pub fn derive_default_no_bound(input: proc_macro::TokenStream) -> proc_macro::To
 			Fields::Unnamed(unnamed) => {
 				let fields = unnamed.unnamed.iter().map(|field| {
 					quote_spanned! {field.span()=>
-						core::default::Default::default()
+						::core::default::Default::default()
 					}
 				});
 
@@ -67,15 +67,12 @@ pub fn derive_default_no_bound(input: proc_macro::TokenStream) -> proc_macro::To
 				.collect::<Vec<_>>();
 
 			match &*default_variants {
-				[] => {
-					return syn::Error::new(
-						name.clone().span(),
-						// writing this as a regular string breaks rustfmt for some reason
-						r#"no default declared, make a variant default by placing `#[default]` above it"#,
-					)
-					.into_compile_error()
-					.into()
-				},
+				[] => return syn::Error::new(
+					name.clone().span(),
+					"no default declared, make a variant default by placing `#[default]` above it",
+				)
+				.into_compile_error()
+				.into(),
 				// only one variant with the #[default] attribute set
 				[default_variant] => {
 					let variant_attrs = default_variant
@@ -109,7 +106,7 @@ pub fn derive_default_no_bound(input: proc_macro::TokenStream) -> proc_macro::To
 							let fields =
 								named.named.iter().map(|field| &field.ident).map(|ident| {
 									quote_spanned! {ident.span()=>
-										#ident: core::default::Default::default()
+										#ident: ::core::default::Default::default()
 									}
 								});
 
@@ -118,7 +115,7 @@ pub fn derive_default_no_bound(input: proc_macro::TokenStream) -> proc_macro::To
 						Fields::Unnamed(unnamed) => {
 							let fields = unnamed.unnamed.iter().map(|field| {
 								quote_spanned! {field.span()=>
-									core::default::Default::default()
+									::core::default::Default::default()
 								}
 							});
 
@@ -153,7 +150,7 @@ pub fn derive_default_no_bound(input: proc_macro::TokenStream) -> proc_macro::To
 
 	quote!(
 		const _: () = {
-			impl #impl_generics core::default::Default for #name #ty_generics #where_clause {
+			impl #impl_generics ::core::default::Default for #name #ty_generics #where_clause {
 				fn default() -> Self {
 					#impl_
 				}

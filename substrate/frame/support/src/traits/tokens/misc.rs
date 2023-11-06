@@ -21,7 +21,7 @@
 use codec::{Decode, Encode, FullCodec, MaxEncodedLen};
 use sp_arithmetic::traits::{AtLeast32BitUnsigned, Zero};
 use sp_core::RuntimeDebug;
-use sp_runtime::{ArithmeticError, DispatchError, TokenError};
+use sp_runtime::{traits::MaybeSerializeDeserialize, ArithmeticError, DispatchError, TokenError};
 use sp_std::fmt::Debug;
 
 /// The origin of funds to be used for a deposit operation.
@@ -241,6 +241,7 @@ pub trait Balance:
 	+ MaxEncodedLen
 	+ Send
 	+ Sync
+	+ MaybeSerializeDeserialize
 	+ 'static
 {
 }
@@ -254,6 +255,7 @@ impl<
 			+ MaxEncodedLen
 			+ Send
 			+ Sync
+			+ MaybeSerializeDeserialize
 			+ 'static,
 	> Balance for T
 {
@@ -273,6 +275,26 @@ pub trait ConversionFromAssetBalance<AssetBalance, AssetId, OutBalance> {
 		balance: AssetBalance,
 		asset_id: AssetId,
 	) -> Result<OutBalance, Self::Error>;
+	/// Ensures that a conversion for the `asset_id` will be successful if done immediately after
+	/// this call.
+	#[cfg(feature = "runtime-benchmarks")]
+	fn ensure_successful(asset_id: AssetId);
+}
+
+/// Implements [`ConversionFromAssetBalance`], enabling a 1:1 conversion of the asset balance
+/// value to the balance.
+pub struct UnityAssetBalanceConversion;
+impl<AssetBalance, AssetId, OutBalance>
+	ConversionFromAssetBalance<AssetBalance, AssetId, OutBalance> for UnityAssetBalanceConversion
+where
+	AssetBalance: Into<OutBalance>,
+{
+	type Error = ();
+	fn from_asset_balance(balance: AssetBalance, _: AssetId) -> Result<OutBalance, Self::Error> {
+		Ok(balance.into())
+	}
+	#[cfg(feature = "runtime-benchmarks")]
+	fn ensure_successful(_: AssetId) {}
 }
 
 /// Trait to handle NFT locking mechanism to ensure interactions with the asset can be implemented

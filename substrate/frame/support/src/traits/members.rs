@@ -19,8 +19,6 @@
 //! Traits for dealing with the idea of membership.
 
 use impl_trait_for_tuples::impl_for_tuples;
-use sp_arithmetic::traits::AtLeast16BitUnsigned;
-use sp_runtime::DispatchResult;
 use sp_std::{marker::PhantomData, prelude::*};
 
 /// A trait for querying whether a type can be said to "contain" a value.
@@ -135,6 +133,14 @@ impl<A, B, These: ContainsPair<A, B>, Those: ContainsPair<A, B>> ContainsPair<A,
 {
 	fn contains(a: &A, b: &B) -> bool {
 		These::contains(a, b) && Those::contains(a, b)
+	}
+}
+
+/// An implementation of [`Contains`] which contains only equal members to `T`.
+pub struct Equals<T>(PhantomData<T>);
+impl<X: PartialEq, T: super::Get<X>> Contains<X> for Equals<T> {
+	fn contains(t: &X) -> bool {
+		t == &T::get()
 	}
 }
 

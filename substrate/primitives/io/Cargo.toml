@@ -38,7 +38,7 @@ default = [ "std" ]
 std = [
 	"bytes/std",
 	"codec/std",
-	"log",
+	"log/std",
 	"sp-core/std",
 	"sp-externalities/std",
 	"sp-keystore/std",

@@ -24,7 +24,8 @@ use crate::traits::{
 	misc::{SameOrOther, TryDrop},
 	tokens::{AssetId, Balance},
 };
-use sp_runtime::{traits::Zero, RuntimeDebug};
+use frame_support_procedural::{EqNoBound, PartialEqNoBound, RuntimeDebugNoBound};
+use sp_runtime::traits::Zero;
 use sp_std::marker::PhantomData;
 
 /// Handler for when an imbalance gets dropped. This could handle either a credit (negative) or
@@ -39,7 +40,7 @@ pub trait HandleImbalanceDrop<AssetId, Balance> {
 ///
 /// Importantly, it has a special `Drop` impl, and cannot be created outside of this module.
 #[must_use]
-#[derive(RuntimeDebug, Eq, PartialEq)]
+#[derive(EqNoBound, PartialEqNoBound, RuntimeDebugNoBound)]
 pub struct Imbalance<
 	A: AssetId,
 	B: Balance,
@@ -109,6 +110,15 @@ impl<
 		sp_std::mem::forget(self);
 		(Imbalance::new(asset.clone(), first), Imbalance::new(asset, second))
 	}
+
+	/// Mutate `self` by extracting a new instance with at most `amount` value, reducing `self`
+	/// accordingly.
+	pub fn extract(&mut self, amount: B) -> Self {
+		let new = self.amount.min(amount);
+		self.amount = self.amount - new;
+		Imbalance::new(self.asset.clone(), new)
+	}
+
 	pub fn merge(mut self, other: Self) -> Result<Self, (Self, Self)> {
 		if self.asset == other.asset {
 			self.amount = self.amount.saturating_add(other.amount);

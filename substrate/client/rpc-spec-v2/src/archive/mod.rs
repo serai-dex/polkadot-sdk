@@ -28,5 +28,6 @@ mod tests;
 
 pub mod api;
 pub mod archive;
+pub mod error;
 
 pub use api::ArchiveApiServer;

@@ -349,6 +349,7 @@ pub trait Keystore: Send + Sync {
 					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
 				self.bls377_sign(id, &public, msg)?.map(|s| s.encode())
 			},
+
 			_ => return Err(Error::KeyNotSupported(id)),
 		};
 		Ok(signature)
