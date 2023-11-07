@@ -2939,7 +2939,6 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "scale-info",
- "sp-runtime",
 ]
 
 [[package]]
@@ -5987,7 +5986,6 @@ dependencies = [
  "pallet-balances",
  "parity-scale-codec",
  "scale-info",
- "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -6014,7 +6012,6 @@ dependencies = [
  "log",
  "pallet-bags-list",
  "pallet-staking",
- "sp-core",
  "sp-runtime",
  "sp-std",
 ]
@@ -6119,7 +6116,6 @@ dependencies = [
 name = "pallet-mixnet"
 version = "0.1.0-dev"
 dependencies = [
- "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",

@@ -1167,9 +1167,16 @@ impl<T: Config> Pallet<T> {
 		let event_idx = {
 			let old_event_count = EventCount::<T>::get();
 			let new_event_count = match old_event_count.checked_add(1) {
-				// We've reached the maximum number of events at this block, just
-				// don't do anything and leave the event_count unaltered.
-				None => return,
+				// The original Substrate silently dropped events in this case
+				// This causes a chain halt/defers block production to someone with a smaller
+				// mempool
+				// The latter is exceedingly preferred behavior
+				// This could also be moved to u64, preventing the overflow, yet we have to O(n)
+				// kill all these events at the start of the next block so the amount of events
+				// CAN'T be excessively large
+				// If we got to 4 billion, we're already having problems
+				// TODO: Review batch deletion of a branch?
+				None => panic!("block had 4 billion events and overflowed the indexer"),
 				Some(nc) => nc,
 			};
 			EventCount::<T>::put(new_event_count);
@@ -1394,7 +1401,7 @@ impl<T: Config> Pallet<T> {
 	pub fn reset_events() {
 		<Events<T>>::kill();
 		EventCount::<T>::kill();
-		let _ = <EventTopics<T>>::clear(u32::max_value(), None);
+		let _ = <EventTopics<T>>::clear(u32::MAX, None);
 	}
 
 	/// Assert the given `event` exists.
