@@ -18,7 +18,6 @@
 
 use crate::{write_file_if_changed, CargoCommandVersioned, OFFLINE};
 
-use build_helper::rerun_if_changed;
 use cargo_metadata::{CargoOpt, Metadata, MetadataCommand};
 use parity_wasm::elements::{deserialize_buffer, Module};
 use std::{
@@ -199,7 +198,7 @@ pub(crate) fn create_and_compile(
 	);
 
 	if let Err(err) = adjust_mtime(&bloaty_blob_binary, final_blob_binary.as_ref()) {
-		build_helper::warning!("Error while adjusting the mtime of the blob binaries: {}", err)
+		println!("cargo:warning=Error while adjusting the mtime of the blob binaries: {}", err)
 	}
 
 	(final_blob_binary, bloaty_blob_binary)
@@ -241,7 +240,7 @@ fn adjust_mtime(
 	bloaty_wasm: &WasmBinaryBloaty,
 	compressed_or_compact_wasm: Option<&WasmBinary>,
 ) -> std::io::Result<()> {
-	let out_dir = build_helper::out_dir();
+	let out_dir = PathBuf::from(std::env::var("OUT_DIR").unwrap());
 	let invoked_timestamp = out_dir.join("../invoked.timestamp");
 
 	// Get the mtime of the `invoked.timestamp`
@@ -278,22 +277,22 @@ fn find_cargo_lock(cargo_manifest: &Path) -> Option<PathBuf> {
 		if path.join("Cargo.lock").exists() {
 			return Some(path.join("Cargo.lock"))
 		} else {
-			build_helper::warning!(
-				"`{}` env variable doesn't point to a directory that contains a `Cargo.lock`.",
+			println!(
+				"cargo:warning=`{}` env variable doesn't point to a directory that contains a `Cargo.lock`.",
 				crate::WASM_BUILD_WORKSPACE_HINT,
 			);
 		}
 	}
 
-	if let Some(path) = find_impl(build_helper::out_dir()) {
+	if let Some(path) = find_impl(std::env::var("OUT_DIR").unwrap().into()) {
 		return Some(path)
 	}
 
-	build_helper::warning!(
-		"Could not find `Cargo.lock` for `{}`, while searching from `{}`. \
+	println!(
+		"cargo:warning=Could not find `Cargo.lock` for `{}`, while searching from `{}`. \
 		 To fix this, point the `{}` env variable to the directory of the workspace being compiled.",
 		cargo_manifest.display(),
-		build_helper::out_dir().display(),
+		std::env::var("OUT_DIR").unwrap(),
 		crate::WASM_BUILD_WORKSPACE_HINT,
 	);
 
@@ -326,7 +325,7 @@ fn get_blob_name(cargo_manifest: &Path) -> String {
 
 /// Returns the root path of the wasm workspace.
 fn get_wasm_workspace_root() -> PathBuf {
-	let mut out_dir = build_helper::out_dir();
+	let mut out_dir = PathBuf::from(std::env::var("OUT_DIR").unwrap());
 
 	loop {
 		match out_dir.parent() {
@@ -338,7 +337,7 @@ fn get_wasm_workspace_root() -> PathBuf {
 		}
 	}
 
-	panic!("Could not find target dir in: {}", build_helper::out_dir().display())
+	panic!("Could not find target dir in: {}", std::env::var("OUT_DIR").unwrap())
 }
 
 fn create_project_cargo_toml(
@@ -685,8 +684,8 @@ impl BuildConfiguration {
 			// not doing a fallback.
 			(None, false) => {
 				let profile = Profile::Release;
-				build_helper::warning!(
-					"Unknown cargo profile `{}`. Defaulted to `{:?}` for the runtime build.",
+				println!(
+					"cargo:warning=Unknown cargo profile `{}`. Defaulted to `{:?}` for the runtime build.",
 					name,
 					profile,
 				);
@@ -831,8 +830,8 @@ fn try_compress_blob(compact_blob_path: &Path, out_name: &str) -> Option<WasmBin
 		);
 		Some(WasmBinary(compact_compressed_blob_path))
 	} else {
-		build_helper::warning!(
-			"Writing uncompressed blob. Exceeded maximum size {}",
+		println!(
+			"cargo:warning=Writing uncompressed blob. Exceeded maximum size {}",
 			CODE_BLOB_BOMB_LIMIT,
 		);
 		println!("{}", colorize_info_message("Skipping blob compression"));
@@ -900,7 +899,7 @@ fn generate_rerun_if_changed_instructions(
 ) {
 	// Rerun `build.rs` if the `Cargo.lock` changes
 	if let Some(cargo_lock) = find_cargo_lock(cargo_manifest) {
-		rerun_if_changed(cargo_lock);
+		println!("cargo:rerun-if-changed={}", cargo_lock.display());
 	}
 
 	let metadata = create_metadata_command(project_folder.join("Cargo.toml"))
@@ -945,8 +944,9 @@ fn generate_rerun_if_changed_instructions(
 	// Make sure that if any file/folder of a dependency change, we need to rerun the `build.rs`
 	packages.iter().for_each(package_rerun_if_changed);
 
-	compressed_or_compact_wasm.map(|w| rerun_if_changed(w.wasm_binary_path()));
-	rerun_if_changed(bloaty_wasm.bloaty_path());
+	compressed_or_compact_wasm
+		.map(|w| println!("cargo:rerun-if-changed={}", w.wasm_binary_path().display()));
+	println!("cargo:rerun-if-changed={}", bloaty_wasm.bloaty_path().display());
 
 	// Register our env variables
 	println!("cargo:rerun-if-env-changed={}", crate::SKIP_BUILD_ENV);
@@ -976,7 +976,7 @@ fn package_rerun_if_changed(package: &DeduplicatePackage) {
 		.filter(|p| {
 			p.is_dir() || p.extension().map(|e| e == "rs" || e == "toml").unwrap_or_default()
 		})
-		.for_each(rerun_if_changed);
+		.for_each(|path| println!("cargo:rerun-if-changed={}", path.display()));
 }
 
 /// Copy the blob binary to the target directory set in `WASM_TARGET_DIRECTORY` environment
