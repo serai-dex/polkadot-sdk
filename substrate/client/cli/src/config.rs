@@ -599,7 +599,7 @@ pub trait CliConfiguration<DCV: DefaultConfigurationValues = ()>: Sized {
 
 		logger.init()?;
 
-		if let Some(new_limit) = fdlimit::raise_fd_limit() {
+		if let Ok(fdlimit::Outcome::LimitRaised { to: new_limit, .. }) = fdlimit::raise_fd_limit() {
 			if new_limit < RECOMMENDED_OPEN_FILE_DESCRIPTOR_LIMIT {
 				warn!(
 					"Low open file descriptor limit configured for the process. \
