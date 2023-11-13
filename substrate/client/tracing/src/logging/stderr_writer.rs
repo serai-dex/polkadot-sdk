@@ -149,7 +149,7 @@ impl Default for MakeStderrWriter {
 	}
 }
 
-impl tracing_subscriber::fmt::MakeWriter for MakeStderrWriter {
+impl<'a> tracing_subscriber::fmt::MakeWriter<'a> for MakeStderrWriter {
 	type Writer = StderrWriter;
 
 	fn make_writer(&self) -> Self::Writer {

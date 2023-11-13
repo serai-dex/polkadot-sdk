@@ -25,7 +25,7 @@ use tracing::{Event, Level, Subscriber};
 use tracing_log::NormalizeEvent;
 use tracing_subscriber::{
 	field::RecordFields,
-	fmt::{time::FormatTime, FmtContext, FormatEvent, FormatFields},
+	fmt::{format::Writer, time::FormatTime, FmtContext, FormatEvent, FormatFields},
 	layer::Context,
 	registry::{LookupSpan, SpanRef},
 };
@@ -56,14 +56,14 @@ where
 	pub(crate) fn format_event_custom<'b, S, N>(
 		&self,
 		ctx: CustomFmtContext<'b, S, N>,
-		writer: &mut dyn fmt::Write,
+		mut writer: Writer<'_>,
 		event: &Event,
 	) -> fmt::Result
 	where
 		S: Subscriber + for<'a> LookupSpan<'a>,
 		N: for<'a> FormatFields<'a> + 'static,
 	{
-		let writer = &mut ControlCodeSanitizer::new(!self.enable_color, writer);
+		let writer = &mut ControlCodeSanitizer::new(!self.enable_color, &mut writer);
 		let normalized_meta = event.normalized_metadata();
 		let meta = normalized_meta.as_ref().unwrap_or_else(|| event.metadata());
 		time::write(&self.timer, writer, self.enable_color)?;
@@ -109,7 +109,7 @@ where
 			writer.sanitize = true;
 		}
 
-		ctx.format_fields(writer, event)?;
+		ctx.format_fields(Writer::new(writer), event)?;
 		writeln!(writer)?;
 
 		writer.flush()
@@ -128,7 +128,7 @@ where
 	fn format_event(
 		&self,
 		ctx: &FmtContext<S, N>,
-		writer: &mut dyn fmt::Write,
+		mut writer: Writer<'_>,
 		event: &Event,
 	) -> fmt::Result {
 		if self.dup_to_stdout &&
@@ -137,7 +137,11 @@ where
 				event.metadata().level() == &Level::ERROR)
 		{
 			let mut out = String::new();
-			self.format_event_custom(CustomFmtContext::FmtContext(ctx), &mut out, event)?;
+			self.format_event_custom(
+				CustomFmtContext::FmtContext(ctx),
+				Writer::new(&mut out),
+				event,
+			)?;
 			writer.write_str(&out)?;
 			print!("{}", out);
 			Ok(())
@@ -242,19 +246,23 @@ impl<'a> fmt::Display for FmtThreadName<'a> {
 mod time {
 	use anstyle::Style;
 	use std::fmt;
-	use tracing_subscriber::fmt::time::FormatTime;
+	use tracing_subscriber::fmt::{format::Writer, time::FormatTime};
 
-	pub(crate) fn write<T>(timer: T, writer: &mut dyn fmt::Write, with_ansi: bool) -> fmt::Result
+	pub(crate) fn write<T>(
+		timer: T,
+		writer: &mut (impl Sized + fmt::Write),
+		with_ansi: bool,
+	) -> fmt::Result
 	where
 		T: FormatTime,
 	{
 		if with_ansi {
 			let style = Style::new().dimmed();
 			write!(writer, "{}", style.render())?;
-			timer.format_time(writer)?;
+			timer.format_time(&mut Writer::new(writer))?;
 			write!(writer, "{}", style.render_reset())?;
 		} else {
-			timer.format_time(writer)?;
+			timer.format_time(&mut Writer::new(writer))?;
 		}
 		writer.write_char(' ')?;
 		Ok(())
@@ -274,11 +282,7 @@ where
 	S: Subscriber + for<'lookup> LookupSpan<'lookup>,
 	N: for<'writer> FormatFields<'writer> + 'static,
 {
-	fn format_fields<R: RecordFields>(
-		&self,
-		writer: &'a mut dyn fmt::Write,
-		fields: R,
-	) -> fmt::Result {
+	fn format_fields<R: RecordFields>(&self, writer: Writer<'a>, fields: R) -> fmt::Result {
 		match self {
 			CustomFmtContext::FmtContext(fmt_ctx) => fmt_ctx.format_fields(writer, fields),
 			CustomFmtContext::ContextWithFormatFields(_ctx, fmt_fields) =>

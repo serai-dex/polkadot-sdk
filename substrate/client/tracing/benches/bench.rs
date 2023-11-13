@@ -17,7 +17,10 @@
 // limitations under the License.
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use tracing_subscriber::fmt::time::{ChronoLocal, FormatTime};
+use tracing_subscriber::fmt::{
+	format::Writer,
+	time::{ChronoLocal, FormatTime},
+};
 
 fn bench_fast_local_time(c: &mut Criterion) {
 	c.bench_function("fast_local_time", |b| {
@@ -25,7 +28,7 @@ fn bench_fast_local_time(c: &mut Criterion) {
 		let t = sc_tracing::logging::FastLocalTime { with_fractional: true };
 		b.iter(|| {
 			buffer.clear();
-			t.format_time(&mut buffer).unwrap();
+			t.format_time(&mut Writer::new(&mut buffer)).unwrap();
 		})
 	});
 }
@@ -34,10 +37,10 @@ fn bench_fast_local_time(c: &mut Criterion) {
 fn bench_chrono_local(c: &mut Criterion) {
 	c.bench_function("chrono_local", |b| {
 		let mut buffer = String::new();
-		let t = ChronoLocal::with_format("%Y-%m-%d %H:%M:%S%.3f".to_string());
+		let t = ChronoLocal::new("%Y-%m-%d %H:%M:%S%.3f".to_string());
 		b.iter(|| {
 			buffer.clear();
-			t.format_time(&mut buffer).unwrap();
+			t.format_time(&mut Writer::new(&mut buffer)).unwrap();
 		})
 	});
 }
