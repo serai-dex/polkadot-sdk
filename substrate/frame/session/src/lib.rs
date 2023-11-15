@@ -141,13 +141,8 @@ use sp_runtime::{
 use sp_staking::SessionIndex;
 
 pub use pallet::*;
+pub use sp_session::ShouldEndSession;
 pub use weights::WeightInfo;
-
-/// Decides whether the session should be ended.
-pub trait ShouldEndSession<BlockNumber> {
-	/// Return `true` if the session should be ended.
-	fn should_end_session(now: BlockNumber) -> bool;
-}
 
 /// Ends the session after a fixed period of blocks.
 ///
