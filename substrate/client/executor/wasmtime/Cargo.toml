@@ -18,12 +18,12 @@ parking_lot = "0.12.1"
 
 # When bumping wasmtime do not forget to also bump rustix
 # to exactly the same version as used by wasmtime!
-wasmtime = { version = "14.0.0", default-features = false, features = [
+wasmtime = { version = "15.0.0", default-features = false, features = [
 	"cache",
 	"cranelift",
-	"jitdump",
+	"profiling",
 	"parallel-compilation",
-	"pooling-allocator"
+	"pooling-allocator",
 ] }
 anyhow = "1.0.68"
 sc-allocator = { path = "../../allocator" }
@@ -33,7 +33,7 @@ sp-wasm-interface = { path = "../../../primitives/wasm-interface", features = ["
 
 # Here we include the rustix crate in the exactly same semver-compatible version as used by
 # wasmtime.
-rustix = { version = "0.38.8", default-features = false, features = ["std", "mm", "param"] }
+rustix = { version = "0.38.21", default-features = false, features = ["std", "mm", "param"] }
 
 [dev-dependencies]
 wat = "=1.0.71"

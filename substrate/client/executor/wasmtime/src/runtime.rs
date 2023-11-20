@@ -282,6 +282,10 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 	config.wasm_multi_memory(false);
 	config.wasm_threads(false);
 	config.wasm_memory64(false);
+	config.wasm_relaxed_simd(false); // Non-deterministic
+
+	config.wasm_tail_call(false); // TODO: Add semantics entry for this
+	config.wasm_function_references(false); // TODO: Add semantics entry for this
 
 	let (use_pooling, use_cow) = match semantics.instantiation_strategy {
 		InstantiationStrategy::PoolingCopyOnWrite => (true, true),

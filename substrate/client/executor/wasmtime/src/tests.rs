@@ -220,7 +220,7 @@ fn deep_call_stack_wat(depth: usize) -> String {
 // We need two limits here since depending on whether the code is compiled in debug
 // or in release mode the maximum call depth is slightly different.
 #[cfg(debug_assertions)]
-const CALL_DEPTH_LIMIT: usize = 65435;
+const CALL_DEPTH_LIMIT: usize = 65434;
 #[cfg(not(debug_assertions))]
 const CALL_DEPTH_LIMIT: usize = 65490;
 
