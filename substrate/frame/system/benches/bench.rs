@@ -23,6 +23,8 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup},
 	BuildStorage, Perbill,
 };
+
+#[allow(unused_imports)]
 #[frame_support::pallet]
 mod module {
 	use frame_support::pallet_prelude::*;

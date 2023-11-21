@@ -22,6 +22,7 @@
 // - `pallet2`: declares an error with `#[pallet::error]`
 // - `pallet3`: does not declare an error.
 
+#[allow(unused_imports)]
 #[frame_support::pallet(dev_mode)]
 pub mod pallet {
 	use frame_support::pallet_prelude::*;
@@ -66,6 +67,7 @@ pub mod pallet {
 	}
 }
 
+#[allow(unused_imports)]
 #[frame_support::pallet]
 pub mod pallet2 {
 	use frame_support::pallet_prelude::*;
@@ -110,6 +112,7 @@ pub mod pallet2 {
 	}
 }
 
+#[allow(unused_imports)]
 #[frame_support::pallet]
 pub mod pallet3 {
 	use frame_support::pallet_prelude::*;

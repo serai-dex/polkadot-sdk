@@ -33,6 +33,7 @@ use sp_runtime::BuildStorage;
 
 type Block = frame_system::mocking::MockBlock<Test>;
 
+#[allow(unused_imports)]
 #[frame_support::pallet]
 mod dummy_pallet {
 	use frame_support::pallet_prelude::*;
