@@ -450,7 +450,6 @@ impl_opaque_keys! {
 		pub grandpa: Grandpa,
 		pub babe: Babe,
 		pub im_online: ImOnline,
-		pub authority_discovery: AuthorityDiscovery,
 		pub mixnet: Mixnet,
 	}
 }
@@ -744,10 +743,6 @@ impl pallet_offences::Config for Runtime {
 	type OnOffenceHandler = Staking;
 }
 
-impl pallet_authority_discovery::Config for Runtime {
-	type MaxAuthorities = MaxAuthorities;
-}
-
 parameter_types! {
 	pub const MaxSetIdSessionEntries: u32 = BondingDuration::get() * SessionsPerEra::get();
 }
@@ -947,7 +942,6 @@ construct_runtime!(
 		Grandpa: pallet_grandpa,
 		Sudo: pallet_sudo,
 		ImOnline: pallet_im_online,
-		AuthorityDiscovery: pallet_authority_discovery,
 		Offences: pallet_offences,
 		Historical: pallet_session_historical::{Pallet},
 		Scheduler: pallet_scheduler,
@@ -1202,7 +1196,7 @@ impl_runtime_apis! {
 
 	impl sp_authority_discovery::AuthorityDiscoveryApi<Block> for Runtime {
 		fn authorities() -> Vec<AuthorityDiscoveryId> {
-			AuthorityDiscovery::authorities()
+			Babe::authorities().into_iter().map(|(validator, _)| validator.into_inner().into()).collect()
 		}
 	}
 

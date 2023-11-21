@@ -75,7 +75,6 @@ members = [
 	"substrate/frame/asset-conversion",
 	"substrate/frame/assets",
 	"substrate/frame/aura",
-	"substrate/frame/authority-discovery",
 	"substrate/frame/authorship",
 	"substrate/frame/babe",
 	"substrate/frame/bags-list",

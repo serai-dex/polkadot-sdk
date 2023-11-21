@@ -20,6 +20,7 @@
 ./substrate/frame/alliance
 ./substrate/frame/asset-rate
 ./substrate/frame/atomic-swap
+./substrate/frame/authority-discovery
 ./substrate/frame/beefy
 ./substrate/frame/beefy-mmr
 ./substrate/frame/bounties

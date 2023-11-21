@@ -180,8 +180,7 @@ pub fn generate_authority_keys_and_store(
 				.map_err(|err| err.to_string())?
 				.into();
 
-		let (_, _, grandpa, babe, im_online, authority_discovery, mixnet) =
-			chain_spec::authority_keys_from_seed(seed);
+		let (_, _, grandpa, babe, im_online, mixnet) = chain_spec::authority_keys_from_seed(seed);
 
 		let insert_key = |key_type, public| {
 			keystore
@@ -194,11 +193,6 @@ pub fn generate_authority_keys_and_store(
 		insert_key(sp_core::crypto::key_types::GRANDPA, grandpa.as_slice())?;
 
 		insert_key(sp_core::crypto::key_types::IM_ONLINE, im_online.as_slice())?;
-
-		insert_key(
-			sp_core::crypto::key_types::AUTHORITY_DISCOVERY,
-			authority_discovery.as_slice(),
-		)?;
 
 		insert_key(sp_core::crypto::key_types::MIXNET, mixnet.as_slice())?;
 	}

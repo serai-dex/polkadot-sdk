@@ -140,8 +140,8 @@ use sp_std::{
 };
 
 pub use pallet::*;
-pub use weights::WeightInfo;
 pub use sp_session::ShouldEndSession;
+pub use weights::WeightInfo;
 
 /// Ends the session after a fixed period of blocks.
 ///

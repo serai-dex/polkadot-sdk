@@ -83,7 +83,6 @@ pub fn config_endowed(code: Option<&[u8]>, extra_endowed: Vec<AccountId>) -> Run
 		},
 		grandpa: GrandpaConfig { authorities: vec![], _config: Default::default() },
 		im_online: Default::default(),
-		authority_discovery: Default::default(),
 		sudo: Default::default(),
 		assets: AssetsConfig { assets: vec![(9, alice(), true, 1)], ..Default::default() },
 		pool_assets: Default::default(),
