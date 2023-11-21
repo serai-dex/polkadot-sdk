@@ -47,7 +47,6 @@ use sc_network::{
 	peer_store::PeerStore,
 	NetworkService, NetworkStateInfo, NetworkStatusProvider,
 };
-use sc_network_bitswap::BitswapRequestHandler;
 use sc_network_common::role::Roles;
 use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
 use sc_network_sync::{
@@ -831,12 +830,6 @@ where
 
 	if let Some(config) = warp_sync_protocol_config {
 		net_config.add_request_response_protocol(config);
-	}
-
-	if config.network.ipfs_server {
-		let (handler, protocol_config) = BitswapRequestHandler::new(client.clone());
-		spawn_handle.spawn("bitswap-request-handler", Some("networking"), handler.run());
-		net_config.add_request_response_protocol(protocol_config);
 	}
 
 	// create transactions protocol and add it to the list of supported protocols of

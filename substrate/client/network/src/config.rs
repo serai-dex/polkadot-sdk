@@ -586,9 +586,6 @@ pub struct NetworkConfiguration {
 	/// `kademlia_replication_factor` peers to consider record successfully put.
 	pub kademlia_replication_factor: NonZeroUsize,
 
-	/// Enable serving block data over IPFS bitswap.
-	pub ipfs_server: bool,
-
 	/// Size of Yamux receive window of all substreams. `None` for the default (256kiB).
 	/// Any value less than 256kiB is invalid.
 	///
@@ -640,7 +637,6 @@ impl NetworkConfiguration {
 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
 				.expect("value is a constant; constant is non-zero; qed."),
 			yamux_window_size: None,
-			ipfs_server: false,
 		}
 	}
 
