@@ -357,7 +357,7 @@ impl pallet_babe::Config for Runtime {
 	type DisabledValidators = Session;
 	type WeightInfo = ();
 	type MaxAuthorities = MaxAuthorities;
-	type MaxNominators = MaxNominatorRewardedPerValidator;
+	type MaxNominators = MaxNominators;
 	type KeyOwnerProof =
 		<Historical as KeyOwnerProofSystem<(KeyTypeId, pallet_babe::AuthorityId)>>::Proof;
 	type EquivocationReportSystem =
@@ -386,7 +386,7 @@ impl pallet_balances::Config for Runtime {
 	type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 	type FreezeIdentifier = RuntimeFreezeReason;
 	type MaxFreezes = ConstU32<1>;
-	type MaxHolds = ConstU32<5>;
+	type MaxHolds = ConstU32<6>;
 }
 
 parameter_types! {
@@ -427,6 +427,10 @@ impl pallet_asset_conversion_tx_payment::Config for Runtime {
 	type Fungibles = Assets;
 	type OnChargeAssetTransaction =
 		pallet_asset_conversion_tx_payment::AssetConversionAdapter<Balances, AssetConversion>;
+}
+
+impl pallet_skip_feeless_payment::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 }
 
 parameter_types! {
@@ -487,7 +491,7 @@ parameter_types! {
 	pub const BondingDuration: sp_staking::EraIndex = 24 * 28;
 	pub const SlashDeferDuration: sp_staking::EraIndex = 24 * 7; // 1/4 the bonding duration.
 	pub const RewardCurve: &'static PiecewiseLinear<'static> = &REWARD_CURVE;
-	pub const MaxNominatorRewardedPerValidator: u32 = 256;
+	pub const MaxNominators: u32 = 64;
 	pub const OffendingValidatorsThreshold: Perbill = Perbill::from_percent(17);
 	pub OffchainRepeat: BlockNumber = 5;
 	pub HistoryDepth: u32 = 84;
@@ -519,7 +523,7 @@ impl pallet_staking::Config for Runtime {
 	type SessionInterface = Self;
 	type EraPayout = pallet_staking::ConvertCurve<RewardCurve>;
 	type NextNewSession = Session;
-	type MaxNominatorRewardedPerValidator = MaxNominatorRewardedPerValidator;
+	type MaxExposurePageSize = ConstU32<256>;
 	type OffendingValidatorsThreshold = OffendingValidatorsThreshold;
 	type ElectionProvider = onchain::OnChainExecution<OnChainElection>;
 	type GenesisElectionProvider = onchain::OnChainExecution<OnChainElection>;
@@ -654,7 +658,9 @@ impl pallet_remark::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
-impl pallet_root_testing::Config for Runtime {}
+impl pallet_root_testing::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
 
 impl pallet_sudo::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -699,7 +705,11 @@ where
 			frame_system::CheckEra::<Runtime>::from(era),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_asset_conversion_tx_payment::ChargeAssetTxPayment::<Runtime>::from(tip, None),
+			pallet_skip_feeless_payment::SkipCheckIfFeeless::from(
+				pallet_asset_conversion_tx_payment::ChargeAssetTxPayment::<Runtime>::from(
+					tip, None,
+				),
+			),
 		);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
@@ -751,7 +761,7 @@ impl pallet_grandpa::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = ();
 	type MaxAuthorities = MaxAuthorities;
-	type MaxNominators = MaxNominatorRewardedPerValidator;
+	type MaxNominators = MaxNominators;
 	type MaxSetIdSessionEntries = MaxSetIdSessionEntries;
 	type KeyOwnerProof = <Historical as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
 	type EquivocationReportSystem =
@@ -959,6 +969,7 @@ construct_runtime!(
 		TxPause: pallet_tx_pause,
 		SafeMode: pallet_safe_mode,
 		Mixnet: pallet_mixnet,
+		SkipFeelessPayment: pallet_skip_feeless_payment,
 	}
 );
 
@@ -985,7 +996,10 @@ pub type SignedExtra = (
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_asset_conversion_tx_payment::ChargeAssetTxPayment<Runtime>,
+	pallet_skip_feeless_payment::SkipCheckIfFeeless<
+		Runtime,
+		pallet_asset_conversion_tx_payment::ChargeAssetTxPayment<Runtime>,
+	>,
 );
 
 /// Unchecked extrinsic type as expected by this runtime.
@@ -1139,9 +1153,13 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl pallet_staking_runtime_api::StakingApi<Block, Balance> for Runtime {
+	impl pallet_staking_runtime_api::StakingApi<Block, Balance, AccountId> for Runtime {
 		fn nominations_quota(balance: Balance) -> u32 {
 			Staking::api_nominations_quota(balance)
+		}
+
+		fn eras_stakers_page_count(era: sp_staking::EraIndex, account: AccountId) -> sp_staking::Page {
+			Staking::api_eras_stakers_page_count(era, account)
 		}
 	}
 

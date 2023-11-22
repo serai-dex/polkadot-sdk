@@ -25,6 +25,7 @@ use sc_service::{BlocksPruning, PruningMode};
 #[derive(Debug, Clone, Args)]
 pub struct PruningParams {
 	/// Specify the state pruning mode.
+	///
 	/// This mode specifies when the block's state (ie, storage)
 	/// should be pruned (ie, removed) from the database.
 	/// This setting can only be set on the first creation of the database. Every subsequent run
@@ -39,6 +40,7 @@ pub struct PruningParams {
 	pub state_pruning: Option<DatabasePruningMode>,
 
 	/// Specify the blocks pruning mode.
+	///
 	/// This mode specifies when the block's body (including justifications)
 	/// should be pruned (ie, removed) from the database.
 	/// Possible values:

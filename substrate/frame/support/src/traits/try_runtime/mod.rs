@@ -18,6 +18,11 @@
 
 //! Try-runtime specific traits and types.
 
+pub mod decode_entire_state;
+pub use decode_entire_state::{TryDecodeEntireStorage, TryDecodeEntireStorageError};
+
+use super::StorageInstance;
+
 use impl_trait_for_tuples::impl_for_tuples;
 use sp_arithmetic::traits::AtLeast32BitUnsigned;
 use sp_runtime::TryRuntimeError;
@@ -36,6 +41,13 @@ pub enum Select {
 	///
 	/// Pallet names are obtained from [`super::PalletInfoAccess`].
 	Only(Vec<Vec<u8>>),
+}
+
+impl Select {
+	/// Whether to run any checks at all.
+	pub fn any(&self) -> bool {
+		!matches!(self, Select::None)
+	}
 }
 
 impl Default for Select {
@@ -106,6 +118,11 @@ impl UpgradeCheckSelect {
 	pub fn try_state(&self) -> bool {
 		matches!(self, Self::All | Self::TryState)
 	}
+
+	/// Whether to run any checks at all.
+	pub fn any(&self) -> bool {
+		!matches!(self, Self::None)
+	}
 }
 
 #[cfg(feature = "std")]
@@ -145,9 +162,27 @@ impl<BlockNumber: Clone + sp_std::fmt::Debug + AtLeast32BitUnsigned> TryState<Bl
 		match targets {
 			Select::None => Ok(()),
 			Select::All => {
-				let mut result = Ok(());
-				for_tuples!( #( result = result.and(Tuple::try_state(n.clone(), targets.clone())); )* );
-				result
+				let mut error_count = 0;
+				for_tuples!(#(
+					if let Err(_) = Tuple::try_state(n.clone(), targets.clone()) {
+						error_count += 1;
+					}
+				)*);
+
+				if error_count > 0 {
+					log::error!(
+						target: "try-runtime",
+						"{} pallets exited with errors while executing try_state checks.",
+						error_count
+					);
+
+					return Err(
+						"Detected errors while executing try_state checks. See logs for more info."
+							.into(),
+					)
+				}
+
+				Ok(())
 			},
 			Select::RoundRobin(len) => {
 				let functions: &[fn(BlockNumber, Select) -> Result<(), TryRuntimeError>] =

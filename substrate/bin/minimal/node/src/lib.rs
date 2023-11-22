@@ -1,6 +1,7 @@
-// This file is part of Substrate.
+// This file is part of a fork of Substrate which has had various changes.
 
 // Copyright (C) Parity Technologies (UK) Ltd.
+// Copyright (C) 2022-2023 Luke Parker
 // SPDX-License-Identifier: Apache-2.0
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod deps {
-	pub use frame_support;
-	pub use frame_system;
-}
+pub mod chain_spec;
+pub(crate) mod cli;
+pub mod rpc;
+pub mod service;

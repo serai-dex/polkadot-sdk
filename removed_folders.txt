@@ -10,6 +10,7 @@
 ./docker/test-parachain*
 ./polkadot
 ./substrate/client/consensus/beefy
+./substrate/client/consensus/manual-seal
 ./substrate/client/consensus/merkle-mountain-range
 ./substrate/client/consensus/pow
 ./substrate/client/merkle-mountain-range
@@ -60,6 +61,7 @@
 ./substrate/frame/scored-pool
 ./substrate/frame/society
 ./substrate/frame/statement
+./substrate/frame/support/src/traits/messages.rs
 ./substrate/frame/support/src/traits/tokens/fungible/freeze.rs
 ./substrate/frame/support/src/traits/tokens/fungible/item_of.rs
 ./substrate/frame/support/src/traits/voting.rs

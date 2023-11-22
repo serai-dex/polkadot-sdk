@@ -17,14 +17,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use crate::types::{ExtendedPeerInfo, SyncEvent, SyncEventStream, SyncStatus, SyncStatusProvider};
+
 use futures::{channel::oneshot, Stream};
 use libp2p::PeerId;
 
 use sc_consensus::{BlockImportError, BlockImportStatus, JustificationSyncLink, Link};
 use sc_network::{NetworkBlock, NetworkSyncForkRequest};
-use sc_network_common::sync::{
-	ExtendedPeerInfo, SyncEvent, SyncEventStream, SyncStatus, SyncStatusProvider,
-};
 use sc_utils::mpsc::{tracing_unbounded, TracingUnboundedSender};
 use sp_runtime::traits::{Block as BlockT, NumberFor};
 
@@ -36,7 +35,7 @@ use std::{
 	},
 };
 
-/// Commands send to `ChainSync`
+/// Commands send to `SyncingEngine`
 pub enum ToServiceCommand<B: BlockT> {
 	SetSyncForkRequest(Vec<PeerId>, B::Hash, NumberFor<B>),
 	RequestJustification(B::Hash, NumberFor<B>),
@@ -65,7 +64,7 @@ pub enum ToServiceCommand<B: BlockT> {
 	// },
 }
 
-/// Handle for communicating with `ChainSync` asynchronously
+/// Handle for communicating with `SyncingEngine` asynchronously
 #[derive(Clone)]
 pub struct SyncingService<B: BlockT> {
 	tx: TracingUnboundedSender<ToServiceCommand<B>>,
@@ -150,7 +149,7 @@ impl<B: BlockT> SyncingService<B> {
 
 	/// Get sync status
 	///
-	/// Returns an error if `ChainSync` has terminated.
+	/// Returns an error if `SyncingEngine` has terminated.
 	pub async fn status(&self) -> Result<SyncStatus<B>, ()> {
 		let (tx, rx) = oneshot::channel();
 		let _ = self.tx.unbounded_send(ToServiceCommand::Status(tx));

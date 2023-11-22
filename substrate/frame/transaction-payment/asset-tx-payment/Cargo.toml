@@ -28,7 +28,7 @@ codec = { package = "parity-scale-codec", version = "3.6.1", default-features = 
 scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
 
 [dev-dependencies]
-serde_json = "1.0.107"
+serde_json = "1.0.108"
 
 sp-storage = { path = "../../../primitives/storage", default-features = false}
 

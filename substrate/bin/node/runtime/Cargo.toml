@@ -20,28 +20,29 @@ codec = { package = "parity-scale-codec", version = "3.6.1", default-features = 
 	"derive",
 	"max-encoded-len",
 ] }
-scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.10.0", default-features = false, features = ["derive", "serde"] }
 static_assertions = "1.1.0"
 log = { version = "0.4.17", default-features = false }
+serde_json = { version = "1.0.108", default-features = false, features = ["alloc", "arbitrary_precision"] }
 
 # pallet-asset-conversion: turn on "num-traits" feature
 primitive-types = { version = "0.12.0", default-features = false, features = ["codec", "scale-info", "num-traits"] }
 
 # primitives
-sp-authority-discovery = { path = "../../../primitives/authority-discovery", default-features = false}
-sp-consensus-babe = { path = "../../../primitives/consensus/babe", default-features = false}
-sp-consensus-grandpa = { path = "../../../primitives/consensus/grandpa", default-features = false}
+sp-authority-discovery = { path = "../../../primitives/authority-discovery", default-features = false, features=["serde"] }
+sp-consensus-babe = { path = "../../../primitives/consensus/babe", default-features = false, features=["serde"] }
+sp-consensus-grandpa = { path = "../../../primitives/consensus/grandpa", default-features = false, features=["serde"] }
 sp-block-builder = { path = "../../../primitives/block-builder", default-features = false}
 sp-genesis-builder = { default-features = false, path = "../../../primitives/genesis-builder" }
 sp-inherents = { path = "../../../primitives/inherents", default-features = false}
 node-primitives = { path = "../primitives", default-features = false}
 sp-mixnet = { path = "../../../primitives/mixnet", default-features = false }
 sp-offchain = { path = "../../../primitives/offchain", default-features = false}
-sp-core = { path = "../../../primitives/core", default-features = false}
+sp-core = { path = "../../../primitives/core", default-features = false, features=["serde"] }
 sp-std = { path = "../../../primitives/std", default-features = false}
 sp-api = { path = "../../../primitives/api", default-features = false}
-sp-runtime = { path = "../../../primitives/runtime", default-features = false}
-sp-staking = { path = "../../../primitives/staking", default-features = false}
+sp-runtime = { path = "../../../primitives/runtime", default-features = false, features=["serde"] }
+sp-staking = { path = "../../../primitives/staking", default-features = false, features=["serde"] }
 sp-storage = { path = "../../../primitives/storage", default-features = false}
 sp-session = { path = "../../../primitives/session", default-features = false}
 sp-transaction-pool = { path = "../../../primitives/transaction-pool", default-features = false}
@@ -88,6 +89,7 @@ pallet-transaction-payment = { path = "../../../frame/transaction-payment", defa
 pallet-transaction-payment-rpc-runtime-api = { path = "../../../frame/transaction-payment/rpc/runtime-api", default-features = false}
 pallet-asset-conversion-tx-payment = { path = "../../../frame/transaction-payment/asset-conversion-tx-payment", default-features = false}
 pallet-asset-tx-payment = { path = "../../../frame/transaction-payment/asset-tx-payment", default-features = false}
+pallet-skip-feeless-payment = { path = "../../../frame/transaction-payment/skip-feeless-payment", default-features = false}
 pallet-uniques = { path = "../../../frame/uniques", default-features = false}
 pallet-tx-pause = { path = "../../../frame/tx-pause", default-features = false}
 pallet-safe-mode = { path = "../../../frame/safe-mode", default-features = false}
@@ -133,6 +135,7 @@ std = [
 	"pallet-scheduler/std",
 	"pallet-session-benchmarking?/std",
 	"pallet-session/std",
+	"pallet-skip-feeless-payment/std",
 	"pallet-staking-runtime-api/std",
 	"pallet-staking/std",
 	"pallet-state-trie-migration/std",
@@ -145,6 +148,7 @@ std = [
 	"pallet-utility/std",
 	"primitive-types/std",
 	"scale-info/std",
+	"serde_json/std",
 	"sp-api/std",
 	"sp-authority-discovery/std",
 	"sp-block-builder/std",
@@ -190,6 +194,7 @@ runtime-benchmarks = [
 	"pallet-safe-mode/runtime-benchmarks",
 	"pallet-scheduler/runtime-benchmarks",
 	"pallet-session-benchmarking/runtime-benchmarks",
+	"pallet-skip-feeless-payment/runtime-benchmarks",
 	"pallet-staking/runtime-benchmarks",
 	"pallet-state-trie-migration/runtime-benchmarks",
 	"pallet-sudo/runtime-benchmarks",
@@ -226,6 +231,7 @@ try-runtime = [
 	"pallet-safe-mode/try-runtime",
 	"pallet-scheduler/try-runtime",
 	"pallet-session/try-runtime",
+	"pallet-skip-feeless-payment/try-runtime",
 	"pallet-staking/try-runtime",
 	"pallet-state-trie-migration/try-runtime",
 	"pallet-sudo/try-runtime",

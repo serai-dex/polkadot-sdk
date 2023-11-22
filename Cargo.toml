@@ -71,6 +71,7 @@ members = [
 	"substrate/client/transaction-pool",
 	"substrate/client/transaction-pool/api",
 	"substrate/client/utils",
+	"substrate/frame",
 	"substrate/frame/asset-conversion",
 	"substrate/frame/assets",
 	"substrate/frame/aura",
@@ -113,7 +114,6 @@ members = [
 	"substrate/frame/support/test",
 	"substrate/frame/support/test/compile_pass",
 	"substrate/frame/support/test/pallet",
-	"substrate/frame/support/test/stg_frame_crate/frame",
 	"substrate/frame/support/test/stg_frame_crate",
 	"substrate/frame/system",
 	"substrate/frame/system/benchmarking",
@@ -124,6 +124,7 @@ members = [
 	"substrate/frame/transaction-payment/asset-tx-payment",
 	"substrate/frame/transaction-payment/rpc",
 	"substrate/frame/transaction-payment/rpc/runtime-api",
+	"substrate/frame/transaction-payment/skip-feeless-payment",
 	"substrate/frame/try-runtime",
 	"substrate/frame/tx-pause",
 	"substrate/frame/uniques",
@@ -206,6 +207,7 @@ members = [
 	"substrate/utils/prometheus",
 	"substrate/utils/wasm-builder",
 ]
+default-members = [ "substrate/bin/node/cli" ]
 
 [profile.release]
 # Polkadot runtime requires unwinding.
@@ -271,7 +273,7 @@ sha2 = { opt-level = 3 }
 sha3 = { opt-level = 3 }
 smallvec = { opt-level = 3 }
 snow = { opt-level = 3 }
-tiny-bip39 = { opt-level = 3 }
+bip39 = { opt-level = 3 }
 twox-hash = { opt-level = 3 }
 uint = { opt-level = 3 }
 x25519-dalek = { opt-level = 3 }
@@ -281,3 +283,8 @@ zeroize = { opt-level = 3 }
 [patch.crates-io]
 # https://github.com/rust-lang-nursery/lazy-static.rs/issues/201
 lazy_static = { git = "https://github.com/rust-lang-nursery/lazy-static.rs", rev = "5735630d46572f1e5377c8f2ba0f79d18f53b10c" }
+
+# The external arkworks-substrate repo refers back to the polkadot-sdk repo,
+# hence patching it to point to the path
+[patch."https://github.com/paritytech/polkadot-sdk"]
+sp-crypto-ec-utils = { path = "substrate/primitives/crypto/ec-utils" }

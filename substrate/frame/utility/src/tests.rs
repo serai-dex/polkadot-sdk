@@ -145,7 +145,9 @@ impl pallet_balances::Config for Test {
 	type MaxHolds = ();
 }
 
-impl pallet_root_testing::Config for Test {}
+impl pallet_root_testing::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
+}
 
 impl pallet_timestamp::Config for Test {
 	type Moment = u64;
