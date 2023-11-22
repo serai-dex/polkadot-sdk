@@ -61,6 +61,7 @@
 ./substrate/frame/scored-pool
 ./substrate/frame/society
 ./substrate/frame/statement
+./substrate/frame/support/src/storage/types/counted_nmap.rs
 ./substrate/frame/support/src/traits/messages.rs
 ./substrate/frame/support/src/traits/tokens/fungible/freeze.rs
 ./substrate/frame/support/src/traits/tokens/fungible/item_of.rs
