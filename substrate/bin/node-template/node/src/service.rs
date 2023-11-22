@@ -186,7 +186,6 @@ pub fn new_full(config: Configuration) -> Result<TaskManager, ServiceError> {
 					transaction_pool.clone(),
 				)),
 				network_provider: network.clone(),
-				enable_http_requests: true,
 				custom_extensions: |_| vec![],
 			})
 			.run(client.clone(), task_manager.spawn_handle())

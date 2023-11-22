@@ -376,28 +376,6 @@ fn offchain_local_storage_should_work(wasm_method: WasmExecutionMethod) {
 	assert_eq!(state.read().persistent_storage.get(b"test"), Some(vec![]));
 }
 
-test_wasm_execution!(offchain_http_should_work);
-fn offchain_http_should_work(wasm_method: WasmExecutionMethod) {
-	let mut ext = TestExternalities::default();
-	let (offchain, state) = testing::TestOffchainExt::new();
-	ext.register_extension(OffchainWorkerExt::new(offchain));
-	state.write().expect_request(testing::PendingRequest {
-		method: "POST".into(),
-		uri: "http://localhost:12345".into(),
-		body: vec![1, 2, 3, 4],
-		headers: vec![("X-Auth".to_owned(), "test".to_owned())],
-		sent: true,
-		response: Some(vec![1, 2, 3]),
-		response_headers: vec![("X-Auth".to_owned(), "hello".to_owned())],
-		..Default::default()
-	});
-
-	assert_eq!(
-		call_in_wasm("test_offchain_http", &[0], wasm_method, &mut ext.ext(),).unwrap(),
-		true.encode(),
-	);
-}
-
 test_wasm_execution!(should_trap_when_heap_exhausted);
 fn should_trap_when_heap_exhausted(wasm_method: WasmExecutionMethod) {
 	let mut ext = TestExternalities::default();

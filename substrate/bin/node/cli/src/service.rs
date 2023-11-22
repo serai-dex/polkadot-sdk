@@ -572,7 +572,6 @@ pub fn new_full_base(
 				)),
 				network_provider: network.clone(),
 				is_validator: role.is_authority(),
-				enable_http_requests: true,
 				custom_extensions: move |_| vec![],
 			})
 			.run(client.clone(), task_manager.spawn_handle())

@@ -47,7 +47,6 @@ log = "0.4.17"
 rand = "0.8"
 
 # primitives
-sp-authority-discovery = { path = "../../../primitives/authority-discovery" }
 sp-consensus-babe = { path = "../../../primitives/consensus/babe" }
 grandpa-primitives = { package = "sp-consensus-grandpa", path = "../../../primitives/consensus/grandpa" }
 sp-api = { path = "../../../primitives/api" }
