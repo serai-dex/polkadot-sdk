@@ -45,7 +45,6 @@ parameter_types! {
 		impl_name: sp_version::create_runtime_str!("system-test"),
 		authoring_version: 1,
 		spec_version: 1,
-		impl_version: 1,
 		apis: sp_version::create_apis_vec!([]),
 		transaction_version: 1,
 		state_version: 1,

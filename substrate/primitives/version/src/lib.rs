@@ -75,7 +75,6 @@ pub mod embed;
 /// 	impl_name: create_runtime_str!("test"),
 /// 	authoring_version: 10,
 /// 	spec_version: 265,
-/// 	impl_version: 1,
 /// 	apis: RUNTIME_API_VERSIONS,
 /// 	transaction_version: 2,
 /// 	state_version: 1,
@@ -92,9 +91,9 @@ pub mod embed;
 /// - The `spec_name` and `impl_name` must be set by a macro-like expression. The name of the
 ///   macro doesn't matter though.
 ///
-/// - `authoring_version`, `spec_version`, `impl_version` and `transaction_version` must be set
-///   by a literal. Literal must be an integer. No other expressions are allowed there. In
-///   particular, you can't supply a constant variable.
+/// - `authoring_version`, `spec_version`, and `transaction_version` must be set by a literal.
+///   Literal must be an integer. No other expressions are allowed there. In particular, you
+///   can't supply a constant variable.
 ///
 /// - `apis` doesn't have any specific constraints. This is because this information doesn't
 ///   get into the custom section and is not parsed.
@@ -150,10 +149,9 @@ macro_rules! create_apis_vec {
 
 /// Runtime version.
 /// This should not be thought of as classic Semver (major/minor/tiny).
-/// This triplet have different semantics and mis-interpretation could cause problems.
+/// These versions have different semantics and mis-interpretation could cause problems.
 /// In particular: bug fixes should result in an increment of `spec_version` and possibly
-/// `authoring_version`, absolutely not `impl_version` since they change the semantics of the
-/// runtime.
+/// `authoring_version`.
 #[derive(Clone, PartialEq, Eq, Encode, Default, sp_runtime::RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
@@ -182,17 +180,6 @@ pub struct RuntimeVersion {
 	///
 	/// This number should never decrease.
 	pub spec_version: u32,
-
-	/// Version of the implementation of the specification.
-	///
-	/// Nodes are free to ignore this; it serves only as an indication that the code is different;
-	/// as long as the other two versions are the same then while the actual code may be different,
-	/// it is nonetheless required to do the same thing. Non-consensus-breaking optimizations are
-	/// about the only changes that could be made which would result in only the `impl_version`
-	/// changing.
-	///
-	/// This number can be reverted to `0` after a [`spec_version`](Self::spec_version) bump.
-	pub impl_version: u32,
 
 	/// List of supported API "features" along with their versions.
 	#[cfg_attr(
@@ -246,7 +233,6 @@ impl RuntimeVersion {
 		let impl_name = Decode::decode(input)?;
 		let authoring_version = Decode::decode(input)?;
 		let spec_version = Decode::decode(input)?;
-		let impl_version = Decode::decode(input)?;
 		let apis = Decode::decode(input)?;
 		let core_version =
 			if core_version.is_some() { core_version } else { core_version_from_apis(&apis) };
@@ -259,7 +245,6 @@ impl RuntimeVersion {
 			impl_name,
 			authoring_version,
 			spec_version,
-			impl_version,
 			apis,
 			transaction_version,
 			state_version,
@@ -278,11 +263,10 @@ impl fmt::Display for RuntimeVersion {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(
 			f,
-			"{}-{} ({}-{}.tx{}.au{})",
+			"{}-{} ({}.tx{}.au{})",
 			self.spec_name,
 			self.spec_version,
 			self.impl_name,
-			self.impl_version,
 			self.transaction_version,
 			self.authoring_version,
 		)

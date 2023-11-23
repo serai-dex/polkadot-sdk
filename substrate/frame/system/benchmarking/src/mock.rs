@@ -77,7 +77,6 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 	let version = sp_version::RuntimeVersion {
 		spec_name: "spec_name".into(),
 		spec_version: 123,
-		impl_version: 456,
 		..Default::default()
 	};
 	let read_runtime_version = MockedReadRuntimeVersion(version.encode());

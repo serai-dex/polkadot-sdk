@@ -55,8 +55,6 @@ pub struct ChainHeadRuntimeVersion {
 	pub impl_name: String,
 	/// Version of the runtime specification.
 	pub spec_version: u32,
-	/// Version of the implementation of the specification.
-	pub impl_version: u32,
 	/// Map of all supported API "features" and their versions.
 	pub apis: BTreeMap<String, u32>,
 	/// Transaction version.
@@ -69,7 +67,6 @@ impl From<RuntimeVersion> for ChainHeadRuntimeVersion {
 			spec_name: val.spec_name.into(),
 			impl_name: val.impl_name.into(),
 			spec_version: val.spec_version,
-			impl_version: val.impl_version,
 			apis: val
 				.apis
 				.into_iter()

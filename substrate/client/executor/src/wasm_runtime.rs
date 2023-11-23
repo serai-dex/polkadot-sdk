@@ -451,7 +451,6 @@ mod tests {
 		pub impl_name: RuntimeString,
 		pub authoring_version: u32,
 		pub spec_version: u32,
-		pub impl_version: u32,
 		pub apis: sp_version::ApisVec,
 	}
 
@@ -470,7 +469,6 @@ mod tests {
 			impl_name: "test".into(),
 			authoring_version: 1,
 			spec_version: 1,
-			impl_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 1)]),
 		};
 
@@ -486,7 +484,6 @@ mod tests {
 			impl_name: "test".into(),
 			authoring_version: 1,
 			spec_version: 1,
-			impl_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
 		};
 
@@ -500,7 +497,6 @@ mod tests {
 			impl_name: "test".into(),
 			authoring_version: 1,
 			spec_version: 1,
-			impl_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
 			transaction_version: 3,
 			state_version: 4,
@@ -515,7 +511,6 @@ mod tests {
 			impl_name: "test".into(),
 			authoring_version: 1,
 			spec_version: 1,
-			impl_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
 			transaction_version: 3,
 			state_version: 4,
@@ -538,7 +533,6 @@ mod tests {
 			impl_name: "test_replace".into(),
 			authoring_version: 100,
 			spec_version: 100,
-			impl_version: 100,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
 			transaction_version: 100,
 			state_version: 1,

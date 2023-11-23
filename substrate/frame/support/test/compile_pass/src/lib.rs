@@ -38,7 +38,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	impl_name: create_runtime_str!("substrate-frame-support-test-compile-pass-runtime"),
 	authoring_version: 0,
 	spec_version: 0,
-	impl_version: 0,
 	apis: sp_version::create_apis_vec!([]),
 	transaction_version: 0,
 	state_version: 0,

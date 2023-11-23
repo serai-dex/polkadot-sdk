@@ -1355,7 +1355,6 @@ mod tests {
 				*v = sp_version::RuntimeVersion {
 					spec_version: 1,
 					spec_name: "test".into(),
-					impl_version: 2,
 					..Default::default()
 				}
 			});

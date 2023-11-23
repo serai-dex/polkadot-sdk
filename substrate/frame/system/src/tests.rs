@@ -584,26 +584,17 @@ fn set_code_checks_works() {
 	}
 
 	let test_data = vec![
-		("test", 1, 2, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
-		("test", 1, 1, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
-		("test2", 1, 1, Err(Error::<Test>::InvalidSpecName)),
-		(
-			"test",
-			2,
-			1,
-			Ok(Some(<mock::Test as pallet::Config>::BlockWeights::get().max_block).into()),
-		),
-		("test", 0, 1, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
-		("test", 1, 0, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
+		("test", 1, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
+		("test", 1, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
+		("test2", 1, Err(Error::<Test>::InvalidSpecName)),
+		("test", 2, Ok(Some(<mock::Test as pallet::Config>::BlockWeights::get().max_block).into())),
+		("test", 0, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
+		("test", 1, Err(Error::<Test>::SpecVersionNeedsToIncrease)),
 	];
 
-	for (spec_name, spec_version, impl_version, expected) in test_data.into_iter() {
-		let version = RuntimeVersion {
-			spec_name: spec_name.into(),
-			spec_version,
-			impl_version,
-			..Default::default()
-		};
+	for (spec_name, spec_version, expected) in test_data.into_iter() {
+		let version =
+			RuntimeVersion { spec_name: spec_name.into(), spec_version, ..Default::default() };
 		let read_runtime_version = ReadRuntimeVersion(version.encode());
 
 		let mut ext = new_test_ext();

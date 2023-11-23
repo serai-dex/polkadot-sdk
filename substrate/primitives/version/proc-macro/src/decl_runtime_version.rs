@@ -61,7 +61,6 @@ struct RuntimeVersion {
 	impl_name: String,
 	authoring_version: u32,
 	spec_version: u32,
-	impl_version: u32,
 	apis: u8,
 	transaction_version: u32,
 	state_version: u8,
@@ -73,7 +72,6 @@ struct ParseRuntimeVersion {
 	impl_name: Option<String>,
 	authoring_version: Option<u32>,
 	spec_version: Option<u32>,
-	impl_version: Option<u32>,
 	transaction_version: Option<u32>,
 	state_version: Option<u8>,
 }
@@ -121,8 +119,6 @@ impl ParseRuntimeVersion {
 			parse_once(&mut self.authoring_version, field_value, Self::parse_num_literal)?;
 		} else if field_name == "spec_version" {
 			parse_once(&mut self.spec_version, field_value, Self::parse_num_literal)?;
-		} else if field_name == "impl_version" {
-			parse_once(&mut self.impl_version, field_value, Self::parse_num_literal)?;
 		} else if field_name == "transaction_version" {
 			parse_once(&mut self.transaction_version, field_value, Self::parse_num_literal)?;
 		} else if field_name == "state_version" {
@@ -197,7 +193,6 @@ impl ParseRuntimeVersion {
 			impl_name,
 			authoring_version,
 			spec_version,
-			impl_version,
 			transaction_version,
 			state_version,
 		} = self;
@@ -207,7 +202,6 @@ impl ParseRuntimeVersion {
 			impl_name: required!(impl_name),
 			authoring_version: required!(authoring_version),
 			spec_version: required!(spec_version),
-			impl_version: required!(impl_version),
 			transaction_version: required!(transaction_version),
 			state_version: required!(state_version),
 			apis: 0,
@@ -238,7 +232,6 @@ mod tests {
 			impl_name: "world".to_string(),
 			authoring_version: 10,
 			spec_version: 265,
-			impl_version: 1,
 			apis: 0,
 			transaction_version: 2,
 			state_version: 1,
@@ -253,7 +246,6 @@ mod tests {
 				impl_name: "world".into(),
 				authoring_version: 10,
 				spec_version: 265,
-				impl_version: 1,
 				apis: Cow::Owned(vec![]),
 				transaction_version: 2,
 				state_version: 1,
