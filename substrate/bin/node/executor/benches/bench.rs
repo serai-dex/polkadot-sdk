@@ -51,8 +51,6 @@ pub fn compact_code_unwrap() -> &'static [u8] {
 
 const GENESIS_HASH: [u8; 32] = [69u8; 32];
 
-const TRANSACTION_VERSION: u32 = kitchensink_runtime::VERSION.transaction_version;
-
 const SPEC_VERSION: u32 = kitchensink_runtime::VERSION.spec_version;
 
 const HEAP_PAGES: u64 = 20;
@@ -60,7 +58,7 @@ const HEAP_PAGES: u64 = 20;
 type TestExternalities<H> = CoreTestExternalities<H>;
 
 fn sign(xt: CheckedExtrinsic) -> UncheckedExtrinsic {
-	node_testing::keyring::sign(xt, SPEC_VERSION, TRANSACTION_VERSION, GENESIS_HASH)
+	node_testing::keyring::sign(xt, SPEC_VERSION, GENESIS_HASH)
 }
 
 fn new_test_ext(genesis_config: &RuntimeGenesisConfig) -> TestExternalities<BlakeTwo256> {

@@ -135,7 +135,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	// If only runtime implementation changes and behavior does not, then leave spec_version as is
 	spec_version: 268,
 	apis: RUNTIME_API_VERSIONS,
-	transaction_version: 2,
 	state_version: 1,
 };
 
@@ -697,7 +696,6 @@ where
 		let extra = (
 			frame_system::CheckNonZeroSender::<Runtime>::new(),
 			frame_system::CheckSpecVersion::<Runtime>::new(),
-			frame_system::CheckTxVersion::<Runtime>::new(),
 			frame_system::CheckGenesis::<Runtime>::new(),
 			frame_system::CheckEra::<Runtime>::from(era),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
@@ -988,7 +986,6 @@ pub type BlockId = generic::BlockId<Block>;
 pub type SignedExtra = (
 	frame_system::CheckNonZeroSender<Runtime>,
 	frame_system::CheckSpecVersion<Runtime>,
-	frame_system::CheckTxVersion<Runtime>,
 	frame_system::CheckGenesis<Runtime>,
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,

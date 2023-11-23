@@ -473,7 +473,6 @@ mod tests {
 		};
 
 		let version = decode_version(&old_runtime_version.encode()).unwrap();
-		assert_eq!(1, version.transaction_version);
 		assert_eq!(0, version.state_version);
 	}
 
@@ -498,12 +497,10 @@ mod tests {
 			authoring_version: 1,
 			spec_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
-			transaction_version: 3,
 			state_version: 4,
 		};
 
 		let version = decode_version(&old_runtime_version.encode()).unwrap();
-		assert_eq!(3, version.transaction_version);
 		assert_eq!(0, version.state_version);
 
 		let old_runtime_version = sp_api::RuntimeVersion {
@@ -512,12 +509,10 @@ mod tests {
 			authoring_version: 1,
 			spec_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
-			transaction_version: 3,
 			state_version: 4,
 		};
 
 		let version = decode_version(&old_runtime_version.encode()).unwrap();
-		assert_eq!(3, version.transaction_version);
 		assert_eq!(4, version.state_version);
 	}
 
@@ -534,7 +529,6 @@ mod tests {
 			authoring_version: 100,
 			spec_version: 100,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
-			transaction_version: 100,
 			state_version: 1,
 		};
 

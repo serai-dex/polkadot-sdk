@@ -41,7 +41,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	authoring_version: 1,
 	spec_version: 0,
 	apis: RUNTIME_API_VERSIONS,
-	transaction_version: 1,
 	state_version: 1,
 };
 
@@ -54,7 +53,6 @@ pub fn native_version() -> NativeVersion {
 type SignedExtra = (
 	frame_system::CheckNonZeroSender<Runtime>,
 	frame_system::CheckSpecVersion<Runtime>,
-	frame_system::CheckTxVersion<Runtime>,
 	frame_system::CheckGenesis<Runtime>,
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,

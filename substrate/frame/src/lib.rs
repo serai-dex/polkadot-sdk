@@ -252,7 +252,6 @@ pub mod runtime {
 		pub type SystemSignedExtensionsOf<T> = (
 			frame_system::CheckNonZeroSender<T>,
 			frame_system::CheckSpecVersion<T>,
-			frame_system::CheckTxVersion<T>,
 			frame_system::CheckGenesis<T>,
 			frame_system::CheckEra<T>,
 			frame_system::CheckNonce<T>,

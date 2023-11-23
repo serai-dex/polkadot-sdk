@@ -39,7 +39,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	authoring_version: 0,
 	spec_version: 0,
 	apis: sp_version::create_apis_vec!([]),
-	transaction_version: 0,
 	state_version: 0,
 };
 

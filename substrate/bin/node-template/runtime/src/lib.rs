@@ -105,7 +105,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   the compatible custom types.
 	spec_version: 100,
 	apis: RUNTIME_API_VERSIONS,
-	transaction_version: 1,
 	state_version: 1,
 };
 
@@ -287,7 +286,6 @@ pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 pub type SignedExtra = (
 	frame_system::CheckNonZeroSender<Runtime>,
 	frame_system::CheckSpecVersion<Runtime>,
-	frame_system::CheckTxVersion<Runtime>,
 	frame_system::CheckGenesis<Runtime>,
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,

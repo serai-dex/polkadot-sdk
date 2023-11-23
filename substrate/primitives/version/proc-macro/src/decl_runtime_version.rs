@@ -62,7 +62,6 @@ struct RuntimeVersion {
 	authoring_version: u32,
 	spec_version: u32,
 	apis: u8,
-	transaction_version: u32,
 	state_version: u8,
 }
 
@@ -72,7 +71,6 @@ struct ParseRuntimeVersion {
 	impl_name: Option<String>,
 	authoring_version: Option<u32>,
 	spec_version: Option<u32>,
-	transaction_version: Option<u32>,
 	state_version: Option<u8>,
 }
 
@@ -119,8 +117,6 @@ impl ParseRuntimeVersion {
 			parse_once(&mut self.authoring_version, field_value, Self::parse_num_literal)?;
 		} else if field_name == "spec_version" {
 			parse_once(&mut self.spec_version, field_value, Self::parse_num_literal)?;
-		} else if field_name == "transaction_version" {
-			parse_once(&mut self.transaction_version, field_value, Self::parse_num_literal)?;
 		} else if field_name == "state_version" {
 			parse_once(&mut self.state_version, field_value, Self::parse_num_literal_u8)?;
 		} else if field_name == "apis" {
@@ -188,21 +184,13 @@ impl ParseRuntimeVersion {
 			};
 		}
 
-		let Self {
-			spec_name,
-			impl_name,
-			authoring_version,
-			spec_version,
-			transaction_version,
-			state_version,
-		} = self;
+		let Self { spec_name, impl_name, authoring_version, spec_version, state_version } = self;
 
 		Ok(RuntimeVersion {
 			spec_name: required!(spec_name),
 			impl_name: required!(impl_name),
 			authoring_version: required!(authoring_version),
 			spec_version: required!(spec_version),
-			transaction_version: required!(transaction_version),
 			state_version: required!(state_version),
 			apis: 0,
 		})
@@ -233,7 +221,6 @@ mod tests {
 			authoring_version: 10,
 			spec_version: 265,
 			apis: 0,
-			transaction_version: 2,
 			state_version: 1,
 		}
 		.encode();
@@ -247,7 +234,6 @@ mod tests {
 				authoring_version: 10,
 				spec_version: 265,
 				apis: Cow::Owned(vec![]),
-				transaction_version: 2,
 				state_version: 1,
 			},
 		);

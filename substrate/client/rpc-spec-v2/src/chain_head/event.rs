@@ -57,8 +57,6 @@ pub struct ChainHeadRuntimeVersion {
 	pub spec_version: u32,
 	/// Map of all supported API "features" and their versions.
 	pub apis: BTreeMap<String, u32>,
-	/// Transaction version.
-	pub transaction_version: u32,
 }
 
 impl From<RuntimeVersion> for ChainHeadRuntimeVersion {
@@ -72,7 +70,6 @@ impl From<RuntimeVersion> for ChainHeadRuntimeVersion {
 				.into_iter()
 				.map(|(api, version)| (sp_core::bytes::to_hex(api, false), *version))
 				.collect(),
-			transaction_version: val.transaction_version,
 		}
 	}
 }

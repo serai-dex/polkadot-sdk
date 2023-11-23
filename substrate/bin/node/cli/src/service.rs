@@ -94,7 +94,6 @@ pub fn create_extrinsic(
 		(
 			frame_system::CheckNonZeroSender::<kitchensink_runtime::Runtime>::new(),
 			frame_system::CheckSpecVersion::<kitchensink_runtime::Runtime>::new(),
-			frame_system::CheckTxVersion::<kitchensink_runtime::Runtime>::new(),
 			frame_system::CheckGenesis::<kitchensink_runtime::Runtime>::new(),
 			frame_system::CheckEra::<kitchensink_runtime::Runtime>::from(generic::Era::mortal(
 				period,
@@ -112,16 +111,7 @@ pub fn create_extrinsic(
 	let raw_payload = kitchensink_runtime::SignedPayload::from_raw(
 		function.clone(),
 		extra.clone(),
-		(
-			(),
-			kitchensink_runtime::VERSION.spec_version,
-			kitchensink_runtime::VERSION.transaction_version,
-			genesis_hash,
-			best_hash,
-			(),
-			(),
-			(),
-		),
+		((), kitchensink_runtime::VERSION.spec_version, genesis_hash, best_hash, (), (), ()),
 	);
 	let signature = raw_payload.using_encoded(|e| sender.sign(e));
 
@@ -803,10 +793,8 @@ mod tests {
 				let from: Address = AccountPublic::from(charlie.public()).into_account().into();
 				let genesis_hash = service.client().block_hash(0).unwrap().unwrap();
 				let best_hash = service.client().chain_info().best_hash;
-				let (spec_version, transaction_version) = {
-					let version = service.client().runtime_version_at(best_hash).unwrap();
-					(version.spec_version, version.transaction_version)
-				};
+				let spec_version =
+					service.client().runtime_version_at(best_hash).unwrap().spec_version;
 				let signer = charlie.clone();
 
 				let function = RuntimeCall::Balances(BalancesCall::transfer_allow_death {
@@ -816,7 +804,6 @@ mod tests {
 
 				let check_non_zero_sender = frame_system::CheckNonZeroSender::new();
 				let check_spec_version = frame_system::CheckSpecVersion::new();
-				let check_tx_version = frame_system::CheckTxVersion::new();
 				let check_genesis = frame_system::CheckGenesis::new();
 				let check_era = frame_system::CheckEra::from(Era::Immortal);
 				let check_nonce = frame_system::CheckNonce::from(index);
@@ -827,7 +814,6 @@ mod tests {
 				let extra = (
 					check_non_zero_sender,
 					check_spec_version,
-					check_tx_version,
 					check_genesis,
 					check_era,
 					check_nonce,
@@ -837,7 +823,7 @@ mod tests {
 				let raw_payload = SignedPayload::from_raw(
 					function,
 					extra,
-					((), spec_version, transaction_version, genesis_hash, genesis_hash, (), (), ()),
+					((), spec_version, genesis_hash, genesis_hash, (), (), ()),
 				);
 				let signature = raw_payload.using_encoded(|payload| signer.sign(payload));
 				let (function, extra, _) = raw_payload.deconstruct();

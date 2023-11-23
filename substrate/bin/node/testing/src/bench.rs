@@ -319,7 +319,6 @@ impl<'a> Iterator for BlockContentIterator<'a> {
 				},
 			},
 			self.runtime_version.spec_version,
-			self.runtime_version.transaction_version,
 			self.genesis_hash.into(),
 		);
 

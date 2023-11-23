@@ -76,7 +76,6 @@ pub mod embed;
 /// 	authoring_version: 10,
 /// 	spec_version: 265,
 /// 	apis: RUNTIME_API_VERSIONS,
-/// 	transaction_version: 2,
 /// 	state_version: 1,
 /// };
 ///
@@ -91,9 +90,9 @@ pub mod embed;
 /// - The `spec_name` and `impl_name` must be set by a macro-like expression. The name of the
 ///   macro doesn't matter though.
 ///
-/// - `authoring_version`, `spec_version`, and `transaction_version` must be set by a literal.
-///   Literal must be an integer. No other expressions are allowed there. In particular, you
-///   can't supply a constant variable.
+/// - `authoring_version` and `spec_version` must be set by a literal. Literal must be an
+///   integer. No other expressions are allowed there. In particular, you can't supply a
+///   constant variable.
 ///
 /// - `apis` doesn't have any specific constraints. This is because this information doesn't
 ///   get into the custom section and is not parsed.
@@ -191,27 +190,6 @@ pub struct RuntimeVersion {
 	)]
 	pub apis: ApisVec,
 
-	/// All existing calls (dispatchables) are fully compatible when this number doesn't change. If
-	/// this number changes, then [`spec_version`](Self::spec_version) must change, also.
-	///
-	/// This number must change when an existing call (pallet index, call index) is changed,
-	/// either through an alteration in its user-level semantics, a parameter
-	/// added/removed, a parameter type changed, or a call/pallet changing its index. An alteration
-	/// of the user level semantics is for example when the call was before `transfer` and now is
-	/// `transfer_all`, the semantics of the call changed completely.
-	///
-	/// Removing a pallet or a call doesn't require a *bump* as long as no pallet or call is put at
-	/// the same index. Removing doesn't require a bump as the chain will reject a transaction
-	/// referencing this removed call/pallet while decoding and thus, the user isn't at risk to
-	/// execute any unknown call. FRAME runtime devs have control over the index of a call/pallet
-	/// to prevent that an index gets reused.
-	///
-	/// Adding a new pallet or call also doesn't require a *bump* as long as they also don't reuse
-	/// any previously used index.
-	///
-	/// This number should never decrease.
-	pub transaction_version: u32,
-
 	/// Version of the state implementation used by this runtime.
 	/// Use of an incorrect version is consensus breaking.
 	pub state_version: u8,
@@ -236,8 +214,6 @@ impl RuntimeVersion {
 		let apis = Decode::decode(input)?;
 		let core_version =
 			if core_version.is_some() { core_version } else { core_version_from_apis(&apis) };
-		let transaction_version =
-			if core_version.map(|v| v >= 3).unwrap_or(false) { Decode::decode(input)? } else { 1 };
 		let state_version =
 			if core_version.map(|v| v >= 4).unwrap_or(false) { Decode::decode(input)? } else { 0 };
 		Ok(RuntimeVersion {
@@ -246,7 +222,6 @@ impl RuntimeVersion {
 			authoring_version,
 			spec_version,
 			apis,
-			transaction_version,
 			state_version,
 		})
 	}
@@ -263,12 +238,8 @@ impl fmt::Display for RuntimeVersion {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(
 			f,
-			"{}-{} ({}.tx{}.au{})",
-			self.spec_name,
-			self.spec_version,
-			self.impl_name,
-			self.transaction_version,
-			self.authoring_version,
+			"{}-{} ({}.au{})",
+			self.spec_name, self.spec_version, self.impl_name, self.authoring_version,
 		)
 	}
 }

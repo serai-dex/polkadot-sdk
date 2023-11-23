@@ -37,7 +37,6 @@ The System module defines the following extensions:
   - [`CheckGenesis`]: Checks the provided genesis hash of the transaction. Must be a part of the signed payload of the
     transaction.
   - [`CheckSpecVersion`]: Checks that the runtime version is the same as the one used to sign the transaction.
-  - [`CheckTxVersion`]: Checks that the transaction version is the same as the one used to sign the transaction.
 
 Lookup the runtime aggregator file (e.g. `node/runtime`) to see the full list of signed extensions included in a chain.
 

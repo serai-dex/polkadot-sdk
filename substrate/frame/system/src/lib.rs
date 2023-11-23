@@ -57,8 +57,6 @@
 //!     signed payload of the transaction.
 //!   - [`CheckSpecVersion`]: Checks that the runtime version is the same as the one used to sign
 //!     the transaction.
-//!   - [`CheckTxVersion`]: Checks that the transaction version is the same as the one used to sign
-//!     the transaction.
 //!
 //! Lookup the runtime aggregator file (e.g. `node/runtime`) to see the full list of signed
 //! extensions included in a chain.
@@ -125,8 +123,7 @@ pub mod migrations;
 pub use extensions::{
 	check_genesis::CheckGenesis, check_mortality::CheckMortality,
 	check_non_zero_sender::CheckNonZeroSender, check_nonce::CheckNonce,
-	check_spec_version::CheckSpecVersion, check_tx_version::CheckTxVersion,
-	check_weight::CheckWeight,
+	check_spec_version::CheckSpecVersion, check_weight::CheckWeight,
 };
 // Backward compatible re-export.
 pub use extensions::check_mortality::CheckMortality as CheckEra;

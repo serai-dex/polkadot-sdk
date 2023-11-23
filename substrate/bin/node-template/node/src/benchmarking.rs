@@ -112,7 +112,6 @@ pub fn create_benchmark_extrinsic(
 	let extra: runtime::SignedExtra = (
 		frame_system::CheckNonZeroSender::<runtime::Runtime>::new(),
 		frame_system::CheckSpecVersion::<runtime::Runtime>::new(),
-		frame_system::CheckTxVersion::<runtime::Runtime>::new(),
 		frame_system::CheckGenesis::<runtime::Runtime>::new(),
 		frame_system::CheckEra::<runtime::Runtime>::from(sp_runtime::generic::Era::mortal(
 			period,
@@ -126,16 +125,7 @@ pub fn create_benchmark_extrinsic(
 	let raw_payload = runtime::SignedPayload::from_raw(
 		call.clone(),
 		extra.clone(),
-		(
-			(),
-			runtime::VERSION.spec_version,
-			runtime::VERSION.transaction_version,
-			genesis_hash,
-			best_hash,
-			(),
-			(),
-			(),
-		),
+		((), runtime::VERSION.spec_version, genesis_hash, best_hash, (), (), ()),
 	);
 	let signature = raw_payload.using_encoded(|e| sender.sign(e));
 
