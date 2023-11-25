@@ -53,7 +53,7 @@ pub fn expand_runtime_metadata(
 			let docs = expand_pallet_metadata_docs(runtime, decl);
 			let attr = decl.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 				let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-					.expect("was successfully parsed before; qed");
+					.expect("was successfully parsed before");
 				quote! {
 					#acc
 					#attr
@@ -206,12 +206,8 @@ fn expand_pallet_metadata_events(
 ) -> TokenStream {
 	if filtered_names.contains(&"Event") {
 		let path = &decl.path;
-		let part_is_generic = !decl
-			.find_part("Event")
-			.expect("Event part exists; qed")
-			.generics
-			.params
-			.is_empty();
+		let part_is_generic =
+			!decl.find_part("Event").expect("Event part exists").generics.params.is_empty();
 		let pallet_event = match (decl.instance.as_ref(), part_is_generic) {
 			(Some(inst), true) => quote!(#path::Event::<#runtime, #path::#inst>),
 			(Some(inst), false) => quote!(#path::Event::<#path::#inst>),

@@ -66,7 +66,7 @@ where
 			.backend
 			.blockchain()
 			.header(best_hash)?
-			.expect("given block hash was fetched from block in db; qed"))
+			.expect("given block hash was fetched from block in db"))
 	}
 
 	/// Returns the highest descendant of the given block that is a valid

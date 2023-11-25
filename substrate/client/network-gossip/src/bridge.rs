@@ -141,7 +141,7 @@ impl<B: BlockT> GossipEngine<B> {
 
 		for notification in past_messages {
 			tx.try_send(notification)
-				.expect("receiver known to be live, and buffer size known to suffice; qed");
+				.expect("receiver known to be live, and buffer size known to suffice");
 		}
 
 		self.message_sinks.entry(topic).or_default().push(tx);
@@ -295,7 +295,7 @@ impl<B: BlockT> Future for GossipEngine<B> {
 						match sink.start_send(notification.clone()) {
 							Ok(()) => {},
 							Err(e) if e.is_full() => {
-								unreachable!("Previously ensured that all sinks are ready; qed.")
+								unreachable!("Previously ensured that all sinks are ready.")
 							},
 							// Receiver got dropped. Will be removed in next iteration (See (1)).
 							Err(_) => {},
@@ -571,7 +571,7 @@ mod tests {
 				role: ObservedRole::Authority,
 				received_handshake: vec![],
 			})
-			.expect("Event stream is unbounded; qed.");
+			.expect("Event stream is unbounded.");
 
 		let messages = vec![vec![1], vec![2]];
 		let events = messages
@@ -584,9 +584,7 @@ mod tests {
 			.collect::<Vec<_>>();
 
 		// Send first event before subscribing.
-		event_sender
-			.start_send(events[0].clone())
-			.expect("Event stream is unbounded; qed.");
+		event_sender.start_send(events[0].clone()).expect("Event stream is unbounded.");
 
 		let mut subscribers = vec![];
 		for _ in 0..2 {
@@ -594,9 +592,7 @@ mod tests {
 		}
 
 		// Send second event after subscribing.
-		event_sender
-			.start_send(events[1].clone())
-			.expect("Event stream is unbounded; qed.");
+		event_sender.start_send(events[1].clone()).expect("Event stream is unbounded.");
 
 		tokio::spawn(gossip_engine);
 
@@ -736,7 +732,7 @@ mod tests {
 					role: ObservedRole::Authority,
 					received_handshake: vec![],
 				})
-				.expect("Event stream is unbounded; qed.");
+				.expect("Event stream is unbounded.");
 
 			// Send messages into the network event stream.
 			for (i_notification, messages) in notifications.iter().enumerate() {
@@ -759,7 +755,7 @@ mod tests {
 
 				event_sender
 					.start_send(Event::NotificationsReceived { remote: remote_peer, messages })
-					.expect("Event stream is unbounded; qed.");
+					.expect("Event stream is unbounded.");
 			}
 
 			let mut received_msgs_per_topic_all_chan = HashMap::<H256, _>::new();

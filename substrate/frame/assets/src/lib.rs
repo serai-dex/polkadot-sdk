@@ -431,7 +431,7 @@ pub mod pallet {
 					|details| -> DispatchResult {
 						debug_assert!(
 							details.supply.checked_add(&amount).is_some(),
-							"checked in prep; qed"
+							"checked in prep"
 						);
 						details.supply = details.supply.saturating_add(*amount);
 						Ok(())

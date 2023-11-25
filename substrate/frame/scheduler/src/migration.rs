@@ -167,7 +167,7 @@ pub mod v3 {
 			}
 
 			let old_agendas: u32 =
-				Decode::decode(&mut &state[..]).expect("pre_upgrade provides a valid state; qed");
+				Decode::decode(&mut &state[..]).expect("pre_upgrade provides a valid state");
 			let new_agendas = crate::Agenda::<T>::iter_keys().count() as u32;
 			if old_agendas != new_agendas {
 				// This is not necessarily an error, but can happen when there are Calls

@@ -1544,9 +1544,7 @@ where
 			if let Some((peer, request)) = matcher.next(peers) {
 				peers
 					.get_mut(&peer)
-					.expect(
-						"`Matcher::next` guarantees the `PeerId` comes from the given peers; qed",
-					)
+					.expect("`Matcher::next` guarantees the `PeerId` comes from the given peers")
 					.state = PeerSyncState::DownloadingJustification(request.0);
 				let req = BlockRequest::<B> {
 					id: 0,

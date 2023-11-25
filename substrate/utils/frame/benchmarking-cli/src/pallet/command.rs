@@ -328,8 +328,8 @@ impl PalletCmd {
 			log::info!(
 				target: LOG_TARGET,
 				"Starting benchmark: {}::{}",
-				String::from_utf8(pallet.clone()).expect("Encoded from String; qed"),
-				String::from_utf8(extrinsic.clone()).expect("Encoded from String; qed"),
+				String::from_utf8(pallet.clone()).expect("Encoded from String"),
+				String::from_utf8(extrinsic.clone()).expect("Encoded from String"),
 			);
 			let all_components = if components.is_empty() {
 				vec![Default::default()]
@@ -491,9 +491,9 @@ impl PalletCmd {
 								target: LOG_TARGET,
 								"Running  benchmark: {}.{}({} args) {}/{} {}/{}",
 								String::from_utf8(pallet.clone())
-									.expect("Encoded from String; qed"),
+									.expect("Encoded from String"),
 								String::from_utf8(extrinsic.clone())
-									.expect("Encoded from String; qed"),
+									.expect("Encoded from String"),
 								components.len(),
 								s + 1, // s starts at 0.
 								all_components.len(),
@@ -607,8 +607,8 @@ impl PalletCmd {
 			// Print benchmark metadata
 			println!(
 					"Pallet: {:?}, Extrinsic: {:?}, Lowest values: {:?}, Highest values: {:?}, Steps: {:?}, Repeat: {:?}",
-					String::from_utf8(batch.pallet.clone()).expect("Encoded from String; qed"),
-					String::from_utf8(batch.benchmark.clone()).expect("Encoded from String; qed"),
+					String::from_utf8(batch.pallet.clone()).expect("Encoded from String"),
+					String::from_utf8(batch.benchmark.clone()).expect("Encoded from String"),
 					self.lowest_range_values,
 					self.highest_range_values,
 					self.steps,

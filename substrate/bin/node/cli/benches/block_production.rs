@@ -44,8 +44,8 @@ use staging_node_cli as node_cli;
 use tokio::runtime::Handle;
 
 fn new_node(tokio_handle: Handle) -> node_cli::service::NewFullBase {
-	let base_path = BasePath::new_temp_dir()
-		.expect("getting the base path of a temporary path doesn't fail; qed");
+	let base_path =
+		BasePath::new_temp_dir().expect("getting the base path of a temporary path doesn't fail");
 	let root = base_path.path().to_path_buf();
 
 	let network_config = NetworkConfiguration::new(
@@ -171,7 +171,7 @@ fn prepare_benchmark(client: &FullClient) -> (usize, Vec<OpaqueExtrinsic>) {
 fn block_production(c: &mut Criterion) {
 	sp_tracing::try_init_simple();
 
-	let runtime = tokio::runtime::Runtime::new().expect("creating tokio runtime doesn't fail; qed");
+	let runtime = tokio::runtime::Runtime::new().expect("creating tokio runtime doesn't fail");
 	let tokio_handle = runtime.handle().clone();
 
 	let node = new_node(tokio_handle.clone());

@@ -265,7 +265,7 @@ pub trait FixedPointNumber:
 	fn trunc(self) -> Self {
 		self.into_inner()
 			.checked_div(&Self::DIV)
-			.expect("panics only if DIV is zero, DIV is not zero; qed")
+			.expect("panics only if DIV is zero, DIV is not zero")
 			.checked_mul(&Self::DIV)
 			.map(Self::from_inner)
 			.expect("can not overflow since fixed number is >= integer part")
@@ -470,8 +470,7 @@ macro_rules! implement_fixed {
 							if value > (u32::max_value() as u128) {
 								panic!(
 									"prior logic ensures 0<self.0<DIV; \
-									multiply ensures 0<self.0<1000000000; \
-									qed"
+									multiply ensures 0<self.0<1000000000"
 								);
 							}
 							Perbill::from_parts(value as u32)
@@ -1240,12 +1239,12 @@ macro_rules! implement_fixed {
 
 				// Case where integer fits.
 				let a = $name::checked_from_integer::<$inner_type>(42)
-					.expect("42 * accuracy <= inner_max; qed");
+					.expect("42 * accuracy <= inner_max");
 				assert_eq!(a.into_inner(), 42 * accuracy);
 
 				// Max integer that fit.
 				let a = $name::checked_from_integer::<$inner_type>(inner_max / accuracy)
-					.expect("(inner_max / accuracy) * accuracy <= inner_max; qed");
+					.expect("(inner_max / accuracy) * accuracy <= inner_max");
 				assert_eq!(a.into_inner(), (inner_max / accuracy) * accuracy);
 
 				// Case where integer doesn't fit, so it returns `None`.
@@ -1255,12 +1254,12 @@ macro_rules! implement_fixed {
 				if $name::SIGNED {
 					// Case where integer fits.
 					let a = $name::checked_from_integer::<$inner_type>(0.saturating_sub(42))
-						.expect("-42 * accuracy >= inner_min; qed");
+						.expect("-42 * accuracy >= inner_min");
 					assert_eq!(a.into_inner(), 0 - 42 * accuracy);
 
 					// Min integer that fit.
 					let a = $name::checked_from_integer::<$inner_type>(inner_min / accuracy)
-						.expect("(inner_min / accuracy) * accuracy <= inner_min; qed");
+						.expect("(inner_min / accuracy) * accuracy <= inner_min");
 					assert_eq!(a.into_inner(), (inner_min / accuracy) * accuracy);
 
 					// Case where integer doesn't fit, so it returns `None`.

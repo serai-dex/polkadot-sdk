@@ -31,7 +31,7 @@ where
 	GC: BuildGenesisConfig + Default,
 {
 	serde_json::to_string(&GC::default())
-		.expect("serialization to json is expected to work. qed.")
+		.expect("serialization to json is expected to work.")
 		.into_bytes()
 }
 

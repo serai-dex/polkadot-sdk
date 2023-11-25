@@ -213,10 +213,10 @@ impl Parse for SolutionDef {
 			})
 			.collect::<Result<_>>()?;
 
-		let max_voters = types.pop().expect("Vector of length 4 can be popped; qed");
-		let weight_type = types.pop().expect("Vector of length 3 can be popped; qed");
-		let target_type = types.pop().expect("Vector of length 2 can be popped; qed");
-		let voter_type = types.pop().expect("Vector of length 1 can be popped; qed");
+		let max_voters = types.pop().expect("Vector of length 4 can be popped");
+		let weight_type = types.pop().expect("Vector of length 3 can be popped");
+		let target_type = types.pop().expect("Vector of length 2 can be popped");
+		let voter_type = types.pop().expect("Vector of length 1 can be popped");
 
 		// (<count>)
 		let count_expr: syn::ExprParen = input.parse()?;

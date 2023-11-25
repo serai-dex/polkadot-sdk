@@ -85,7 +85,7 @@ impl Keyring {
 
 	pub fn pair(self) -> Pair {
 		Pair::from_string(&format!("//{}", <&'static str>::from(self)), None)
-			.expect("static values are known good; qed")
+			.expect("static values are known good")
 	}
 
 	/// Returns an iterator over all test accounts.

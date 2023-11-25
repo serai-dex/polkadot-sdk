@@ -79,7 +79,7 @@ impl<'a> From<&'a str> for ProtocolId {
 impl AsRef<str> for ProtocolId {
 	fn as_ref(&self) -> &str {
 		str::from_utf8(&self.0[..])
-			.expect("the only way to build a ProtocolId is through a UTF-8 String; qed")
+			.expect("the only way to build a ProtocolId is through a UTF-8 String")
 	}
 }
 
@@ -635,7 +635,7 @@ impl NetworkConfiguration {
 			allow_non_globals_in_dht: false,
 			kademlia_disjoint_query_paths: false,
 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
-				.expect("value is a constant; constant is non-zero; qed."),
+				.expect("value is a constant; constant is non-zero."),
 			yamux_window_size: None,
 		}
 	}

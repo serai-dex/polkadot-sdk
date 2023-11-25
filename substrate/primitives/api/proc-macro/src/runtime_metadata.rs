@@ -192,10 +192,8 @@ pub fn generate_impl_runtime_metadata(impls: &[ItemImpl]) -> Result<TokenStream2
 	let crate_ = generate_crate_access();
 
 	// Get the name of the runtime for which the traits are implemented.
-	let runtime_name = &impls
-		.get(0)
-		.expect("Traits should contain at least one implementation; qed")
-		.self_ty;
+	let runtime_name =
+		&impls.get(0).expect("Traits should contain at least one implementation").self_ty;
 
 	let mut metadata = Vec::new();
 
@@ -208,7 +206,7 @@ pub fn generate_impl_runtime_metadata(impls: &[ItemImpl]) -> Result<TokenStream2
 			.segments
 			.last()
 			.as_ref()
-			.expect("Trait path should always contain at least one item; qed")
+			.expect("Trait path should always contain at least one item")
 			.ident;
 
 		// Extract the generics from the trait to pass to the `runtime_metadata`
@@ -223,7 +221,7 @@ pub fn generate_impl_runtime_metadata(impls: &[ItemImpl]) -> Result<TokenStream2
 					None
 				}
 			})
-			.expect("Trait path should always contain at least one generic parameter; qed");
+			.expect("Trait path should always contain at least one generic parameter");
 
 		let mod_name = generate_runtime_mod_name_for_trait(&trait_name_ident);
 		// Get absolute path to the `runtime_decl_for_` module by replacing the last segment.

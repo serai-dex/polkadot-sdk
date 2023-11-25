@@ -189,7 +189,7 @@ fn expand_enum_variant(
 	let part_is_generic = !generics.params.is_empty();
 	let attr = pallet.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 		let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-			.expect("was successfully parsed before; qed");
+			.expect("was successfully parsed before");
 		quote! {
 			#acc
 			#attr
@@ -229,7 +229,7 @@ fn expand_enum_conversion(
 	let variant_name = &pallet.name;
 	let attr = pallet.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 		let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-			.expect("was successfully parsed before; qed");
+			.expect("was successfully parsed before");
 		quote! {
 			#acc
 			#attr

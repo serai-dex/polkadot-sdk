@@ -232,8 +232,7 @@ where
 		KArg: EncodeLikeTuple<K::KArg> + TupleToEncodedIter,
 		F: FnOnce(&mut Self::Query) -> R,
 	{
-		Self::try_mutate(key, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+		Self::try_mutate(key, |v| Ok::<R, Never>(f(v))).expect("`Never` can not be constructed")
 	}
 
 	fn try_mutate<KArg, R, E, F>(key: KArg, f: F) -> Result<R, E>
@@ -260,7 +259,7 @@ where
 		F: FnOnce(&mut Option<V>) -> R,
 	{
 		Self::try_mutate_exists(key, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	fn try_mutate_exists<KArg, R, E, F>(key: KArg, f: F) -> Result<R, E>

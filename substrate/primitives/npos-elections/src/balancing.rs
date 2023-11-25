@@ -118,11 +118,11 @@ pub(crate) fn balance_voter<AccountId: IdentifierT>(
 		let max_stake = backing_backed_stake
 			.iter()
 			.max()
-			.expect("vector with positive length will have a max; qed");
+			.expect("vector with positive length will have a max");
 		let min_stake = backed_stakes
 			.iter()
 			.min()
-			.expect("iterator with positive length will have a min; qed");
+			.expect("iterator with positive length will have a min");
 		let mut difference = max_stake.saturating_sub(*min_stake);
 		difference = difference.saturating_add(voter.budget.saturating_sub(stake_used));
 		if difference < tolerance {
@@ -161,7 +161,7 @@ pub(crate) fn balance_voter<AccountId: IdentifierT>(
 		.get(last_index)
 		.expect(
 			"length of elected_edges is greater than or equal 2; last_index index is at the \
- 			 minimum elected_edges.len() - 1; index is within range; qed",
+ 			 minimum elected_edges.len() - 1; index is within range",
 		)
 		.candidate
 		.borrow()

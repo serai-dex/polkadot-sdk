@@ -451,13 +451,13 @@ impl<H: Hasher> OverlayedChanges<H> {
 		retain_map(&mut self.children, |_, (changeset, _)| {
 			changeset
 				.rollback_transaction()
-				.expect("Top and children changesets are started in lockstep; qed");
+				.expect("Top and children changesets are started in lockstep");
 			!changeset.is_empty()
 		});
 		self.offchain
 			.overlay_mut()
 			.rollback_transaction()
-			.expect("Top and offchain changesets are started in lockstep; qed");
+			.expect("Top and offchain changesets are started in lockstep");
 		Ok(())
 	}
 
@@ -470,12 +470,12 @@ impl<H: Hasher> OverlayedChanges<H> {
 		for (_, (changeset, _)) in self.children.iter_mut() {
 			changeset
 				.commit_transaction()
-				.expect("Top and children changesets are started in lockstep; qed");
+				.expect("Top and children changesets are started in lockstep");
 		}
 		self.offchain
 			.overlay_mut()
 			.commit_transaction()
-			.expect("Top and offchain changesets are started in lockstep; qed");
+			.expect("Top and offchain changesets are started in lockstep");
 		Ok(())
 	}
 
@@ -488,12 +488,12 @@ impl<H: Hasher> OverlayedChanges<H> {
 		for (_, (changeset, _)) in self.children.iter_mut() {
 			changeset
 				.enter_runtime()
-				.expect("Top and children changesets are entering runtime in lockstep; qed")
+				.expect("Top and children changesets are entering runtime in lockstep")
 		}
 		self.offchain
 			.overlay_mut()
 			.enter_runtime()
-			.expect("Top and offchain changesets are started in lockstep; qed");
+			.expect("Top and offchain changesets are started in lockstep");
 		Ok(())
 	}
 
@@ -506,12 +506,12 @@ impl<H: Hasher> OverlayedChanges<H> {
 		for (_, (changeset, _)) in self.children.iter_mut() {
 			changeset
 				.exit_runtime()
-				.expect("Top and children changesets are entering runtime in lockstep; qed");
+				.expect("Top and children changesets are entering runtime in lockstep");
 		}
 		self.offchain
 			.overlay_mut()
 			.exit_runtime()
-			.expect("Top and offchain changesets are started in lockstep; qed");
+			.expect("Top and offchain changesets are started in lockstep");
 		Ok(())
 	}
 
@@ -568,7 +568,7 @@ impl<H: Hasher> OverlayedChanges<H> {
 				self.storage_root(backend, state_version);
 				self.storage_transaction_cache
 					.take()
-					.expect("`storage_transaction_cache` was just initialized; qed")
+					.expect("`storage_transaction_cache` was just initialized")
 					.into_inner()
 			},
 		};

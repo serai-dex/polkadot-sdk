@@ -403,7 +403,7 @@ pub mod pallet {
 			};
 
 			if current > limit {
-				let _ = Self::do_exit(ExitReason::Timeout).defensive_proof("Only Errors if safe-mode is not entered. Safe-mode has already been checked to be entered; qed");
+				let _ = Self::do_exit(ExitReason::Timeout).defensive_proof("Only Errors if safe-mode is not entered. Safe-mode has already been checked to be entered");
 				T::WeightInfo::on_initialize_exit()
 			} else {
 				T::WeightInfo::on_initialize_noop()

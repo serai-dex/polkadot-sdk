@@ -157,7 +157,7 @@ pub mod v1 {
 		#[cfg(feature = "try-runtime")]
 		fn post_upgrade(state: Vec<u8>) -> DispatchResult {
 			let old_images: u32 =
-				Decode::decode(&mut &state[..]).expect("pre_upgrade provides a valid state; qed");
+				Decode::decode(&mut &state[..]).expect("pre_upgrade provides a valid state");
 			let new_images = image_count::<T>().expect("V1 storage corrupted");
 
 			if new_images != old_images {

@@ -245,11 +245,11 @@ impl<B: BlockT> OnlineConfig<B> {
 	fn rpc_client(&self) -> &HttpClient {
 		self.transport
 			.as_client()
-			.expect("http client must have been initialized by now; qed.")
+			.expect("http client must have been initialized by now.")
 	}
 
 	fn at_expected(&self) -> B::Hash {
-		self.at.expect("block at must be initialized; qed")
+		self.at.expect("block at must be initialized")
 	}
 }
 
@@ -425,8 +425,7 @@ where
 				log::debug!(target: LOG_TARGET, "last page received: {}", page_len);
 				break all_keys
 			} else {
-				let new_last_key =
-					all_keys.last().expect("all_keys is populated; has .last(); qed");
+				let new_last_key = all_keys.last().expect("all_keys is populated; has .last()");
 				log::debug!(
 					target: LOG_TARGET,
 					"new total = {}, full page received: {}",
@@ -837,10 +836,7 @@ where
 		pending_ext: &mut TestExternalities<HashingFor<B>>,
 	) -> Result<TopKeyValues, &'static str> {
 		let config = self.as_online();
-		let at = self
-			.as_online()
-			.at
-			.expect("online config must be initialized by this point; qed.");
+		let at = self.as_online().at.expect("online config must be initialized by this point.");
 		log::info!(target: LOG_TARGET, "scraping key-pairs from remote at block height {:?}", at);
 
 		let mut keys_and_values = Vec::new();
@@ -962,7 +958,7 @@ where
 				state_version,
 				self.as_online()
 					.at
-					.expect("set to `Some` in `init_remote_client`; must be called before; qed"),
+					.expect("set to `Some` in `init_remote_client`; must be called before"),
 				raw_storage.clone(),
 				storage_root,
 			);

@@ -35,7 +35,7 @@ fn vrf_input_from_data(
 	let buf = data.into_iter().fold(Vec::new(), |mut buf, item| {
 		let bytes = item.as_ref();
 		buf.extend_from_slice(bytes);
-		let len = u8::try_from(bytes.len()).expect("private function with well known inputs; qed");
+		let len = u8::try_from(bytes.len()).expect("private function with well known inputs");
 		buf.push(len);
 		buf
 	});

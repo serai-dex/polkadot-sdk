@@ -638,7 +638,7 @@ impl<T: Config> Pallet<T> {
 		// Update epoch randomness.
 		let next_epoch_index = epoch_index
 			.checked_add(1)
-			.expect("epoch indices will never reach 2^64 before the death of the universe; qed");
+			.expect("epoch indices will never reach 2^64 before the death of the universe");
 
 		// Returns randomness for the current epoch and computes the *next*
 		// epoch randomness.
@@ -698,7 +698,7 @@ impl<T: Config> Pallet<T> {
 			authorities: Self::authorities().into_inner(),
 			randomness: Self::randomness(),
 			config: EpochConfig::<T>::get()
-				.expect("EpochConfig is initialized in genesis; we never `take` or `kill` it; qed"),
+				.expect("EpochConfig is initialized in genesis; we never `take` or `kill` it"),
 		}
 	}
 
@@ -707,7 +707,7 @@ impl<T: Config> Pallet<T> {
 	pub fn next_epoch() -> Epoch {
 		let next_epoch_index = EpochIndex::<T>::get().checked_add(1).expect(
 			"epoch index is u64; it is always only incremented by one; \
-			 if u64 is not enough we should crash for safety; qed.",
+			 if u64 is not enough we should crash for safety.",
 		);
 
 		let start_slot = sp_consensus_babe::epoch_start_slot(
@@ -723,9 +723,8 @@ impl<T: Config> Pallet<T> {
 			authorities: NextAuthorities::<T>::get().into_inner(),
 			randomness: NextRandomness::<T>::get(),
 			config: NextEpochConfig::<T>::get().unwrap_or_else(|| {
-				EpochConfig::<T>::get().expect(
-					"EpochConfig is initialized in genesis; we never `take` or `kill` it; qed",
-				)
+				EpochConfig::<T>::get()
+					.expect("EpochConfig is initialized in genesis; we never `take` or `kill` it")
 			}),
 		}
 	}

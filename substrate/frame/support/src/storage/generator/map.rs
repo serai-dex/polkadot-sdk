@@ -272,8 +272,7 @@ impl<K: FullEncode, V: FullCodec, G: StorageMap<K, V>> storage::StorageMap<K, V>
 	}
 
 	fn mutate<KeyArg: EncodeLike<K>, R, F: FnOnce(&mut Self::Query) -> R>(key: KeyArg, f: F) -> R {
-		Self::try_mutate(key, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+		Self::try_mutate(key, |v| Ok::<R, Never>(f(v))).expect("`Never` can not be constructed")
 	}
 
 	fn mutate_exists<KeyArg: EncodeLike<K>, R, F: FnOnce(&mut Option<V>) -> R>(
@@ -281,7 +280,7 @@ impl<K: FullEncode, V: FullCodec, G: StorageMap<K, V>> storage::StorageMap<K, V>
 		f: F,
 	) -> R {
 		Self::try_mutate_exists(key, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	fn try_mutate<KeyArg: EncodeLike<K>, R, E, F: FnOnce(&mut Self::Query) -> Result<R, E>>(

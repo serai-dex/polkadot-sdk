@@ -1948,7 +1948,7 @@ impl NetworkBehaviour for Notifications {
 							},
 							_ => unreachable!(
 								"Match branches are the same as the one on which we
-							enter this block; qed"
+							enter this block"
 							),
 						};
 

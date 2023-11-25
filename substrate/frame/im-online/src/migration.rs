@@ -99,7 +99,7 @@ pub mod v1 {
 		#[cfg(feature = "try-runtime")]
 		fn post_upgrade(state: Vec<u8>) -> DispatchResult {
 			let old_received_heartbeats: u32 =
-				Decode::decode(&mut &state[..]).expect("pre_upgrade provides a valid state; qed");
+				Decode::decode(&mut &state[..]).expect("pre_upgrade provides a valid state");
 			let new_received_heartbeats = crate::ReceivedHeartbeats::<T>::iter().count();
 
 			if new_received_heartbeats != old_received_heartbeats as usize {

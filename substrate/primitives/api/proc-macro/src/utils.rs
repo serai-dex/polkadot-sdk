@@ -37,7 +37,7 @@ pub fn generate_crate_access() -> TokenStream {
 		Err(e) =>
 			if let Ok(FoundCrate::Name(name)) = crate_name(&"frame") {
 				let path = format!("{}::deps::{}", name, "sp_api");
-				let path = syn::parse_str::<syn::Path>(&path).expect("is a valid path; qed");
+				let path = syn::parse_str::<syn::Path>(&path).expect("is a valid path");
 				quote!( #path )
 			} else {
 				let err = Error::new(Span::call_site(), e).to_compile_error();

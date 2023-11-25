@@ -270,7 +270,7 @@ impl TraitPair for Pair {
 		let mut raw = [0; PUBLIC_SERIALIZED_LEN];
 		public
 			.serialize_compressed(raw.as_mut_slice())
-			.expect("serialization length is constant and checked by test; qed");
+			.expect("serialization length is constant and checked by test");
 		Public::unchecked_from(raw)
 	}
 
@@ -348,7 +348,7 @@ pub mod vrf {
 			let mut bytes = [0; PREOUT_SERIALIZED_LEN];
 			self.0
 				.serialize_compressed(bytes.as_mut_slice())
-				.expect("serialization length is constant and checked by test; qed");
+				.expect("serialization length is constant and checked by test");
 			bytes.encode()
 		}
 	}
@@ -545,7 +545,7 @@ pub mod vrf {
 			thin_signature
 				.proof
 				.serialize_compressed(signature.signature.0.as_mut_slice())
-				.expect("serialization length is constant and checked by test; qed");
+				.expect("serialization length is constant and checked by test");
 
 			signature
 		}
@@ -659,7 +659,7 @@ pub mod ring_vrf {
 			let mut buf = Box::new([0; RING_CONTEXT_SERIALIZED_LEN]);
 			self.0
 				.serialize_compressed(buf.as_mut_slice())
-				.expect("serialization length is constant and checked by test; qed");
+				.expect("serialization length is constant and checked by test");
 			buf.encode()
 		}
 	}
@@ -737,7 +737,7 @@ pub mod ring_vrf {
 			ring_signature
 				.proof
 				.serialize_compressed(signature.signature.as_mut_slice())
-				.expect("serialization length is constant and checked by test; qed");
+				.expect("serialization length is constant and checked by test");
 
 			signature
 		}

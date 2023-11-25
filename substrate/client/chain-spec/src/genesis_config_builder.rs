@@ -90,7 +90,7 @@ where
 			.map_err(|e| format!("wasm call error {e}"))?;
 		let default_config = Vec::<u8>::decode(&mut &call_result[..])
 			.map_err(|e| format!("scale codec error: {e}"))?;
-		Ok(from_slice(&default_config[..]).expect("returned value is json. qed."))
+		Ok(from_slice(&default_config[..]).expect("returned value is json."))
 	}
 
 	/// Build the given `GenesisConfig` and returns the genesis state.

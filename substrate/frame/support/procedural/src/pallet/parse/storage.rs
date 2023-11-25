@@ -774,10 +774,7 @@ impl StorageDef {
 						return Ok(Some(QueryKind::OptionQuery)),
 					Type::Path(TypePath { path: Path { segments, .. }, .. })
 						if segments.last().map_or(false, |s| s.ident == "ResultQuery") =>
-						segments
-							.last()
-							.expect("segments is checked to have the last value; qed")
-							.clone(),
+						segments.last().expect("segments is checked to have the last value").clone(),
 					Type::Path(path)
 						if path.path.segments.last().map_or(false, |s| s.ident == "ValueQuery") =>
 						return Ok(Some(QueryKind::ValueQuery)),
@@ -824,15 +821,11 @@ impl StorageDef {
 							return Err(syn::Error::new(err_variant.span(), msg))
 						}
 						let mut error = err_variant.clone();
-						let err_variant = error
-							.pop()
-							.expect("Checked to have at least 2; qed")
-							.into_value()
-							.ident;
+						let err_variant =
+							error.pop().expect("Checked to have at least 2").into_value().ident;
 
 						// Necessary here to eliminate the last double colon
-						let last =
-							error.pop().expect("Checked to have at least 2; qed").into_value();
+						let last = error.pop().expect("Checked to have at least 2").into_value();
 						error.push_value(last);
 
 						Ok(Some(QueryKind::ResultQuery(

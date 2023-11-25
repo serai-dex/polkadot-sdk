@@ -98,7 +98,7 @@ fn crate_metadata(cargo_manifest: &Path) -> Metadata {
 
 	let crate_metadata = crate_metadata_command
 		.exec()
-		.expect("`cargo metadata` can not fail on project `Cargo.toml`; qed");
+		.expect("`cargo metadata` can not fail on project `Cargo.toml`");
 	// If the `Cargo.lock` didn't exist, we need to remove it after
 	// calling `cargo metadata`. This is required to ensure that we don't change
 	// the build directory outside of the `target` folder. Commands like
@@ -207,7 +207,7 @@ pub(crate) fn create_and_compile(
 ///
 /// If the section can not be found, it will print an error and exit the builder.
 fn ensure_runtime_version_wasm_section_exists(blob_path: &Path) {
-	let blob = fs::read(blob_path).expect("`{blob_path}` was just written and should exist; qed");
+	let blob = fs::read(blob_path).expect("`{blob_path}` was just written and should exist");
 
 	let module: Module = match deserialize_buffer(&blob) {
 		Ok(m) => m,
@@ -300,21 +300,20 @@ fn find_cargo_lock(cargo_manifest: &Path) -> Option<PathBuf> {
 
 /// Extract the crate name from the given `Cargo.toml`.
 fn get_crate_name(cargo_manifest: &Path) -> String {
-	let cargo_toml: Table = toml::from_str(
-		&fs::read_to_string(cargo_manifest).expect("File exists as checked before; qed"),
-	)
-	.expect("Cargo manifest is a valid toml file; qed");
+	let cargo_toml: Table =
+		toml::from_str(&fs::read_to_string(cargo_manifest).expect("File exists as checked before"))
+			.expect("Cargo manifest is a valid toml file");
 
 	let package = cargo_toml
 		.get("package")
 		.and_then(|t| t.as_table())
-		.expect("`package` key exists in valid `Cargo.toml`; qed");
+		.expect("`package` key exists in valid `Cargo.toml`");
 
 	package
 		.get("name")
 		.and_then(|p| p.as_str())
 		.map(ToOwned::to_owned)
-		.expect("Package name exists; qed")
+		.expect("Package name exists")
 }
 
 /// Returns the name for the blob binary.
@@ -349,9 +348,9 @@ fn create_project_cargo_toml(
 ) {
 	let mut workspace_toml: Table = toml::from_str(
 		&fs::read_to_string(workspace_root_path.join("Cargo.toml"))
-			.expect("Workspace root `Cargo.toml` exists; qed"),
+			.expect("Workspace root `Cargo.toml` exists"),
 	)
-	.expect("Workspace root `Cargo.toml` is a valid toml file; qed");
+	.expect("Workspace root `Cargo.toml` is a valid toml file");
 
 	let mut wasm_workspace_toml = Table::new();
 
@@ -428,7 +427,7 @@ fn create_project_cargo_toml(
 
 	write_file_if_changed(
 		wasm_workspace.join("Cargo.toml"),
-		toml::to_string_pretty(&wasm_workspace_toml).expect("Wasm workspace toml is valid; qed"),
+		toml::to_string_pretty(&wasm_workspace_toml).expect("Wasm workspace toml is valid"),
 	);
 }
 
@@ -538,12 +537,12 @@ fn create_project(
 	features_to_enable: Vec<String>,
 ) -> PathBuf {
 	let crate_name = get_crate_name(project_cargo_toml);
-	let crate_path = project_cargo_toml.parent().expect("Parent path exists; qed");
+	let crate_path = project_cargo_toml.parent().expect("Parent path exists");
 	let wasm_binary = get_blob_name(project_cargo_toml);
 	let wasm_project_folder = wasm_workspace.join(&crate_name);
 
 	fs::create_dir_all(wasm_project_folder.join("src"))
-		.expect("Wasm project dir create can not fail; qed");
+		.expect("Wasm project dir create can not fail");
 
 	let mut enabled_features =
 		project_enabled_features(&crate_name, project_cargo_toml, crate_metadata);
@@ -662,10 +661,10 @@ impl BuildConfiguration {
 				.rev()
 				.take_while(|c| c.as_os_str() != "wbuild")
 				.last()
-				.expect("We put the wasm project within a `target/.../wbuild` path; qed")
+				.expect("We put the wasm project within a `target/.../wbuild` path")
 				.as_os_str()
 				.to_str()
-				.expect("All our profile directory names are ascii; qed")
+				.expect("All our profile directory names are ascii")
 				.to_string();
 			(name, false)
 		};
@@ -909,7 +908,7 @@ fn generate_rerun_if_changed_instructions(
 		.packages
 		.iter()
 		.find(|p| p.manifest_path == cargo_manifest)
-		.expect("The crate package is contained in its own metadata; qed");
+		.expect("The crate package is contained in its own metadata");
 
 	// Start with the dependencies of the crate we want to compile for wasm.
 	let mut dependencies = package.dependencies.iter().collect::<Vec<_>>();

@@ -802,7 +802,7 @@ modified your chain you should probably try to apply these patches:
 -				vec![],
 -				sc_authority_discovery::Role::Sentry,
 -			),
--			_ => unreachable!("Due to outer matches! constraint; qed.")
+-			_ => unreachable!("Due to outer matches! constraint.")
 -		};
 -
 +	if role.is_authority() {

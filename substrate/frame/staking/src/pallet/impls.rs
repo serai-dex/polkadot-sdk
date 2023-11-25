@@ -350,7 +350,7 @@ impl<T: Config> Pallet<T> {
 
 					let _ = ledger
 						.update()
-						.defensive_proof("ledger fetched from storage, so it exists; qed.");
+						.defensive_proof("ledger fetched from storage, so it exists.");
 
 					Ok(r)
 				})
@@ -633,7 +633,7 @@ impl<T: Config> Pallet<T> {
 
 		let elected_stashes: BoundedVec<_, MaxWinnersOf<T>> = elected_stashes
 			.try_into()
-			.expect("elected_stashes.len() always equal to exposures.len(); qed");
+			.expect("elected_stashes.len() always equal to exposures.len()");
 
 		EraInfo::<T>::set_total_stake(new_planned_era, total_stake);
 
@@ -689,7 +689,7 @@ impl<T: Config> Pallet<T> {
 				(validator, exposure)
 			})
 			.try_collect()
-			.expect("we only map through support vector which cannot change the size; qed")
+			.expect("we only map through support vector which cannot change the size")
 	}
 
 	/// Remove all associated data of a stash account from the staking system.
@@ -1370,7 +1370,7 @@ where
 				// This offence need not be re-submitted.
 				return consumed_weight
 			}
-			active_era.expect("value checked not to be `None`; qed").index
+			active_era.expect("value checked not to be `None`").index
 		};
 		let active_era_start_session_index = Self::eras_start_session_index(active_era)
 			.unwrap_or_else(|| {
@@ -1772,7 +1772,7 @@ impl<T: Config> StakingInterface for Pallet<T> {
 			(false, false) => Ok(StakerStatus::Idle),
 			(true, false) => Ok(StakerStatus::Validator),
 			(false, true) => Ok(StakerStatus::Nominator(
-				is_nominator.expect("is checked above; qed").targets.into_inner(),
+				is_nominator.expect("is checked above").targets.into_inner(),
 			)),
 			(true, true) => {
 				defensive!("cannot be both validators and nominator");

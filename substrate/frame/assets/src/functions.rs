@@ -267,7 +267,7 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 		let actual = match conseq.into_result(f.keep_alive) {
 			Ok(dust) => actual.saturating_add(dust), //< guaranteed by reducible_balance
 			Err(e) => {
-				debug_assert!(false, "passed from reducible_balance; qed");
+				debug_assert!(false, "passed from reducible_balance");
 				return Err(e)
 			},
 		};
@@ -415,7 +415,7 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 			if let Some(check_issuer) = maybe_check_issuer {
 				ensure!(check_issuer == details.issuer, Error::<T, I>::NoPermission);
 			}
-			debug_assert!(details.supply.checked_add(&amount).is_some(), "checked in prep; qed");
+			debug_assert!(details.supply.checked_add(&amount).is_some(), "checked in prep");
 
 			details.supply = details.supply.saturating_add(amount);
 
@@ -501,7 +501,7 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 				ensure!(check_admin == details.admin, Error::<T, I>::NoPermission);
 			}
 
-			debug_assert!(details.supply >= actual, "checked in prep; qed");
+			debug_assert!(details.supply >= actual, "checked in prep");
 			details.supply = details.supply.saturating_sub(actual);
 
 			Ok(())
@@ -544,12 +544,12 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 
 			Account::<T, I>::try_mutate(&id, target, |maybe_account| -> DispatchResult {
 				let mut account = maybe_account.take().ok_or(Error::<T, I>::NoAccount)?;
-				debug_assert!(account.balance >= actual, "checked in prep; qed");
+				debug_assert!(account.balance >= actual, "checked in prep");
 
 				// Make the debit.
 				account.balance = account.balance.saturating_sub(actual);
 				if account.balance < details.min_balance {
-					debug_assert!(account.balance.is_zero(), "checked in prep; qed");
+					debug_assert!(account.balance.is_zero(), "checked in prep");
 					target_died = Some(Self::dead_account(target, details, &account.reason, false));
 					if let Some(Remove) = target_died {
 						return Ok(())
@@ -635,12 +635,12 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 			if let Some(burn) = maybe_burn {
 				// Debit dust from supply; this will not saturate since it's already checked in
 				// prep.
-				debug_assert!(details.supply >= burn, "checked in prep; qed");
+				debug_assert!(details.supply >= burn, "checked in prep");
 				details.supply = details.supply.saturating_sub(burn);
 			}
 
 			// Debit balance from source; this will not saturate since it's already checked in prep.
-			debug_assert!(source_account.balance >= debit, "checked in prep; qed");
+			debug_assert!(source_account.balance >= debit, "checked in prep");
 			source_account.balance = source_account.balance.saturating_sub(debit);
 
 			Account::<T, I>::try_mutate(&id, &dest, |maybe_account| -> DispatchResult {
@@ -650,7 +650,7 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 						// in prep.
 						debug_assert!(
 							account.balance.checked_add(&credit).is_some(),
-							"checked in prep; qed"
+							"checked in prep"
 						);
 						account.balance.saturating_accrue(credit);
 					},
@@ -668,7 +668,7 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 
 			// Remove source account if it's now dead.
 			if source_account.balance < details.min_balance {
-				debug_assert!(source_account.balance.is_zero(), "checked in prep; qed");
+				debug_assert!(source_account.balance.is_zero(), "checked in prep");
 				source_died =
 					Some(Self::dead_account(source, details, &source_account.reason, false));
 				if let Some(Remove) = source_died {

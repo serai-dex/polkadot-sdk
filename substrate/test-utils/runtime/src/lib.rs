@@ -1251,7 +1251,7 @@ mod tests {
 			let mut t = BasicExternalities::new_empty();
 			let r = executor_call(&mut t, "GenesisBuilder_create_default_config", &vec![]).unwrap();
 			let r = Vec::<u8>::decode(&mut &r[..]).unwrap();
-			let json = String::from_utf8(r.into()).expect("returned value is json. qed.");
+			let json = String::from_utf8(r.into()).expect("returned value is json.");
 
 			let expected = r#"{"system":{},"babe":{"authorities":[],"epochConfig":null},"substrateTest":{"authorities":[]},"balances":{"balances":[]}}"#;
 			assert_eq!(expected.to_string(), json);
@@ -1350,7 +1350,7 @@ mod tests {
 			let r = executor_call(&mut t, "GenesisBuilder_create_default_config", &vec![]).unwrap();
 			let r = Vec::<u8>::decode(&mut &r[..]).unwrap();
 			let mut default_config: serde_json::Value =
-				serde_json::from_slice(&r[..]).expect("returned value is json. qed.");
+				serde_json::from_slice(&r[..]).expect("returned value is json.");
 
 			// Patch default json with some custom values:
 			let patch = json!({

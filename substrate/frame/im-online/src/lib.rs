@@ -569,7 +569,7 @@ impl<T: Config> Pallet<T> {
 
 			let seed = sp_io::offchain::random_seed();
 			let random = <u32>::decode(&mut TrailingZeroInput::new(seed.as_ref()))
-				.expect("input is padded with zeroes; qed");
+				.expect("input is padded with zeroes");
 			let random = Permill::from_parts(random % Permill::ACCURACY);
 
 			random <= threshold

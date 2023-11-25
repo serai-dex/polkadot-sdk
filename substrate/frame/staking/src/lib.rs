@@ -515,9 +515,7 @@ impl<T: Config> StakingLedger<T> {
 			})
 			.collect::<Vec<_>>()
 			.try_into()
-			.expect(
-				"filtering items from a bounded vec always leaves length less than bounds. qed",
-			);
+			.expect("filtering items from a bounded vec always leaves length less than bounds");
 
 		Self {
 			stash: self.stash,
@@ -1071,7 +1069,7 @@ impl<T: Config> EraInfo<T> {
 			return None
 		}
 
-		let overview = overview.expect("checked above; qed");
+		let overview = overview.expect("checked above");
 
 		// validator stake is added only in page zero
 		let validator_stake = if page == 0 { overview.own } else { Zero::zero() };
@@ -1098,7 +1096,7 @@ impl<T: Config> EraInfo<T> {
 			return ErasStakers::<T>::get(era, validator)
 		}
 
-		let overview = overview.expect("checked above; qed");
+		let overview = overview.expect("checked above");
 
 		let mut others = Vec::with_capacity(overview.nominator_count as usize);
 		for page in 0..overview.page_count {

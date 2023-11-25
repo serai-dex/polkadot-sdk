@@ -455,9 +455,10 @@ impl<T: BlsBound> TraitPair for Pair<T> {
 		path: Iter,
 		_seed: Option<Seed>,
 	) -> Result<(Self, Option<Seed>), DeriveError> {
-		let mut acc: [u8; SECRET_KEY_SERIALIZED_SIZE] = self.0.secret.to_bytes().try_into().expect(
-			"Secret key serializer returns a vector of SECRET_KEY_SERIALIZED_SIZE size; qed",
-		);
+		let mut acc: [u8; SECRET_KEY_SERIALIZED_SIZE] =
+			self.0.secret.to_bytes().try_into().expect(
+				"Secret key serializer returns a vector of SECRET_KEY_SERIALIZED_SIZE size",
+			);
 		for j in path {
 			match j {
 				DeriveJunction::Soft(_cc) => return Err(DeriveError::SoftKeyInPath),

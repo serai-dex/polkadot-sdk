@@ -116,8 +116,8 @@ fn create_check_toolchain_project(project_dir: &Path) {
 fn check_wasm_toolchain_installed(
 	cargo_command: CargoCommand,
 ) -> Result<CargoCommandVersioned, String> {
-	let temp = tempdir().expect("Creating temp dir does not fail; qed");
-	fs::create_dir_all(temp.path().join("src")).expect("Creating src dir does not fail; qed");
+	let temp = tempdir().expect("Creating temp dir does not fail");
+	fs::create_dir_all(temp.path().join("src")).expect("Creating src dir does not fail");
 	create_check_toolchain_project(temp.path());
 
 	let err_msg = print_error_message("Rust WASM toolchain not installed, please install it!");

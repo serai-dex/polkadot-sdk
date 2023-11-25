@@ -64,7 +64,7 @@ pub fn fetch_nonce(client: &FullClient, account: sp_core::sr25519::Pair) -> u32 
 	client
 		.runtime_api()
 		.account_nonce(best_hash, account.public().into())
-		.expect("Fetching account nonce works; qed")
+		.expect("Fetching account nonce works")
 }
 
 /// Create a transaction using the given `call`.
@@ -80,7 +80,7 @@ pub fn create_extrinsic(
 	nonce: Option<u32>,
 ) -> kitchensink_runtime::UncheckedExtrinsic {
 	let function = function.into();
-	let genesis_hash = client.block_hash(0).ok().flatten().expect("Genesis block exists; qed");
+	let genesis_hash = client.block_hash(0).ok().flatten().expect("Genesis block exists");
 	let best_hash = client.chain_info().best_hash;
 	let best_block = client.chain_info().best_number;
 	let nonce = nonce.unwrap_or_else(|| fetch_nonce(client, sender.clone()));
@@ -339,7 +339,7 @@ pub fn new_full_base(
 	let auth_disc_publish_non_global_ips = config.network.allow_non_globals_in_dht;
 	let mut net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
 
-	let genesis_hash = client.block_hash(0).ok().flatten().expect("Genesis block exists; qed");
+	let genesis_hash = client.block_hash(0).ok().flatten().expect("Genesis block exists");
 
 	let grandpa_protocol_name = grandpa::protocol_standard_name(&genesis_hash, &config.chain_spec);
 	net_config.add_notification_protocol(grandpa::grandpa_peers_set_config(

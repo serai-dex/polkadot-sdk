@@ -969,7 +969,7 @@ pub mod pallet {
 			details.approved = Some(delegate);
 			Item::<T, I>::insert(&collection, &item, &details);
 
-			let delegate = details.approved.expect("set as Some above; qed");
+			let delegate = details.approved.expect("set as Some above");
 			Self::deposit_event(Event::ApprovedTransfer {
 				collection,
 				item,

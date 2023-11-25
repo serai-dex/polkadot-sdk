@@ -351,7 +351,7 @@ impl State {
 		if let Some(new_code) = maybe_code_to_overwrite {
 			let original_code = ext
 				.execute_with(|| sp_io::storage::get(well_known_keys::CODE))
-				.expect("':CODE:' is always downloaded in try-runtime-cli; qed");
+				.expect("':CODE:' is always downloaded in try-runtime-cli");
 
 			// NOTE: see the impl notes of `read_runtime_version`, the ext is almost not used here,
 			// only as a backup.
@@ -517,7 +517,7 @@ fn ensure_try_runtime<Block: BlockT, HostFns: HostFunctions>(
 	use sp_api::RuntimeApiInfo;
 	let final_code = ext
 		.execute_with(|| sp_io::storage::get(well_known_keys::CODE))
-		.expect("':CODE:' is always downloaded in try-runtime-cli; qed");
+		.expect("':CODE:' is always downloaded in try-runtime-cli");
 	let final_version = <RuntimeVersion as Decode>::decode(
 		&mut &*executor.read_runtime_version(&final_code, &mut ext.ext()).unwrap(),
 	)
@@ -592,7 +592,7 @@ pub(crate) fn state_machine_call_with_proof<Block: BlockT, HostFns: HostFunction
 
 	let proof = proving_backend
 		.extract_proof()
-		.expect("A recorder was set and thus, a storage proof can be extracted; qed");
+		.expect("A recorder was set and thus, a storage proof can be extracted");
 
 	if let Some(path) = maybe_export_proof {
 		let mut file = std::fs::File::create(&path).map_err(|e| {

@@ -123,7 +123,7 @@ impl DiscoveryConfig {
 			kademlia_disjoint_query_paths: false,
 			kademlia_protocols: Vec::new(),
 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
-				.expect("value is a constant; constant is non-zero; qed."),
+				.expect("value is a constant; constant is non-zero."),
 		}
 	}
 
@@ -263,7 +263,7 @@ impl DiscoveryConfig {
 			allow_non_globals_in_dht,
 			known_external_addresses: LruHashSet::new(
 				NonZeroUsize::new(MAX_KNOWN_EXTERNAL_ADDRESSES)
-					.expect("value is a constant; constant is non-zero; qed."),
+					.expect("value is a constant; constant is non-zero."),
 			),
 			records_to_publish: Default::default(),
 		}

@@ -124,7 +124,7 @@ impl<T: Config<I>, I: 'static> fungibles::Balanced<<T as SystemConfig>::AccountI
 impl<T: Config<I>, I: 'static> fungibles::Unbalanced<T::AccountId> for Pallet<T, I> {
 	fn handle_raw_dust(_: Self::AssetId, _: Self::Balance) {}
 	fn handle_dust(_: fungibles::Dust<T::AccountId, Self>) {
-		defensive!("`decrease_balance` and `increase_balance` have non-default impls; nothing else calls this; qed");
+		defensive!("`decrease_balance` and `increase_balance` have non-default impls; nothing else calls this");
 	}
 	fn write_balance(
 		_: Self::AssetId,

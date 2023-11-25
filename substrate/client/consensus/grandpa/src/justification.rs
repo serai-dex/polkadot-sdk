@@ -199,8 +199,7 @@ impl<Block: BlockT> GrandpaJustification<Block> {
 			.expect(
 				"can only fail if precommits is empty; \
 				 commit has been validated above; \
-				 valid commits must include precommits; \
-				 qed.",
+				 valid commits must include precommits.",
 			);
 
 		let mut buf = Vec::new();

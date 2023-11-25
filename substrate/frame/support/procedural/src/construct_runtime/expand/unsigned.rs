@@ -37,7 +37,7 @@ pub fn expand_outer_validate_unsigned(
 			let path = &pallet_decl.path;
 			let attr = pallet_decl.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 				let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-					.expect("was successfully parsed before; qed");
+					.expect("was successfully parsed before");
 				quote! {
 					#acc
 					#attr

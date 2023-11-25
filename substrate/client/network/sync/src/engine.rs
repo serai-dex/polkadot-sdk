@@ -445,11 +445,7 @@ where
 			roles,
 			client.info().best_number,
 			client.info().best_hash,
-			client
-				.block_hash(Zero::zero())
-				.ok()
-				.flatten()
-				.expect("Genesis block exists; qed"),
+			client.block_hash(Zero::zero()).ok().flatten().expect("Genesis block exists"),
 		);
 		let block_announce_protocol_name = block_announce_config.notifications_protocol.clone();
 
@@ -464,11 +460,8 @@ where
 		let (tx, service_rx) = tracing_unbounded("mpsc_chain_sync", 100_000);
 		let num_connected = Arc::new(AtomicUsize::new(0));
 		let is_major_syncing = Arc::new(AtomicBool::new(false));
-		let genesis_hash = client
-			.block_hash(0u32.into())
-			.ok()
-			.flatten()
-			.expect("Genesis block exists; qed");
+		let genesis_hash =
+			client.block_hash(0u32.into()).ok().flatten().expect("Genesis block exists");
 
 		// `default_peers_set.in_peers` contains an unspecified amount of light peers so the number
 		// of full inbound peers must be calculated from the total full peer count

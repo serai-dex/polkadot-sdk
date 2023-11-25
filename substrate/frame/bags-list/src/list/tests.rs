@@ -396,7 +396,7 @@ mod list {
 	}
 
 	#[test]
-	#[should_panic = "given nodes must always have a valid bag. qed."]
+	#[should_panic = "given nodes must always have a valid bag."]
 	fn put_in_front_of_panics_if_bag_not_found() {
 		ExtBuilder::default().skip_genesis_ids().build_and_execute_no_post_check(|| {
 			let node_10_no_bag = Node::<Runtime> {

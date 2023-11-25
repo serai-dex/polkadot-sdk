@@ -33,10 +33,10 @@ use prometheus::{
 lazy_static! {
 	pub static ref TOKIO_THREADS_TOTAL: GenericCounter<AtomicU64> =
 		GenericCounter::new("substrate_tokio_threads_total", "Total number of threads created")
-			.expect("Creating of statics doesn't fail. qed");
+			.expect("Creating of statics doesn't fail");
 	pub static ref TOKIO_THREADS_ALIVE: GenericGauge<AtomicU64> =
 		GenericGauge::new("substrate_tokio_threads_alive", "Number of threads alive right now")
-			.expect("Creating of statics doesn't fail. qed");
+			.expect("Creating of statics doesn't fail");
 }
 
 lazy_static! {
@@ -46,14 +46,14 @@ lazy_static! {
 			"Items sent/received/dropped on each mpsc::unbounded instance"
 		),
 		&["entity", "action"], // name of channel, send|received|dropped
-	).expect("Creating of statics doesn't fail. qed");
+	).expect("Creating of statics doesn't fail");
 	pub static ref UNBOUNDED_CHANNELS_SIZE: GenericGaugeVec<AtomicU64> = GenericGaugeVec::new(
 		Opts::new(
 			"substrate_unbounded_channel_size",
 			"Size (number of messages to be processed) of each mpsc::unbounded instance",
 		),
 		&["entity"], // name of channel
-	).expect("Creating of statics doesn't fail. qed");
+	).expect("Creating of statics doesn't fail");
 }
 
 pub static SENT_LABEL: &'static str = "send";

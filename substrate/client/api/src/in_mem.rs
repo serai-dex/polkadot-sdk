@@ -273,10 +273,8 @@ impl<Block: BlockT> Blockchain<Block> {
 		storage.finalized_hash = block;
 
 		if justification.is_some() {
-			let block = storage
-				.blocks
-				.get_mut(&block)
-				.expect("hash was fetched from a block in the db; qed");
+			let block =
+				storage.blocks.get_mut(&block).expect("hash was fetched from a block in the db");
 
 			let block_justifications = match block {
 				StoredBlock::Header(_, ref mut j) | StoredBlock::Full(_, ref mut j) => j,
@@ -295,10 +293,7 @@ impl<Block: BlockT> Blockchain<Block> {
 	) -> sp_blockchain::Result<()> {
 		let mut storage = self.storage.write();
 
-		let block = storage
-			.blocks
-			.get_mut(&hash)
-			.expect("hash was fetched from a block in the db; qed");
+		let block = storage.blocks.get_mut(&hash).expect("hash was fetched from a block in the db");
 
 		let block_justifications = match block {
 			StoredBlock::Header(_, ref mut j) | StoredBlock::Full(_, ref mut j) => j,

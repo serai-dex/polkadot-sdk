@@ -195,7 +195,7 @@ pub fn staging_testnet_config() -> ChainSpec {
 		.with_genesis_config_patch(staging_testnet_config_genesis())
 		.with_telemetry_endpoints(
 			TelemetryEndpoints::new(vec![(STAGING_TELEMETRY_URL.to_string(), 0)])
-				.expect("Staging telemetry url is valid; qed"),
+				.expect("Staging telemetry url is valid"),
 		)
 		.build()
 }
@@ -203,7 +203,7 @@ pub fn staging_testnet_config() -> ChainSpec {
 /// Helper function to generate a crypto pair from seed.
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
 	TPublic::Pair::from_string(&format!("//{}", seed), None)
-		.expect("static values are valid; qed")
+		.expect("static values are valid")
 		.public()
 }
 

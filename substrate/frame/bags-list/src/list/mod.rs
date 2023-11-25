@@ -453,8 +453,7 @@ impl<T: Config<I>, I: 'static> List<T, I> {
 
 		// remove the heavier node from this list. Note that this removes the node from storage and
 		// decrements the node counter.
-		let _ =
-			Self::remove(&heavier_id).defensive_proof("both nodes have been checked to exist; qed");
+		let _ = Self::remove(&heavier_id).defensive_proof("both nodes have been checked to exist");
 
 		// re-fetch `lighter_node` from storage since it may have been updated when `heavier_node`
 		// was removed.
@@ -491,8 +490,8 @@ impl<T: Config<I>, I: 'static> List<T, I> {
 			// since `node` is always in front of `at` we know that 1) there is always at least 2
 			// nodes in the bag, and 2) only `node` could be the head and only `at` could be the
 			// tail.
-			let mut bag = Bag::<T, I>::get(at.bag_upper)
-				.expect("given nodes must always have a valid bag. qed.");
+			let mut bag =
+				Bag::<T, I>::get(at.bag_upper).expect("given nodes must always have a valid bag.");
 
 			if node.prev == None {
 				bag.head = Some(node.id().clone())

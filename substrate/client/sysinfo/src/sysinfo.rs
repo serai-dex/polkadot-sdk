@@ -373,7 +373,7 @@ pub fn benchmark_cpu(limit: ExecutionLimit) -> Throughput {
 	};
 
 	benchmark("CPU score", SIZE, limit.max_iterations(), limit.max_duration(), run)
-		.expect("benchmark cannot fail; qed")
+		.expect("benchmark cannot fail")
 }
 
 /// A default [`ExecutionLimit`] that can be used to call [`benchmark_memory`].
@@ -421,7 +421,7 @@ pub fn benchmark_memory(limit: ExecutionLimit) -> Throughput {
 	};
 
 	benchmark("memory score", SIZE, limit.max_iterations(), limit.max_duration(), run)
-		.expect("benchmark cannot fail; qed")
+		.expect("benchmark cannot fail")
 }
 
 struct TemporaryFile {
@@ -617,7 +617,7 @@ pub fn benchmark_sr25519_verify(limit: ExecutionLimit) -> Throughput {
 		limit.max_duration(),
 		run,
 	)
-	.expect("sr25519 verification cannot fail; qed")
+	.expect("sr25519 verification cannot fail")
 }
 
 /// Benchmarks the hardware and returns the results of those benchmarks.

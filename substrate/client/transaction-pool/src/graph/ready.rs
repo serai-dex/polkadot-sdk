@@ -102,8 +102,7 @@ impl<Hash: Clone, Ex> Clone for ReadyTx<Hash, Ex> {
 const HASH_READY: &str = r#"
 Every time transaction is imported its hash is placed in `ready` map and tags in `provided_tags`;
 Every time transaction is removed from the queue we remove the hash from `ready` map and from `provided_tags`;
-Hence every hash retrieved from `provided_tags` is always present in `ready`;
-qed
+Hence every hash retrieved from `provided_tags` is always present in `ready`
 "#;
 
 /// Validated transactions that are block ready with all their dependencies met.
@@ -400,7 +399,7 @@ impl<Hash: hash::Hash + Member + Serialize, Ex> ReadyTransactions<Hash, Ex> {
 						removed.as_ref(),
 						if current_tag == tag { None } else { Some(&tx.hash) },
 						"The pool contains exactly one transaction providing given tag; the removed transaction
-						claims to provide that tag, so it has to be mapped to it's hash; qed"
+						claims to provide that tag, so it has to be mapped to it's hash"
 					);
 				}
 

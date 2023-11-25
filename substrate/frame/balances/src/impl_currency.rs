@@ -689,7 +689,7 @@ where
 						// remain should always be zero but just to be defensive here.
 						let actual = to_change.defensive_saturating_sub(remain);
 
-						// `actual <= to_change` and `to_change <= amount`; qed;
+						// `actual <= to_change` and `to_change <= amount`;
 						reserves[index].amount -= actual;
 
 						if reserves[index].amount.is_zero() {
@@ -736,7 +736,7 @@ where
 					// remain should always be zero but just to be defensive here.
 					let actual = to_change.defensive_saturating_sub(remain);
 
-					// `actual <= to_change` and `to_change <= amount`; qed;
+					// `actual <= to_change` and `to_change <= amount`;
 					reserves[index].amount -= actual;
 
 					Self::deposit_event(Event::Slashed { who: who.clone(), amount: actual });
@@ -839,7 +839,7 @@ where
 						to_change.defensive_saturating_sub(remain)
 					};
 
-					// `actual <= to_change` and `to_change <= amount`; qed;
+					// `actual <= to_change` and `to_change <= amount`;
 					reserves[index].amount -= actual;
 
 					Ok(value - actual)

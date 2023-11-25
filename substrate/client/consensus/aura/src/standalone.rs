@@ -75,12 +75,12 @@ pub fn slot_author<P: Pair>(slot: Slot, authorities: &[AuthorityId<P>]) -> Optio
 	let idx = *slot % (authorities.len() as u64);
 	assert!(
 		idx <= usize::MAX as u64,
-		"It is impossible to have a vector with length beyond the address space; qed",
+		"It is impossible to have a vector with length beyond the address space",
 	);
 
-	let current_author = authorities.get(idx as usize).expect(
-		"authorities not empty; index constrained to list length;this is a valid index; qed",
-	);
+	let current_author = authorities
+		.get(idx as usize)
+		.expect("authorities not empty; index constrained to list length;this is a valid index");
 
 	Some(current_author)
 }

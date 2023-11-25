@@ -313,8 +313,7 @@ fn initialize_grandpa(
 
 		let (net_service, link) = {
 			// temporary needed for some reason
-			let link =
-				net.peers[peer_id].data.lock().take().expect("link initialized at startup; qed");
+			let link = net.peers[peer_id].data.lock().take().expect("link initialized at startup");
 			(net.peers[peer_id].network_service().clone(), link)
 		};
 		let sync = net.peers[peer_id].sync_service().clone();
@@ -472,7 +471,7 @@ async fn finalize_3_voters_1_full_observer() {
 		let peer_id = 3;
 		let net_service = net.peers[peer_id].network_service().clone();
 		let sync = net.peers[peer_id].sync_service().clone();
-		let link = net.peers[peer_id].data.lock().take().expect("link initialized at startup; qed");
+		let link = net.peers[peer_id].data.lock().take().expect("link initialized at startup");
 
 		let grandpa_params = GrandpaParams {
 			config: Config {
@@ -560,8 +559,7 @@ async fn transition_3_voters_twice_1_full_observer() {
 
 		let (net_service, link, sync) = {
 			let net = net.lock();
-			let link =
-				net.peers[peer_id].data.lock().take().expect("link initialized at startup; qed");
+			let link = net.peers[peer_id].data.lock().take().expect("link initialized at startup");
 			(
 				net.peers[peer_id].network_service().clone(),
 				link,
@@ -1040,7 +1038,7 @@ async fn voter_persists_its_votes() {
 
 		let (net_service, link) = {
 			// temporary needed for some reason
-			let link = net.peers[0].data.lock().take().expect("link initialized at startup; qed");
+			let link = net.peers[0].data.lock().take().expect("link initialized at startup");
 			(net.peers[0].network_service().clone(), link)
 		};
 		let sync = net.peers[0].sync_service().clone();
@@ -1267,7 +1265,7 @@ async fn finalize_3_voters_1_light_observer() {
 			telemetry: None,
 			protocol_name: grandpa_protocol_name::NAME.into(),
 		},
-		net.peers[3].data.lock().take().expect("link initialized at startup; qed"),
+		net.peers[3].data.lock().take().expect("link initialized at startup"),
 		net.peers[3].network_service().clone(),
 		net.peers[3].sync_service().clone(),
 	)
@@ -1334,8 +1332,7 @@ async fn voter_catches_up_to_latest_round_when_behind() {
 	for (peer_id, key) in peers.iter().enumerate() {
 		let (client, link) = {
 			let net = net.lock();
-			let link =
-				net.peers[peer_id].data.lock().take().expect("link initialized at startup; qed");
+			let link = net.peers[peer_id].data.lock().take().expect("link initialized at startup");
 			(net.peers[peer_id].client().clone(), link)
 		};
 
@@ -1371,7 +1368,7 @@ async fn voter_catches_up_to_latest_round_when_behind() {
 			let link = {
 				let net = net.lock();
 				let mut link = net.peers[2].data.lock();
-				link.take().expect("link initialized at startup; qed")
+				link.take().expect("link initialized at startup")
 			};
 			let set_state = link.persistent_data.set_state.clone();
 			tokio::spawn(voter(None, 2, link, net.clone()));

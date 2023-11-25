@@ -617,7 +617,7 @@ pub fn do_slash<T: Config>(
 
 		let _ = ledger
 			.update()
-			.defensive_proof("ledger fetched from storage so it exists in storage; qed.");
+			.defensive_proof("ledger fetched from storage so it exists in storage.");
 
 		// trigger the event
 		<Pallet<T>>::deposit_event(super::Event::<T>::Slashed {

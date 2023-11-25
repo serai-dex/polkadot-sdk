@@ -100,8 +100,7 @@ impl<Block: BlockT> WarpSyncProof<Block> {
 
 		let canon_hash = blockchain.hash(begin_number)?.expect(
 			"begin number is lower than finalized number; \
-			 all blocks below finalized number must have been imported; \
-			 qed.",
+			 all blocks below finalized number must have been imported.",
 		);
 
 		if canon_hash != begin {
@@ -118,11 +117,11 @@ impl<Block: BlockT> WarpSyncProof<Block> {
 
 		for (_, last_block) in set_changes {
 			let hash = blockchain.block_hash_from_id(&BlockId::Number(*last_block))?
-				.expect("header number comes from previously applied set changes; corresponding hash must exist in db; qed.");
+				.expect("header number comes from previously applied set changes; corresponding hash must exist in db.");
 
 			let header = blockchain
 				.header(hash)?
-				.expect("header hash obtained from header number exists in db; corresponding header must exist in db too; qed.");
+				.expect("header hash obtained from header number exists in db; corresponding header must exist in db too.");
 
 			// the last block in a set is the one that triggers a change to the next set,
 			// therefore the block must have a digest that signals the authority set change
@@ -172,8 +171,9 @@ impl<Block: BlockT> WarpSyncProof<Block> {
 			});
 
 			if let Some(latest_justification) = latest_justification {
-				let header = blockchain.header(latest_justification.target().1)?
-					.expect("header hash corresponds to a justification in db; must exist in db as well; qed.");
+				let header = blockchain.header(latest_justification.target().1)?.expect(
+					"header hash corresponds to a justification in db; must exist in db as well.",
+				);
 
 				proofs.push(WarpSyncFragment { header, justification: latest_justification })
 			}

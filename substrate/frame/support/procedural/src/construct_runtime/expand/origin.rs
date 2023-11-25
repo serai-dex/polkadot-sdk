@@ -318,7 +318,7 @@ fn expand_origin_caller_variant(
 	let path = &pallet.path;
 	let attr = pallet.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 		let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-			.expect("was successfully parsed before; qed");
+			.expect("was successfully parsed before");
 		quote! {
 			#acc
 			#attr
@@ -370,7 +370,7 @@ fn expand_origin_pallet_conversions(
 	let doc_string = get_intra_doc_string(" Convert to runtime origin using", &path.module_name());
 	let attr = pallet.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 		let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-			.expect("was successfully parsed before; qed");
+			.expect("was successfully parsed before");
 		quote! {
 			#acc
 			#attr

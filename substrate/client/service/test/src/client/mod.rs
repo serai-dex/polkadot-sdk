@@ -257,10 +257,10 @@ fn block_builder_works_with_transactions() {
 
 	let hash0 = client
 		.expect_block_hash_from_id(&BlockId::Number(0))
-		.expect("block 0 was just imported. qed");
+		.expect("block 0 was just imported");
 	let hash1 = client
 		.expect_block_hash_from_id(&BlockId::Number(1))
-		.expect("block 1 was just imported. qed");
+		.expect("block 1 was just imported");
 
 	assert_eq!(client.chain_info().best_number, 1);
 	assert_ne!(
@@ -327,10 +327,10 @@ fn block_builder_does_not_include_invalid() {
 
 	let hashof0 = client
 		.expect_block_hash_from_id(&BlockId::Number(0))
-		.expect("block 0 was just imported. qed");
+		.expect("block 0 was just imported");
 	let hashof1 = client
 		.expect_block_hash_from_id(&BlockId::Number(1))
-		.expect("block 1 was just imported. qed");
+		.expect("block 1 was just imported");
 
 	assert_eq!(client.chain_info().best_number, 1);
 	assert_ne!(

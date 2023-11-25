@@ -508,6 +508,6 @@ impl<T: Config> Pallet<T> {
 	pub fn derivative_account_id(who: T::AccountId, index: u16) -> T::AccountId {
 		let entropy = (b"modlpy/utilisuba", who, index).using_encoded(blake2_256);
 		Decode::decode(&mut TrailingZeroInput::new(entropy.as_ref()))
-			.expect("infinite length input; no invalid inputs for type; qed")
+			.expect("infinite length input; no invalid inputs for type")
 	}
 }

@@ -184,8 +184,7 @@ where
 		if *target_header.number() < target_number {
 			unreachable!(
 				"we are traversing backwards from a known block; \
-				 blocks are stored contiguously; \
-				 qed"
+				 blocks are stored contiguously"
 			);
 		}
 
@@ -197,7 +196,7 @@ where
 		target_header = backend
 			.header(target_hash)
 			.ok()?
-			.expect("Header known to exist due to the existence of one of its descendents; qed");
+			.expect("Header known to exist due to the existence of one of its descendents");
 	}
 }
 

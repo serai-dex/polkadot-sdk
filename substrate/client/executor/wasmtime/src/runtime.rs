@@ -64,7 +64,7 @@ impl StoreData {
 
 	/// Returns the host memory.
 	pub fn memory(&self) -> Memory {
-		self.memory.expect("memory is always set; qed")
+		self.memory.expect("memory is always set")
 	}
 }
 
@@ -704,9 +704,10 @@ fn perform_call(
 		.map(unpack_ptr_and_len);
 
 	// Reset the host state
-	let host_state = instance_wrapper.store_mut().data_mut().host_state.take().expect(
-		"the host state is always set before calling into WASM so it can't be None here; qed",
-	);
+	let host_state =
+		instance_wrapper.store_mut().data_mut().host_state.take().expect(
+			"the host state is always set before calling into WASM so it can't be None here",
+		);
 	*allocation_stats = Some(host_state.allocation_stats());
 
 	let (output_ptr, output_len) = ret?;

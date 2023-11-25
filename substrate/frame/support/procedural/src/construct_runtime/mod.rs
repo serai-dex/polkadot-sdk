@@ -257,7 +257,7 @@ pub fn construct_runtime(input: TokenStream) -> TokenStream {
 		.dry(std::env::var("FRAME_EXPAND").is_err())
 		.verbose(true)
 		.write_to_out_dir(res)
-		.expect("Does not fail because of IO in OUT_DIR; qed");
+		.expect("Does not fail because of IO in OUT_DIR");
 
 	res.into()
 }
@@ -523,7 +523,7 @@ fn decl_all_pallets<'a>(
 		let mut attrs = Vec::new();
 		for cfg in &pallet_declaration.cfg_pattern {
 			let feat = format!("#[cfg({})]\n", cfg.original());
-			attrs.extend(TokenStream2::from_str(&feat).expect("was parsed successfully; qed"));
+			attrs.extend(TokenStream2::from_str(&feat).expect("was parsed successfully"));
 		}
 		let type_decl = quote!(
 			#(#attrs)*
@@ -643,7 +643,7 @@ fn decl_pallet_runtime_setup(
 		.map(|pallet| {
 			pallet.cfg_pattern.iter().fold(TokenStream2::new(), |acc, pattern| {
 				let attr = TokenStream2::from_str(&format!("#[cfg({})]", pattern.original()))
-					.expect("was successfully parsed before; qed");
+					.expect("was successfully parsed before");
 				quote! {
 					#acc
 					#attr

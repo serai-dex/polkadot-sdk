@@ -257,7 +257,7 @@ where
 					.chain(responses_max)
 					.chain(notifs_max)
 					.max()
-					.expect("iterator known to always yield at least one element; qed")
+					.expect("iterator known to always yield at least one element")
 					.saturating_add(10)
 			};
 
@@ -471,7 +471,7 @@ where
 						)),
 				)
 				.substream_upgrade_protocol_override(upgrade::Version::V1Lazy)
-				.notify_handler_buffer_size(NonZeroUsize::new(32).expect("32 != 0; qed"))
+				.notify_handler_buffer_size(NonZeroUsize::new(32).expect("32 != 0"))
 				// NOTE: 24 is somewhat arbitrary and should be tuned in the future if necessary.
 				// See <https://github.com/paritytech/substrate/pull/6080>
 				.per_connection_event_buffer_size(24)

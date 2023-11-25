@@ -1637,11 +1637,11 @@ fn metadata() {
 		_ => panic!("metadata has been bumped, test needs to be updated"),
 	};
 
-	let bytes = &Runtime::metadata_at_version(LATEST_METADATA_VERSION)
-		.expect("Metadata must be present; qed");
+	let bytes =
+		&Runtime::metadata_at_version(LATEST_METADATA_VERSION).expect("Metadata must be present");
 
 	let actual_metadata: RuntimeMetadataPrefixed =
-		Decode::decode(&mut &bytes[..]).expect("Metadata encoded properly; qed");
+		Decode::decode(&mut &bytes[..]).expect("Metadata encoded properly");
 
 	let actual_metadata = match actual_metadata.1 {
 		RuntimeMetadata::V15(metadata) => metadata,

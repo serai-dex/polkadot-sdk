@@ -152,7 +152,7 @@ impl<'a> ExportImportRevertExecutor<'a> {
 			assert_eq!(imported, best, "numbers of blocks imported and best number differs");
 			assert_eq!(
 				best,
-				self.num_exported_blocks.expect("number of exported blocks cannot be None; qed"),
+				self.num_exported_blocks.expect("number of exported blocks cannot be None"),
 				"best block number and number of expected blocks should not differ"
 			);
 		}

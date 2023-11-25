@@ -28,7 +28,7 @@ lazy_static! {
 	/// to use your own requirements if you are running a custom chain.
 	pub static ref SUBSTRATE_REFERENCE_HARDWARE: Requirements = {
 		let raw = include_bytes!("reference_hardware.json").as_slice();
-		serde_json::from_slice(raw).expect("Hardcoded data is known good; qed")
+		serde_json::from_slice(raw).expect("Hardcoded data is known good")
 	};
 }
 

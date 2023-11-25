@@ -623,7 +623,7 @@ fn default_config_as_json_works() {
 		.0
 		.unwrap();
 	let r = Vec::<u8>::decode(&mut &r[..]).unwrap();
-	let json = String::from_utf8(r.into()).expect("returned value is json. qed.");
+	let json = String::from_utf8(r.into()).expect("returned value is json.");
 	let expected = include_str!("res/default_genesis_config.json").to_string();
 
 	assert_eq!(

@@ -72,7 +72,7 @@ fn create_basic_pool_with_genesis(
 			.block_by_number
 			.get(&0)
 			.map(|blocks| blocks[0].0.header.hash())
-			.expect("there is block 0. qed")
+			.expect("there is block 0")
 	};
 	BasicPool::new_test(test_api, genesis_hash, genesis_hash)
 }

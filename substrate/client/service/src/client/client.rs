@@ -474,7 +474,7 @@ where
 		Ok(StorageProvider::storage(self, hash, &StorageKey(well_known_keys::CODE.to_vec()))?
 			.expect(
 				"None is returned if there's no value stored for the given key;\
-				':code' key is always defined; qed",
+				':code' key is always defined",
 			)
 			.0)
 	}
@@ -959,7 +959,7 @@ where
 				.last()
 				.expect(
 					"The block to finalize is always the latest \
-						block in the route to the finalized block; qed",
+						block in the route to the finalized block",
 				)
 				.number;
 
@@ -972,7 +972,7 @@ where
 				.backend
 				.blockchain()
 				.header(hash)?
-				.expect("Block to finalize expected to be onchain; qed");
+				.expect("Block to finalize expected to be onchain");
 
 			operation.notify_finalized = Some(FinalizeSummary { header, finalized, stale_heads });
 		}

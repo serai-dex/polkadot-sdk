@@ -132,7 +132,7 @@ pub mod pallet {
 	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
 		fn build(&self) {
 			for call in &self.paused {
-				Pallet::<T>::ensure_can_pause(&call).expect("Genesis data is known good; qed");
+				Pallet::<T>::ensure_can_pause(&call).expect("Genesis data is known good");
 				PausedCalls::<T>::insert(&call, ());
 			}
 		}

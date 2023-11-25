@@ -248,10 +248,7 @@ impl<Hash: FromStr + Debug, Number: FromStr + Debug> FromStr for ExtrinsicAddres
 
 		// split by a bunch of different characters
 		let mut it = s.split(|c| c == '.' || c == ':' || c == ' ');
-		let block = it
-			.next()
-			.expect("First element of split iterator is never empty; qed")
-			.parse()?;
+		let block = it.next().expect("First element of split iterator is never empty").parse()?;
 
 		let index = it
 			.next()

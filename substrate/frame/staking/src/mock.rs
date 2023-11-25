@@ -512,7 +512,7 @@ impl ExtBuilder {
 				let (_, _, _, ref mut prev_status) = stakers
 					.iter_mut()
 					.find(|s| s.0 == stash)
-					.expect("set_status staker should exist; qed");
+					.expect("set_status staker should exist");
 				*prev_status = status;
 			});
 			// replaced any of the stakes if needed.
@@ -520,7 +520,7 @@ impl ExtBuilder {
 				let (_, _, ref mut prev_stake, _) = stakers
 					.iter_mut()
 					.find(|s| s.0 == stash)
-					.expect("set_stake staker should exits; qed.");
+					.expect("set_stake staker should exits.");
 				*prev_stake = stake;
 			});
 			// extend stakers if needed.

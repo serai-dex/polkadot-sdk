@@ -137,11 +137,7 @@ where
 
 		let mut protocol_config = generate_protocol_config(
 			protocol_id,
-			client
-				.block_hash(0u32.into())
-				.ok()
-				.flatten()
-				.expect("Genesis block exists; qed"),
+			client.block_hash(0u32.into()).ok().flatten().expect("Genesis block exists"),
 			fork_id,
 		);
 		protocol_config.inbound_queue = Some(tx);

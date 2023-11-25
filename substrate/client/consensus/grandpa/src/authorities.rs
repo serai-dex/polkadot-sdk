@@ -113,8 +113,7 @@ where
 	pub fn current_authorities(&self) -> VoterSet<AuthorityId> {
 		VoterSet::new(self.inner().current_authorities.iter().cloned()).expect(
 			"current_authorities is non-empty and weights are non-zero; \
-			 constructor and all mutating operations on `AuthoritySet` ensure this; \
-			 qed.",
+			 constructor and all mutating operations on `AuthoritySet` ensure this.",
 		)
 	}
 
@@ -471,7 +470,7 @@ where
 				let median_last_finalized = match change.delay_kind {
 					DelayKind::Best { ref median_last_finalized } => median_last_finalized.clone(),
 					_ => unreachable!(
-						"pending_forced_changes only contains forced changes; forced changes have delay kind Best; qed."
+						"pending_forced_changes only contains forced changes; forced changes have delay kind Best."
 					),
 				};
 

@@ -279,7 +279,7 @@ impl<T: Config<I>, I: 'static> fungible::UnbalancedHold<T::AccountId> for Pallet
 		})?;
 		debug_assert!(
 			maybe_dust.is_none(),
-			"Does not alter main balance; dust only happens when it is altered; qed"
+			"Does not alter main balance; dust only happens when it is altered"
 		);
 		Holds::<T, I>::insert(who, holds);
 		Ok(result)

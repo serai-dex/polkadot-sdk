@@ -795,11 +795,7 @@ where
 			// Allow both outgoing and incoming requests.
 			let (handler, protocol_config) = WarpSyncRequestHandler::new(
 				protocol_id.clone(),
-				client
-					.block_hash(0u32.into())
-					.ok()
-					.flatten()
-					.expect("Genesis block exists; qed"),
+				client.block_hash(0u32.into()).ok().flatten().expect("Genesis block exists"),
 				config.chain_spec.fork_id(),
 				warp_with_provider.clone(),
 			);
@@ -835,11 +831,7 @@ where
 	// `network_params`
 	let transactions_handler_proto = sc_network_transactions::TransactionsHandlerPrototype::new(
 		protocol_id.clone(),
-		client
-			.block_hash(0u32.into())
-			.ok()
-			.flatten()
-			.expect("Genesis block exists; qed"),
+		client.block_hash(0u32.into()).ok().flatten().expect("Genesis block exists"),
 		config.chain_spec.fork_id(),
 	);
 	net_config.add_notification_protocol(transactions_handler_proto.set_config());
@@ -876,7 +868,7 @@ where
 	let sync_service_import_queue = sync_service.clone();
 	let sync_service = Arc::new(sync_service);
 
-	let genesis_hash = client.hash(Zero::zero()).ok().flatten().expect("Genesis block exists; qed");
+	let genesis_hash = client.hash(Zero::zero()).ok().flatten().expect("Genesis block exists");
 	let network_params = sc_network::config::Params::<TBl> {
 		role: config.role.clone(),
 		executor: {

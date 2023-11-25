@@ -39,7 +39,7 @@ pub fn expand_outer_inherent(
 			let path = &pallet_decl.path;
 			let attr = pallet_decl.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 				let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-					.expect("was successfully parsed before; qed");
+					.expect("was successfully parsed before");
 				quote! {
 					#acc
 					#attr
@@ -78,7 +78,7 @@ pub fn expand_outer_inherent(
 							inherent.into(),
 							None,
 						).expect("Runtime UncheckedExtrinsic is not Opaque, so it has to return \
-							`Some`; qed");
+							`Some`");
 
 						inherents.push(inherent);
 					}

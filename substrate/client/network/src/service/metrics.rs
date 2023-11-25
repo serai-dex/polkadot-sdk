@@ -123,7 +123,7 @@ impl Metrics {
 						"Duration of Kademlia queries per query type"
 					),
 					buckets: prometheus::exponential_buckets(0.5, 2.0, 10)
-						.expect("parameters are always valid values; qed"),
+						.expect("parameters are always valid values"),
 				},
 				&["type"]
 			)?, registry)?,
@@ -161,7 +161,7 @@ impl Metrics {
 						"Sizes of the notifications send to and received from all nodes"
 					),
 					buckets: prometheus::exponential_buckets(64.0, 4.0, 8)
-						.expect("parameters are always valid values; qed"),
+						.expect("parameters are always valid values"),
 				},
 				&["direction", "protocol"]
 			)?, registry)?,
@@ -209,7 +209,7 @@ impl Metrics {
 						 starting to send the response"
 					),
 					buckets: prometheus::exponential_buckets(0.001, 2.0, 16)
-						.expect("parameters are always valid values; qed"),
+						.expect("parameters are always valid values"),
 				},
 				&["protocol"]
 			)?, registry)?,
@@ -227,7 +227,7 @@ impl Metrics {
 						"For successful outgoing requests, time between a request's start and finish"
 					),
 					buckets: prometheus::exponential_buckets(0.001, 2.0, 16)
-						.expect("parameters are always valid values; qed"),
+						.expect("parameters are always valid values"),
 				},
 				&["protocol"]
 			)?, registry)?,

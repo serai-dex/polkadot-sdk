@@ -913,7 +913,7 @@ pub mod pallet {
 			let encoded_pool_id = sp_io::hashing::blake2_256(&Encode::encode(pool_id)[..]);
 
 			Decode::decode(&mut TrailingZeroInput::new(encoded_pool_id.as_ref()))
-				.expect("infinite length input; no invalid inputs for type; qed")
+				.expect("infinite length input; no invalid inputs for type")
 		}
 
 		/// Get the `owner`'s balance of `asset`, which could be the chain's native asset or another

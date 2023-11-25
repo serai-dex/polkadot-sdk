@@ -37,7 +37,7 @@ pub fn now() -> Timestamp {
 			Timestamp::from_unix_millis(
 				duration
 					.try_into()
-					.expect("epoch milliseconds won't overflow u64 for hundreds of years; qed"),
+					.expect("epoch milliseconds won't overflow u64 for hundreds of years"),
 			)
 		},
 	}

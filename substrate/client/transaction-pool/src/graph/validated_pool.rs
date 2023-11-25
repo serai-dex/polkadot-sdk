@@ -284,7 +284,7 @@ impl<B: ChainApi> ValidatedPool<B> {
 				let watcher = self.listener.write().create_watcher(hash);
 				self.submit(std::iter::once(ValidatedTransaction::Valid(tx)))
 					.pop()
-					.expect("One extrinsic passed; one result returned; qed")
+					.expect("One extrinsic passed; one result returned")
 					.map(|_| watcher)
 			},
 			ValidatedTransaction::Invalid(hash, err) => {
@@ -324,11 +324,8 @@ impl<B: ChainApi> ValidatedPool<B> {
 			let mut initial_statuses = HashMap::new();
 			let mut txs_to_resubmit = Vec::with_capacity(updated_transactions.len());
 			while !updated_transactions.is_empty() {
-				let hash = updated_transactions
-					.keys()
-					.next()
-					.cloned()
-					.expect("transactions is not empty; qed");
+				let hash =
+					updated_transactions.keys().next().cloned().expect("transactions is not empty");
 
 				// note we are not considering tx with hash invalid here - we just want
 				// to remove it along with dependent transactions and `remove_subtree()`

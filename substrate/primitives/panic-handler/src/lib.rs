@@ -139,7 +139,7 @@ fn strip_control_codes(input: &str) -> std::borrow::Cow<str> {
 			  \u{202A}-\u{202E}  # Unicode left-to-right / right-to-left control characters
 			  \u{2066}-\u{2069}  # Same as above
 			]
-		"#).expect("regex parsing doesn't fail; qed");
+		"#).expect("regex parsing doesn't fail");
 	}
 
 	RE.replace_all(input, "")

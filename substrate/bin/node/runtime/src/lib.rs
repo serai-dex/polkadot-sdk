@@ -551,7 +551,7 @@ parameter_types! {
 	pub const MultiPhaseUnsignedPriority: TransactionPriority = StakingUnsignedPriority::get() - 1u64;
 	pub MinerMaxWeight: Weight = RuntimeBlockWeights::get()
 		.get(DispatchClass::Normal)
-		.max_extrinsic.expect("Normal extrinsics have a weight limit configured; qed")
+		.max_extrinsic.expect("Normal extrinsics have a weight limit configured")
 		.saturating_sub(BlockExecutionWeight::get());
 	// Solution can occupy 90% of normal block size
 	pub MinerMaxLength: u32 = Perbill::from_rational(9u32, 10) *
@@ -599,7 +599,7 @@ impl Get<Option<BalancingConfig>> for OffchainRandomBalancing {
 			max => {
 				let seed = sp_io::offchain::random_seed();
 				let random = <u32>::decode(&mut TrailingZeroInput::new(&seed))
-					.expect("input is padded with zeroes; qed") %
+					.expect("input is padded with zeroes") %
 					max.saturating_add(1);
 				random as usize
 			},

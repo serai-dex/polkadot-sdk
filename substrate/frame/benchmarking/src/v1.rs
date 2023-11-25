@@ -1754,9 +1754,9 @@ pub fn show_benchmark_debug_info(
 		* Verify: {:?}\n\
 		* Error message: {}",
 		sp_std::str::from_utf8(instance_string)
-			.expect("it's all just strings ran through the wasm interface. qed"),
+			.expect("it's all just strings ran through the wasm interface"),
 		sp_std::str::from_utf8(benchmark)
-			.expect("it's all just strings ran through the wasm interface. qed"),
+			.expect("it's all just strings ran through the wasm interface"),
 		components,
 		verify,
 		error_message,

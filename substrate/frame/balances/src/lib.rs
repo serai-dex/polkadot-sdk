@@ -1020,7 +1020,7 @@ pub mod pallet {
 			});
 			debug_assert!(res.is_ok());
 			if let Ok((_, maybe_dust)) = res {
-				debug_assert!(maybe_dust.is_none(), "Not altering main balance; qed");
+				debug_assert!(maybe_dust.is_none(), "Not altering main balance");
 			}
 
 			match locks.is_empty() {

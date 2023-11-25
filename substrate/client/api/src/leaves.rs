@@ -209,10 +209,7 @@ where
 
 		for (hash, number) in &items {
 			if number.0 > best_number {
-				assert!(
-					self.remove_leaf(number, hash),
-					"item comes from an iterator over storage; qed",
-				);
+				assert!(self.remove_leaf(number, hash), "item comes from an iterator over storage",);
 			}
 		}
 

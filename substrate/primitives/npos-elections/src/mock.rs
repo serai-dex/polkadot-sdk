@@ -228,10 +228,10 @@ where
 		let max_stake = backing_backed_stake
 			.iter()
 			.max_by(|x, y| x.partial_cmp(&y).unwrap_or(sp_std::cmp::Ordering::Equal))
-			.expect("vector with positive length will have a max; qed");
+			.expect("vector with positive length will have a max");
 		let min_stake = backed_stakes_iter
 			.min_by(|x, y| x.partial_cmp(&y).unwrap_or(sp_std::cmp::Ordering::Equal))
-			.expect("iterator with positive length will have a min; qed");
+			.expect("iterator with positive length will have a min");
 
 		difference = max_stake - min_stake;
 		difference = difference + budget - stake_used;

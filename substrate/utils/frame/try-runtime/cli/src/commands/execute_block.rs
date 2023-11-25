@@ -113,7 +113,7 @@ where
 	)
 	.await
 	.map_err(rpc_err_handler)?
-	.expect("header exists, block should also exist; qed")
+	.expect("header exists, block should also exist")
 	.block;
 
 	// A digest item gets added when the runtime is processing the block, so we need to pop
@@ -163,7 +163,7 @@ where
 	.await
 	.map_err(rpc_err_handler)?
 	{
-		ListOrValue::Value(t) => t.expect("value passed in; value comes out; qed"),
+		ListOrValue::Value(t) => t.expect("value passed in; value comes out"),
 		_ => unreachable!(),
 	};
 

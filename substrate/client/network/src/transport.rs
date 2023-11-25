@@ -81,7 +81,7 @@ pub fn build_transport(
 		Either::Right(OptionalTransport::some(libp2p::core::transport::MemoryTransport::default()))
 	};
 
-	let authentication_config = noise::Config::new(&keypair).expect("Can create noise config. qed");
+	let authentication_config = noise::Config::new(&keypair).expect("Can create noise config");
 	let multiplexing_config = {
 		let mut yamux_config = libp2p::yamux::Config::default();
 		// Enable proper flow-control: window updates are only sent when

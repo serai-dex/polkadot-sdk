@@ -232,8 +232,7 @@ impl TestNetworkBuilder {
 		let peer_store_handle = peer_store.handle();
 		tokio::spawn(peer_store.run().boxed());
 
-		let genesis_hash =
-			client.hash(Zero::zero()).ok().flatten().expect("Genesis block exists; qed");
+		let genesis_hash = client.hash(Zero::zero()).ok().flatten().expect("Genesis block exists");
 		let worker = NetworkWorker::<
 			substrate_test_runtime_client::runtime::Block,
 			substrate_test_runtime_client::runtime::Hash,

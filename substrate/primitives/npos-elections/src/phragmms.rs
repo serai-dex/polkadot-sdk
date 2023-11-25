@@ -189,7 +189,7 @@ pub(crate) fn apply_elected<AccountId: IdentifierT>(
 		.borrow()
 		.score
 		.to_den(1)
-		.expect("(n / d) < u128::MAX and (n' / 1) == (n / d), thus n' < u128::MAX'; qed.")
+		.expect("(n / d) < u128::MAX and (n' / 1) == (n / d), thus n' < u128::MAX'.")
 		.n();
 
 	let mut elected_backed_stake = elected_ptr.borrow().backed_stake;

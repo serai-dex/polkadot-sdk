@@ -838,11 +838,7 @@ pub trait TestNetFactory: Default + Sized + Send {
 		let warp_protocol_config = {
 			let (handler, protocol_config) = warp_request_handler::RequestHandler::new(
 				protocol_id.clone(),
-				client
-					.block_hash(0u32.into())
-					.ok()
-					.flatten()
-					.expect("Genesis block exists; qed"),
+				client.block_hash(0u32.into()).ok().flatten().expect("Genesis block exists"),
 				None,
 				warp_sync.clone(),
 			);
@@ -904,8 +900,7 @@ pub trait TestNetFactory: Default + Sized + Send {
 		let peer_store_handle = peer_store.handle();
 		self.spawn_task(peer_store.run().boxed());
 
-		let genesis_hash =
-			client.hash(Zero::zero()).ok().flatten().expect("Genesis block exists; qed");
+		let genesis_hash = client.hash(Zero::zero()).ok().flatten().expect("Genesis block exists");
 		let network = NetworkWorker::new(sc_network::config::Params {
 			role: if config.is_authority { Role::Authority } else { Role::Full },
 			executor: Box::new(|f| {

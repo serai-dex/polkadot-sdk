@@ -117,7 +117,7 @@ fn get_frame_crate_path(def_crate: &str) -> Option<syn::Path> {
 	// This does not work if the frame crate is renamed.
 	if let Ok(FoundCrate::Name(name)) = crate_name(&"frame") {
 		let path = format!("{}::deps::{}", name, def_crate.to_string().replace("-", "_"));
-		Some(syn::parse_str::<syn::Path>(&path).expect("is a valid path; qed"))
+		Some(syn::parse_str::<syn::Path>(&path).expect("is a valid path"))
 	} else {
 		None
 	}

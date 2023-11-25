@@ -65,7 +65,7 @@ impl Timestamp {
 
 		let now = SystemTime::now();
 		now.duration_since(SystemTime::UNIX_EPOCH)
-			.expect("Current time is always after unix epoch; qed")
+			.expect("Current time is always after unix epoch")
 			.into()
 	}
 }

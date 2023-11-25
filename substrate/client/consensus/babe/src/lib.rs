@@ -243,7 +243,7 @@ impl Epoch {
 		let epoch_index = epoch.epoch_index.checked_add(skipped_epochs).expect(
 			"epoch number is u64; it should be strictly smaller than number of slots; \
 				slots relate in some way to wall clock time; \
-				if u64 is not enough we should crash for safety; qed.",
+				if u64 is not enough we should crash for safety.",
 		);
 
 		let start_slot = skipped_epochs
@@ -251,7 +251,7 @@ impl Epoch {
 			.and_then(|skipped_slots| epoch.start_slot.checked_add(skipped_slots))
 			.expect(
 				"slot number is u64; it should relate in some way to wall clock time; \
-				 if u64 is not enough we should crash for safety; qed.",
+				 if u64 is not enough we should crash for safety.",
 			);
 
 		epoch.epoch_index = epoch_index;
@@ -1209,7 +1209,7 @@ where
 				let babe_pre_digest = verified_info
 					.pre_digest
 					.as_babe_pre_digest()
-					.expect("check_header always returns a pre-digest digest item; qed");
+					.expect("check_header always returns a pre-digest digest item");
 				let slot = babe_pre_digest.slot();
 
 				// the header is valid but let's check if there was something else already
@@ -1435,7 +1435,7 @@ where
 		}
 
 		let pre_digest = find_pre_digest::<Block>(&block.header).expect(
-			"valid babe headers must contain a predigest; header has been already verified; qed",
+			"valid babe headers must contain a predigest; header has been already verified",
 		);
 		let slot = pre_digest.slot();
 
@@ -1452,7 +1452,7 @@ where
 
 		let parent_slot = find_pre_digest::<Block>(&parent_header).map(|d| d.slot()).expect(
 			"parent is non-genesis; valid BABE headers contain a pre-digest; header has already \
-			 been verified; qed",
+			 been verified",
 		);
 
 		// make sure that slot number is strictly increasing
@@ -1616,8 +1616,7 @@ where
 
 				if let Err(e) = prune_and_import() {
 					debug!(target: LOG_TARGET, "Failed to launch next epoch: {}", e);
-					*epoch_changes =
-						old_epoch_changes.expect("set `Some` above and not taken; qed");
+					*epoch_changes = old_epoch_changes.expect("set `Some` above and not taken");
 					return Err(e)
 				}
 
@@ -1703,12 +1702,10 @@ where
 		let finalized_header = client
 			.header(info.finalized_hash)
 			.map_err(|e| ConsensusError::ClientImport(e.to_string()))?
-			.expect(
-				"best finalized hash was given by client; finalized headers must exist in db; qed",
-			);
+			.expect("best finalized hash was given by client; finalized headers must exist in db");
 
 		find_pre_digest::<Block>(&finalized_header)
-			.expect("finalized header must be valid; valid blocks have a pre-digest; qed")
+			.expect("finalized header must be valid; valid blocks have a pre-digest")
 			.slot()
 	};
 

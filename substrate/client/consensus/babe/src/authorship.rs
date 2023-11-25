@@ -71,30 +71,26 @@ pub(super) fn calculate_primary_threshold(
 		 theta must be > 0 if the given authority's weight is > 0; \
 		 theta represents the validator's relative weight defined in (0, 1]; \
 		 powf will always return values in (0, 1] given both the \
-		 base and exponent are in that domain; \
-		 qed.",
+		 base and exponent are in that domain.",
 	);
 
 	let numer = p.numer().to_biguint().expect(
 		"returns None when the given value is negative; \
 		 p is defined as `1 - n` where n is defined in (0, 1]; \
-		 p must be a value in [0, 1); \
-		 qed.",
+		 p must be a value in [0, 1).",
 	);
 
 	let denom = p.denom().to_biguint().expect(
 		"returns None when the given value is negative; \
 		 p is defined as `1 - n` where n is defined in (0, 1]; \
-		 p must be a value in [0, 1); \
-		 qed.",
+		 p must be a value in [0, 1).",
 	);
 
 	((BigUint::one() << 128usize) * numer / denom).to_u128().expect(
 		"returns None if the underlying value cannot be represented with 128 bits; \
 		 we start with 2^128 which is one more than can be represented with 128 bits; \
 		 we multiple by p which is defined in [0, 1); \
-		 the result must be lower than 2^128 by at least one and thus representable with 128 bits; \
-		 qed.",
+		 the result must be lower than 2^128 by at least one and thus representable with 128 bits.",
 	)
 }
 
@@ -117,7 +113,7 @@ pub(super) fn secondary_slot_author(
 
 	let expected_author = authorities.get(idx.as_u32() as usize).expect(
 		"authorities not empty; index constrained to list length; \
-				this is a valid index; qed",
+				this is a valid index",
 	);
 
 	Some(&expected_author.0)

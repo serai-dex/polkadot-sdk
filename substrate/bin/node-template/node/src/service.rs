@@ -147,7 +147,7 @@ pub fn new_full(config: Configuration) -> Result<TaskManager, ServiceError> {
 	let mut net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
 
 	let grandpa_protocol_name = sc_consensus_grandpa::protocol_standard_name(
-		&client.block_hash(0).ok().flatten().expect("Genesis block exists; qed"),
+		&client.block_hash(0).ok().flatten().expect("Genesis block exists"),
 		&config.chain_spec,
 	);
 	net_config.add_notification_protocol(sc_consensus_grandpa::grandpa_peers_set_config(

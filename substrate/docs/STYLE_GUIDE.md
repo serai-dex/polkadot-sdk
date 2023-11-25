@@ -132,8 +132,7 @@ match meal {
 let mut target_path =
 	self.path().expect(
 		"self is instance of DiskDirectory;\
-		DiskDirectory always returns path;\
-		qed"
+		DiskDirectory always returns path"
 	);
 ```
 

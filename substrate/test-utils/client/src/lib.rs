@@ -329,7 +329,7 @@ impl RpcHandlersExt for RpcHandlers {
 				array_bytes::bytes2hex("", &extrinsic.encode())
 			))
 			.await
-			.expect("valid JSON-RPC request object; qed");
+			.expect("valid JSON-RPC request object");
 		parse_rpc_result(result, rx)
 	}
 }
@@ -339,12 +339,12 @@ pub(crate) fn parse_rpc_result(
 	receiver: futures::channel::mpsc::UnboundedReceiver<String>,
 ) -> Result<RpcTransactionOutput, RpcTransactionError> {
 	let json: serde_json::Value =
-		serde_json::from_str(&result).expect("the result can only be a JSONRPC string; qed");
-	let error = json.as_object().expect("JSON result is always an object; qed").get("error");
+		serde_json::from_str(&result).expect("the result can only be a JSONRPC string");
+	let error = json.as_object().expect("JSON result is always an object").get("error");
 
 	if let Some(error) = error {
 		return Err(serde_json::from_value(error.clone())
-			.expect("the JSONRPC result's error is always valid; qed"))
+			.expect("the JSONRPC result's error is always valid"))
 	}
 
 	Ok(RpcTransactionOutput { result, receiver })
