@@ -38,7 +38,6 @@ use frame_support::genesis_builder_helper::{build_config, create_default_config}
 pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("minimal-runtime"),
 	impl_name: create_runtime_str!("minimal-runtime"),
-	authoring_version: 1,
 	spec_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	state_version: 1,

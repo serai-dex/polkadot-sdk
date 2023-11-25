@@ -318,7 +318,6 @@ pub use sp_api_proc_macro::decl_runtime_apis;
 /// pub const VERSION: sp_version::RuntimeVersion = sp_version::RuntimeVersion {
 ///     spec_name: create_runtime_str!("node"),
 ///     impl_name: create_runtime_str!("test-node"),
-///     authoring_version: 1,
 ///     spec_version: 1,
 ///     // Here we are exposing the runtime api versions.
 ///     apis: RUNTIME_API_VERSIONS,

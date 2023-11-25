@@ -130,7 +130,6 @@ pub fn wasm_binary_unwrap() -> &'static [u8] {
 pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("node"),
 	impl_name: create_runtime_str!("substrate-node"),
-	authoring_version: 10,
 	// Per convention: if the runtime behavior changes, increment spec_version
 	// If only runtime implementation changes and behavior does not, then leave spec_version as is
 	spec_version: 268,

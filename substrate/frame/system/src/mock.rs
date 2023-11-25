@@ -43,7 +43,6 @@ parameter_types! {
 	pub Version: RuntimeVersion = RuntimeVersion {
 		spec_name: sp_version::create_runtime_str!("test"),
 		impl_name: sp_version::create_runtime_str!("system-test"),
-		authoring_version: 1,
 		spec_version: 1,
 		apis: sp_version::create_apis_vec!([]),
 		state_version: 1,

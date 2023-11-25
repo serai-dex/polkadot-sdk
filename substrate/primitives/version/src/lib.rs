@@ -73,7 +73,6 @@ pub mod embed;
 /// pub const VERSION: RuntimeVersion = RuntimeVersion {
 /// 	spec_name: create_runtime_str!("test"),
 /// 	impl_name: create_runtime_str!("test"),
-/// 	authoring_version: 10,
 /// 	spec_version: 265,
 /// 	apis: RUNTIME_API_VERSIONS,
 /// 	state_version: 1,
@@ -90,9 +89,8 @@ pub mod embed;
 /// - The `spec_name` and `impl_name` must be set by a macro-like expression. The name of the
 ///   macro doesn't matter though.
 ///
-/// - `authoring_version` and `spec_version` must be set by a literal. Literal must be an
-///   integer. No other expressions are allowed there. In particular, you can't supply a
-///   constant variable.
+/// - `spec_version` must be set by a literal. Literal must be an integer. No other expressions
+///   are allowed there. In particular, you can't supply a constant variable.
 ///
 /// - `apis` doesn't have any specific constraints. This is because this information doesn't
 ///   get into the custom section and is not parsed.
@@ -149,8 +147,7 @@ macro_rules! create_apis_vec {
 /// Runtime version.
 /// This should not be thought of as classic Semver (major/minor/tiny).
 /// These versions have different semantics and mis-interpretation could cause problems.
-/// In particular: bug fixes should result in an increment of `spec_version` and possibly
-/// `authoring_version`.
+/// In particular: bug fixes should result in an increment of `spec_version`.
 #[derive(Clone, PartialEq, Eq, Encode, Default, sp_runtime::RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
@@ -167,15 +164,10 @@ pub struct RuntimeVersion {
 	/// `impl_name`.
 	pub impl_name: RuntimeString,
 
-	/// `authoring_version` is the version of the authorship interface. An authoring node
-	/// will not attempt to author blocks unless this is equal to its native runtime.
-	pub authoring_version: u32,
-
 	/// Version of the runtime specification.
 	///
 	/// A full-node will not attempt to use its native runtime in substitute for the on-chain
-	/// Wasm runtime unless all of `spec_name`, `spec_version` and `authoring_version` are the same
-	/// between Wasm and native.
+	/// Wasm runtime unless `spec_name` and `spec_version` are the same between Wasm and native.
 	///
 	/// This number should never decrease.
 	pub spec_version: u32,
@@ -209,21 +201,13 @@ impl RuntimeVersion {
 	) -> Result<RuntimeVersion, codec::Error> {
 		let spec_name = Decode::decode(input)?;
 		let impl_name = Decode::decode(input)?;
-		let authoring_version = Decode::decode(input)?;
 		let spec_version = Decode::decode(input)?;
 		let apis = Decode::decode(input)?;
 		let core_version =
 			if core_version.is_some() { core_version } else { core_version_from_apis(&apis) };
 		let state_version =
 			if core_version.map(|v| v >= 4).unwrap_or(false) { Decode::decode(input)? } else { 0 };
-		Ok(RuntimeVersion {
-			spec_name,
-			impl_name,
-			authoring_version,
-			spec_version,
-			apis,
-			state_version,
-		})
+		Ok(RuntimeVersion { spec_name, impl_name, spec_version, apis, state_version })
 	}
 }
 
@@ -236,11 +220,7 @@ impl Decode for RuntimeVersion {
 #[cfg(feature = "std")]
 impl fmt::Display for RuntimeVersion {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(
-			f,
-			"{}-{} ({}.au{})",
-			self.spec_name, self.spec_version, self.impl_name, self.authoring_version,
-		)
+		write!(f, "{}-{} ({})", self.spec_name, self.spec_version, self.impl_name,)
 	}
 }
 
@@ -259,9 +239,7 @@ pub fn core_version_from_apis(apis: &ApisVec) -> Option<u32> {
 impl RuntimeVersion {
 	/// Check if this version matches other version for calling into runtime.
 	pub fn can_call_with(&self, other: &RuntimeVersion) -> bool {
-		self.spec_version == other.spec_version &&
-			self.spec_name == other.spec_name &&
-			self.authoring_version == other.authoring_version
+		(self.spec_version == other.spec_version) && (self.spec_name == other.spec_name)
 	}
 
 	/// Check if the given api with `api_id` is implemented and the version passes the given

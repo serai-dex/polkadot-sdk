@@ -108,7 +108,6 @@ pub fn wasm_binary_logging_disabled_unwrap() -> &'static [u8] {
 pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("test"),
 	impl_name: create_runtime_str!("parity-test"),
-	authoring_version: 1,
 	spec_version: 2,
 	apis: RUNTIME_API_VERSIONS,
 	state_version: 1,

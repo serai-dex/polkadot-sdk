@@ -449,7 +449,6 @@ mod tests {
 	pub struct OldRuntimeVersion {
 		pub spec_name: RuntimeString,
 		pub impl_name: RuntimeString,
-		pub authoring_version: u32,
 		pub spec_version: u32,
 		pub apis: sp_version::ApisVec,
 	}
@@ -467,7 +466,6 @@ mod tests {
 		let old_runtime_version = OldRuntimeVersion {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
-			authoring_version: 1,
 			spec_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 1)]),
 		};
@@ -481,7 +479,6 @@ mod tests {
 		let old_runtime_version = OldRuntimeVersion {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
-			authoring_version: 1,
 			spec_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
 		};
@@ -494,7 +491,6 @@ mod tests {
 		let old_runtime_version = sp_api::RuntimeVersion {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
-			authoring_version: 1,
 			spec_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
 			state_version: 4,
@@ -506,7 +502,6 @@ mod tests {
 		let old_runtime_version = sp_api::RuntimeVersion {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
-			authoring_version: 1,
 			spec_version: 1,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
 			state_version: 4,
@@ -526,7 +521,6 @@ mod tests {
 		let runtime_version = RuntimeVersion {
 			spec_name: "test_replace".into(),
 			impl_name: "test_replace".into(),
-			authoring_version: 100,
 			spec_version: 100,
 			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
 			state_version: 1,
