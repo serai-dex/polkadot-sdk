@@ -22,7 +22,6 @@
 
 mod benchmark;
 mod construct_runtime;
-mod crate_version;
 mod derive_impl;
 mod dummy_part_checker;
 mod key_prefix;
@@ -38,7 +37,7 @@ use frame_support_procedural_tools::generate_access_from_frame_or_crate;
 use macro_magic::{import_tokens_attr, import_tokens_attr_verbatim};
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use std::{cell::RefCell, str::FromStr};
+use std::cell::RefCell;
 use syn::{parse_macro_input, Error, ItemImpl, ItemMod, TraitItemType};
 
 pub(crate) const INHERENT_INSTANCE_NAME: &str = "__InherentHiddenInstance";
@@ -59,16 +58,6 @@ impl Counter {
 		self.0 += 1;
 		ret
 	}
-}
-
-/// Get the value from the given environment variable set by cargo.
-///
-/// The value is parsed into the requested destination type.
-fn get_cargo_env_var<T: FromStr>(version_env: &str) -> std::result::Result<T, ()> {
-	let version = std::env::var(version_env)
-		.unwrap_or_else(|_| panic!("`{}` is always set by cargo", version_env));
-
-	T::from_str(&version).map_err(drop)
 }
 
 /// Generate the counter_prefix related to the storage.
@@ -484,13 +473,6 @@ pub fn derive_eq_no_bound(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(DefaultNoBound, attributes(default))]
 pub fn derive_default_no_bound(input: TokenStream) -> TokenStream {
 	no_bound::default::derive_default_no_bound(input)
-}
-
-#[proc_macro]
-pub fn crate_to_crate_version(input: TokenStream) -> TokenStream {
-	crate_version::crate_to_crate_version(input)
-		.unwrap_or_else(|e| e.to_compile_error())
-		.into()
 }
 
 /// The number of module instances supported by the runtime, starting at index 1,

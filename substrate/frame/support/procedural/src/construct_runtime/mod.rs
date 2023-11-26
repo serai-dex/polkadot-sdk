@@ -384,7 +384,7 @@ fn construct_runtime_final_expansion(
 
 	let outer_origin = expand::expand_outer_origin(&name, system_pallet, &pallets, &scrate)?;
 	let all_pallets = decl_all_pallets(&name, pallets.iter(), &features);
-	let pallet_to_index = decl_pallet_runtime_setup(&name, &pallets, &scrate);
+	let pallet_to_index = decl_pallet_runtime_setup(&pallets, &scrate);
 
 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
 	let metadata = expand::expand_runtime_metadata(
@@ -619,7 +619,6 @@ fn decl_all_pallets<'a>(
 	)
 }
 fn decl_pallet_runtime_setup(
-	runtime: &Ident,
 	pallet_declarations: &[Pallet],
 	scrate: &TokenStream2,
 ) -> TokenStream2 {
@@ -628,16 +627,6 @@ fn decl_pallet_runtime_setup(
 	let name_hashes = pallet_declarations.iter().map(|d| two128_str(&d.name.to_string()));
 	let module_names = pallet_declarations.iter().map(|d| d.path.module_name());
 	let indices = pallet_declarations.iter().map(|pallet| pallet.index as usize);
-	let pallet_structs = pallet_declarations
-		.iter()
-		.map(|pallet| {
-			let path = &pallet.path;
-			match pallet.instance.as_ref() {
-				Some(inst) => quote!(#path::Pallet<#runtime, #path::#inst>),
-				None => quote!(#path::Pallet<#runtime>),
-			}
-		})
-		.collect::<Vec<_>>();
 	let pallet_attrs = pallet_declarations
 		.iter()
 		.map(|pallet| {
@@ -701,20 +690,6 @@ fn decl_pallet_runtime_setup(
 					#pallet_attrs
 					if type_id == #scrate::__private::sp_std::any::TypeId::of::<#names>() {
 						return Some(#module_names)
-					}
-				)*
-
-				None
-			}
-
-			fn crate_version<P: 'static>() -> Option<#scrate::traits::CrateVersion> {
-				let type_id = #scrate::__private::sp_std::any::TypeId::of::<P>();
-				#(
-					#pallet_attrs
-					if type_id == #scrate::__private::sp_std::any::TypeId::of::<#names>() {
-						return Some(
-							<#pallet_structs as #scrate::traits::PalletInfoAccess>::crate_version()
-						)
 					}
 				)*
 
