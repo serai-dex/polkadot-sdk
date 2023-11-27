@@ -26,7 +26,6 @@ codec = { package = "parity-scale-codec", version = "3.6.1", default-features = 
 scale-info = { version = "2.10.0", default-features = false, features = ["derive", "serde"] }
 static_assertions = "1.1.0"
 log = { version = "0.4.17", default-features = false }
-serde_json = { version = "1.0.111", default-features = false, features = ["alloc", "arbitrary_precision"] }
 
 # pallet-asset-conversion: turn on "num-traits" feature
 primitive-types = { version = "0.12.0", default-features = false, features = ["codec", "num-traits", "scale-info"] }
@@ -151,7 +150,6 @@ std = [
 	"pallet-utility/std",
 	"primitive-types/std",
 	"scale-info/std",
-	"serde_json/std",
 	"sp-api/std",
 	"sp-authority-discovery/std",
 	"sp-block-builder/std",
