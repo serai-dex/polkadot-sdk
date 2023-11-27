@@ -267,7 +267,7 @@ mod tests {
 	use sp_consensus::BlockOrigin;
 	use sp_consensus_grandpa::GRANDPA_ENGINE_ID as ID;
 	use sp_core::crypto::UncheckedFrom;
-	use sp_keyring::Ed25519Keyring;
+	use sp_keyring::Sr25519Keyring;
 	use substrate_test_runtime_client::{
 		runtime::{Block, Header, H256},
 		Backend as TestBackend, ClientBlockImportExt, ClientExt, DefaultTestClientBuilderExt,
@@ -435,11 +435,11 @@ mod tests {
 		block: Block,
 		round: u64,
 		set_id: SetId,
-		auth: &[Ed25519Keyring],
+		auth: &[Sr25519Keyring],
 	) -> finality_grandpa::Commit<H256, u64, S, Id>
 	where
-		Id: From<sp_core::ed25519::Public>,
-		S: From<sp_core::ed25519::Signature>,
+		Id: From<sp_core::sr25519::Public>,
+		S: From<sp_core::sr25519::Signature>,
 	{
 		let mut precommits = Vec::new();
 
@@ -472,7 +472,7 @@ mod tests {
 	fn finality_proof_check_works_with_correct_justification() {
 		let (client, _, blocks) = test_blockchain(8, &[4, 5, 8]);
 
-		let alice = Ed25519Keyring::Alice;
+		let alice = Sr25519Keyring::Alice;
 		let set_id = 1;
 		let round = 8;
 		let commit = create_commit(blocks[7].clone(), round, set_id, &[alice]);
@@ -514,7 +514,7 @@ mod tests {
 		let block8 = &blocks[7];
 
 		let round = 8;
-		let commit = create_commit(block8.clone(), round, 1, &[Ed25519Keyring::Alice]);
+		let commit = create_commit(block8.clone(), round, 1, &[Sr25519Keyring::Alice]);
 		let grandpa_just8 = GrandpaJustification::from_commit(&client, round, commit).unwrap();
 
 		client
@@ -575,7 +575,7 @@ mod tests {
 		let block8 = &blocks[7];
 
 		let round = 8;
-		let commit = create_commit(block8.clone(), round, 1, &[Ed25519Keyring::Alice]);
+		let commit = create_commit(block8.clone(), round, 1, &[Sr25519Keyring::Alice]);
 		let grandpa_just8 = GrandpaJustification::from_commit(&client, round, commit).unwrap();
 		store_best_justification(&client, &grandpa_just8);
 
