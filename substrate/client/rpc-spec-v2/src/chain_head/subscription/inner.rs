@@ -751,36 +751,22 @@ impl<Block: BlockT, BE: Backend<Block>> SubscriptionsInner<Block, BE> {
 		}
 	}
 
-	pub fn unpin_blocks(
+	pub fn unpin_block(
 		&mut self,
 		sub_id: &str,
-		hashes: impl IntoIterator<Item = Block::Hash> + Clone,
+		hash: Block::Hash,
 	) -> Result<(), SubscriptionManagementError> {
 		let Some(sub) = self.subs.get_mut(sub_id) else {
 			return Err(SubscriptionManagementError::SubscriptionAbsent)
 		};
 
-		// Ensure that all blocks are part of the subscription before removing individual
-		// blocks.
-		for hash in hashes.clone() {
-			if !sub.contains_block(hash) {
-				return Err(SubscriptionManagementError::BlockHashAbsent)
-			}
+		// Check that unpin was not called before and the block was pinned
+		// for this subscription.
+		if !sub.unregister_block(hash) {
+			return Err(SubscriptionManagementError::BlockHashAbsent)
 		}
 
-		// Note: this needs to be separate from the global mappings to avoid barrow checker
-		// thinking we borrow `&mut self` twice: once from `self.subs.get_mut` and once from
-		// `self.global_unregister_block`. Although the borrowing is correct, since different
-		// fields of the structure are borrowed, one at a time.
-		for hash in hashes.clone() {
-			sub.unregister_block(hash);
-		}
-
-		// Block have been removed from the subscription. Remove them from the global tracking.
-		for hash in hashes {
-			self.global_unregister_block(hash);
-		}
-
+		self.global_unregister_block(hash);
 		Ok(())
 	}
 

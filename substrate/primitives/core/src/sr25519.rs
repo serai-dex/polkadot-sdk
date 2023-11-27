@@ -760,6 +760,7 @@ pub mod vrf {
 		match e {
 			EquationFalse => "Signature error: `EquationFalse`".into(),
 			PointDecompressionError => "Signature error: `PointDecompressionError`".into(),
+			InvalidKey => "Signature error: `InvalidKey`".into(),
 			ScalarFormatError => "Signature error: `ScalarFormatError`".into(),
 			NotMarkedSchnorrkel => "Signature error: `NotMarkedSchnorrkel`".into(),
 			BytesLengthError { .. } => "Signature error: `BytesLengthError`".into(),

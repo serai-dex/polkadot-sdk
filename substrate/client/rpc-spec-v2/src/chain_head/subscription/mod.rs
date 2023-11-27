@@ -95,23 +95,22 @@ impl<Block: BlockT, BE: Backend<Block>> SubscriptionManagement<Block, BE> {
 		inner.pin_block(sub_id, hash)
 	}
 
-	/// Unpin the blocks from the subscription.
+	/// Unpin the block from the subscription.
 	///
-	/// Blocks are reference counted and when the last subscription unpins a given block, the block
-	/// is also unpinned from the backend.
+	/// The last subscription that unpins the block is also unpinning the block
+	/// from the backend.
 	///
 	/// This method is called only once per subscription.
 	///
-	/// Returns an error if the subscription ID is invalid, or any of the blocks are not pinned
-	/// for the subscriptions. When an error is returned, it is guaranteed that no blocks have
-	/// been unpinned.
-	pub fn unpin_blocks(
+	/// Returns an error if the block is not pinned for the subscription or
+	/// the subscription ID is invalid.
+	pub fn unpin_block(
 		&self,
 		sub_id: &str,
-		hashes: impl IntoIterator<Item = Block::Hash> + Clone,
+		hash: Block::Hash,
 	) -> Result<(), SubscriptionManagementError> {
 		let mut inner = self.inner.write();
-		inner.unpin_blocks(sub_id, hashes)
+		inner.unpin_block(sub_id, hash)
 	}
 
 	/// Ensure the block remains pinned until the return object is dropped.
