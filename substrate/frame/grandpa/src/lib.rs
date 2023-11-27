@@ -517,36 +517,16 @@ impl<T: Config> Pallet<T> {
 	) -> Option<()> {
 		T::EquivocationReportSystem::publish_evidence((equivocation_proof, key_owner_proof)).ok()
 	}
-}
 
-impl<T: Config> sp_runtime::BoundToRuntimeAppPublic for Pallet<T> {
-	type Public = AuthorityId;
-}
-
-impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T>
-where
-	T: pallet_session::Config,
-{
-	type Key = AuthorityId;
-
-	fn on_genesis_session<'a, I: 'a>(validators: I)
-	where
-		I: Iterator<Item = (&'a T::AccountId, AuthorityId)>,
-	{
-		let authorities = validators.map(|(_, k)| (k, 1)).collect::<Vec<_>>();
+	pub fn genesis_session(authorities: AuthorityList) {
 		Self::initialize(authorities);
 	}
 
-	fn on_new_session<'a, I: 'a>(changed: bool, validators: I, _queued_validators: I)
-	where
-		I: Iterator<Item = (&'a T::AccountId, AuthorityId)>,
-	{
+	pub fn new_session(changed: bool, session_index: u32, next_authorities: AuthorityList) {
 		// Always issue a change if `session` says that the validators have changed.
 		// Even if their session keys are the same as before, the underlying economic
 		// identities have changed.
 		let current_set_id = if changed {
-			let next_authorities = validators.map(|(_, k)| (k, 1)).collect::<Vec<_>>();
-
 			let res = Self::schedule_change(next_authorities, Zero::zero(), None);
 
 			if res.is_ok() {
@@ -575,8 +555,37 @@ where
 
 		// update the mapping to note that the current set corresponds to the
 		// latest equivalent session (i.e. now).
-		let session_index = <pallet_session::Pallet<T>>::current_index();
 		SetIdSession::<T>::insert(current_set_id, &session_index);
+	}
+}
+
+impl<T: Config> sp_runtime::BoundToRuntimeAppPublic for Pallet<T> {
+	type Public = AuthorityId;
+}
+
+impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T>
+where
+	T: pallet_session::Config,
+{
+	type Key = AuthorityId;
+
+	fn on_genesis_session<'a, I: 'a>(validators: I)
+	where
+		I: Iterator<Item = (&'a T::AccountId, AuthorityId)>,
+	{
+		let authorities = validators.map(|(_, k)| (k, 1)).collect::<Vec<_>>();
+		Self::genesis_session(authorities);
+	}
+
+	fn on_new_session<'a, I: 'a>(changed: bool, validators: I, _queued_validators: I)
+	where
+		I: Iterator<Item = (&'a T::AccountId, AuthorityId)>,
+	{
+		Self::new_session(
+			changed,
+			<pallet_session::Pallet<T>>::current_index(),
+			validators.map(|(_, k)| (k, 1)).collect::<Vec<_>>(),
+		);
 	}
 
 	fn on_disabled(i: u32) {
