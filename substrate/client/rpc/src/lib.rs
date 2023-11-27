@@ -35,6 +35,7 @@ pub use sc_rpc_api::DenyUnsafe;
 pub mod author;
 pub mod chain;
 pub mod dev;
+#[cfg(feature = "mixnet")]
 pub mod mixnet;
 pub mod offchain;
 pub mod state;

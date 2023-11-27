@@ -18,4 +18,4 @@ name = "subkey"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
-sc-cli = { path = "../../../client/cli" }
+sc-cli = { path = "../../../client/cli", features = ["mixnet"] }

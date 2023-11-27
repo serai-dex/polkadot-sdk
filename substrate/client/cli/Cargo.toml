@@ -34,7 +34,7 @@ tokio = { version = "1.22.0", features = ["signal", "rt-multi-thread", "parking_
 sc-client-api = { path = "../api" }
 sc-client-db = { path = "../db", default-features = false}
 sc-keystore = { path = "../keystore" }
-sc-mixnet = { path = "../mixnet" }
+sc-mixnet = { path = "../mixnet", optional = true }
 sc-network = { path = "../network" }
 sc-service = { path = "../service", default-features = false}
 sc-telemetry = { path = "../telemetry" }
@@ -56,3 +56,4 @@ sp-tracing = { path = "../../primitives/tracing" }
 [features]
 default = [ "rocksdb" ]
 rocksdb = [ "sc-client-db/rocksdb" ]
+mixnet = ["sc-mixnet"]
