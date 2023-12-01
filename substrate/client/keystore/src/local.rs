@@ -21,7 +21,7 @@
 use parking_lot::RwLock;
 use sp_application_crypto::{AppCrypto, AppPair, IsWrappedBy};
 use sp_core::{
-	crypto::{ByteArray, ExposeSecret, KeyTypeId, Pair as CorePair, SecretString, VrfSecret},
+	crypto::{ByteArray, KeyTypeId, Pair as CorePair, SecretString, VrfSecret},
 	ed25519, sr25519,
 };
 use sp_keystore::{Error as TraitError, Keystore, KeystorePtr};
@@ -363,7 +363,7 @@ impl KeystoreInner {
 
 	/// Get the password for this store.
 	fn password(&self) -> Option<&str> {
-		self.password.as_ref().map(|p| p.expose_secret()).map(|p| p.as_str())
+		self.password.as_ref().map(|p| p.as_str())
 	}
 
 	/// Create a new in-memory store.

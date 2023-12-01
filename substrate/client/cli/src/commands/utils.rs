@@ -24,10 +24,7 @@ use crate::{
 };
 use serde_json::json;
 use sp_core::{
-	crypto::{
-		unwrap_or_default_ss58_version, ExposeSecret, SecretString, Ss58AddressFormat, Ss58Codec,
-		Zeroize,
-	},
+	crypto::{unwrap_or_default_ss58_version, SecretString, Ss58AddressFormat, Ss58Codec, Zeroize},
 	hexdisplay::HexDisplay,
 	Pair,
 };
@@ -73,7 +70,7 @@ pub fn print_from_uri<Pair>(
 	Pair: sp_core::Pair,
 	Pair::Public: Into<MultiSigner>,
 {
-	let password = password.as_ref().map(|s| s.expose_secret().as_str());
+	let password = password.as_ref().map(|s| s.as_str());
 	let network_id = String::from(unwrap_or_default_ss58_version(network_override));
 	if let Ok((pair, seed)) = Pair::from_phrase(uri, password) {
 		let public_key = pair.public();
@@ -245,8 +242,8 @@ where
 /// generate a pair from suri
 pub fn pair_from_suri<P: Pair>(suri: &str, password: Option<SecretString>) -> Result<P, Error> {
 	let result = if let Some(pass) = password {
-		let mut pass_str = pass.expose_secret().clone();
-		let pair = P::from_string(suri, Some(&pass_str));
+		let mut pass_str = pass.clone();
+		let pair = P::from_string(suri, Some(pass_str.as_str()));
 		pass_str.zeroize();
 		pair
 	} else {

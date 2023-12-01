@@ -29,8 +29,6 @@ use rand::{rngs::OsRng, RngCore};
 #[cfg(feature = "std")]
 use regex::Regex;
 use scale_info::TypeInfo;
-#[cfg(feature = "std")]
-pub use secrecy::{ExposeSecret, SecretString};
 use sp_runtime_interface::pass_by::PassByInner;
 #[doc(hidden)]
 pub use sp_std::ops::Deref;
@@ -42,7 +40,7 @@ use sp_std::{
 use sp_std::{hash::Hash, str, vec::Vec};
 pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
 /// Trait to zeroize a memory buffer.
-pub use zeroize::Zeroize;
+pub use zeroize::{Zeroize, Zeroizing};
 
 /// The root phrase for our publicly known keys.
 pub const DEV_PHRASE: &str =
@@ -74,6 +72,35 @@ pub trait UncheckedInto<T> {
 impl<S, T: UncheckedFrom<S>> UncheckedInto<T> for S {
 	fn unchecked_into(self) -> T {
 		T::unchecked_from(self)
+	}
+}
+
+/// A censored-Debug wrapper around Zeroizing<String>.
+#[cfg(feature = "std")]
+#[derive(Clone, Zeroize)]
+pub struct SecretString(Zeroizing<String>);
+#[cfg(feature = "std")]
+impl SecretString {
+	/// Construct a Zeroizing wrapper around a String.
+	pub fn new(string: String) -> SecretString {
+		SecretString(Zeroizing::new(string))
+	}
+
+	/// Obtain a reference to the underlying string.
+	pub fn as_str(&self) -> &str {
+		self.0.as_str()
+	}
+}
+#[cfg(feature = "std")]
+impl AsRef<str> for SecretString {
+	fn as_ref(&self) -> &str {
+		self.0.as_str()
+	}
+}
+#[cfg(feature = "std")]
+impl core::fmt::Debug for SecretString {
+	fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> Result<(), core::fmt::Error> {
+		fmt.debug_struct("SecretString").finish_non_exhaustive()
 	}
 }
 
@@ -760,7 +787,7 @@ mod dummy {
 /// let suri = SecretUri::from_str("//Alice").expect("Parse SURI");
 ///
 /// assert_eq!(vec![DeriveJunction::from("Alice").harden()], suri.junctions);
-/// assert_eq!(DEV_PHRASE, suri.phrase.expose_secret());
+/// assert_eq!(DEV_PHRASE, suri.phrase);
 /// assert!(suri.password.is_none());
 /// ```
 ///
@@ -772,8 +799,8 @@ mod dummy {
 /// let suri = SecretUri::from_str("//Alice///SECRET_PASSWORD").expect("Parse SURI");
 ///
 /// assert_eq!(vec![DeriveJunction::from("Alice").harden()], suri.junctions);
-/// assert_eq!(DEV_PHRASE, suri.phrase.expose_secret());
-/// assert_eq!("SECRET_PASSWORD", suri.password.unwrap().expose_secret());
+/// assert_eq!(DEV_PHRASE, suri.phrase);
+/// assert_eq!("SECRET_PASSWORD", suri.password.unwrap());
 /// ```
 ///
 /// Parse [`DEV_PHRASE`] secret ui with hex phrase and junction:
@@ -784,7 +811,7 @@ mod dummy {
 /// let suri = SecretUri::from_str("0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a//Alice").expect("Parse SURI");
 ///
 /// assert_eq!(vec![DeriveJunction::from("Alice").harden()], suri.junctions);
-/// assert_eq!("0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a", suri.phrase.expose_secret());
+/// assert_eq!("0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a", suri.phrase);
 /// assert!(suri.password.is_none());
 /// ```
 #[cfg(feature = "std")]
@@ -792,9 +819,9 @@ pub struct SecretUri {
 	/// The phrase to derive the private key.
 	///
 	/// This can either be a 64-bit hex string or a BIP-39 key phrase.
-	pub phrase: SecretString,
+	pub phrase: Zeroizing<String>,
 	/// Optional password as given as part of the uri.
-	pub password: Option<SecretString>,
+	pub password: Option<Zeroizing<String>>,
 	/// The junctions as part of the uri.
 	pub junctions: Vec<DeriveJunction>,
 }
@@ -815,9 +842,8 @@ impl sp_std::str::FromStr for SecretUri {
 		let password = cap.name("password");
 
 		Ok(Self {
-			phrase: SecretString::from_str(phrase).expect("Returns infallible error"),
-			password: password
-				.map(|v| SecretString::from_str(v.as_str()).expect("Returns infallible error")),
+			phrase: Zeroizing::new(phrase.to_string()),
+			password: password.map(|password| Zeroizing::new(password.as_str().to_string())),
 			junctions,
 		})
 	}
@@ -948,10 +974,9 @@ pub trait Pair: CryptoType + Sized {
 	) -> Result<(Self, Option<Self::Seed>), SecretStringError> {
 		use sp_std::str::FromStr;
 		let SecretUri { junctions, phrase, password } = SecretUri::from_str(s)?;
-		let password =
-			password_override.or_else(|| password.as_ref().map(|p| p.expose_secret().as_str()));
+		let password = password_override.or_else(|| password.as_ref().map(|p| p.as_str()));
 
-		let (root, seed) = if let Some(stripped) = phrase.expose_secret().strip_prefix("0x") {
+		let (root, seed) = if let Some(stripped) = phrase.strip_prefix("0x") {
 			array_bytes::hex2bytes(stripped)
 				.ok()
 				.and_then(|seed_vec| {
@@ -965,7 +990,7 @@ pub trait Pair: CryptoType + Sized {
 				})
 				.ok_or(SecretStringError::InvalidSeed)?
 		} else {
-			Self::from_phrase(phrase.expose_secret().as_str(), password)
+			Self::from_phrase(phrase.as_str(), password)
 				.map_err(|_| SecretStringError::InvalidPhrase)?
 		};
 		root.derive(junctions.into_iter(), Some(seed))

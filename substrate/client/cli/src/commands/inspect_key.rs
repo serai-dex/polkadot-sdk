@@ -23,7 +23,7 @@ use crate::{
 	with_crypto_scheme, CryptoSchemeFlag, Error, KeystoreParams, NetworkSchemeFlag, OutputTypeFlag,
 };
 use clap::Parser;
-use sp_core::crypto::{ExposeSecret, SecretString, SecretUri, Ss58Codec};
+use sp_core::crypto::{SecretString, SecretUri, Ss58Codec};
 use std::str::FromStr;
 
 /// The `inspect` command
@@ -134,10 +134,10 @@ fn expect_public_from_phrase<Pair: sp_core::Pair>(
 	};
 
 	let pair = Pair::from_string_with_seed(
-		secret_uri.phrase.expose_secret().as_str(),
+		secret_uri.phrase.as_str(),
 		password
-			.or_else(|| secret_uri.password.as_ref())
-			.map(|p| p.expose_secret().as_str()),
+			.map(|p| p.as_str())
+			.or_else(|| secret_uri.password.as_ref().map(|p| p.as_str())),
 	)
 	.map_err(|_| format!("Invalid secret uri: {}", suri))?
 	.0;

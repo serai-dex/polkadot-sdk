@@ -9074,15 +9074,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "secrecy"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bd1c54ea06cfd2f6b63219704de0b9b4f72dcc2b8fdef820be6cd799780e91e"
-dependencies = [
- "zeroize",
-]
-
-[[package]]
 name = "security-framework"
 version = "2.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9658,7 +9649,6 @@ dependencies = [
  "regex",
  "scale-info",
  "schnorrkel",
- "secrecy",
  "serde",
  "serde_json",
  "sp-core-hashing",
