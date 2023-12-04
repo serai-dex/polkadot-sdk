@@ -301,7 +301,7 @@ impl BasePath {
 	/// Create a base path from values describing the project.
 	pub fn from_project(qualifier: &str, organization: &str, application: &str) -> BasePath {
 		BasePath::new(
-			directories::ProjectDirs::from(qualifier, organization, application)
+			directories_next::ProjectDirs::from(qualifier, organization, application)
 				.expect("app directories exist on all supported platforms")
 				.data_local_dir(),
 		)
