@@ -332,7 +332,6 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 			// instantiated in parallel from the same `Module`.
 			.total_core_instances(MAX_INSTANCE_COUNT)
 			.total_memories(MAX_INSTANCE_COUNT)
-			.total_stacks(MAX_INSTANCE_COUNT)
 			.total_tables(MAX_INSTANCE_COUNT);
 
 		config.allocation_strategy(wasmtime::InstanceAllocationStrategy::Pooling(pooling_config));
