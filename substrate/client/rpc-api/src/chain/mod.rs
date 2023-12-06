@@ -20,19 +20,28 @@
 //! Substrate blockchain API.
 
 use jsonrpsee::{core::RpcResult, proc_macros::rpc};
+use sp_core::bytes::to_hex;
 use sp_rpc::{list::ListOrValue, number::NumberOrHex};
+use sp_runtime::generic::SignedBlock;
 
 pub mod error;
 
 #[rpc(client, server)]
-pub trait ChainApi<Number, Hash, Header, SignedBlock> {
+pub trait ChainApi<Number, Hash, Header, Block: codec::Encode> {
 	/// Get header.
 	#[method(name = "chain_getHeader", blocking)]
 	fn header(&self, hash: Option<Hash>) -> RpcResult<Option<Header>>;
 
 	/// Get header and body of a block.
 	#[method(name = "chain_getBlock", blocking)]
-	fn block(&self, hash: Option<Hash>) -> RpcResult<Option<SignedBlock>>;
+	fn block(&self, hash: Option<Hash>) -> RpcResult<Option<SignedBlock<Block>>>;
+
+	/// Get a hex-encoded block.
+	#[method(name = "chain_getBlockBin", blocking)]
+	fn block_bin(&self, hash: Option<Hash>) -> RpcResult<Option<String>> {
+		self.block(hash)
+			.map(|opt| opt.map(|signed_block| to_hex(&signed_block.block.encode(), false)))
+	}
 
 	/// Get hash of the n-th block in the canon chain.
 	///

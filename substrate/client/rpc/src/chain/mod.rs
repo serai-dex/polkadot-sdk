@@ -119,7 +119,7 @@ pub struct Chain<Block: BlockT, Client> {
 	backend: Box<dyn ChainBackend<Client, Block>>,
 }
 
-impl<Block, Client> ChainApiServer<NumberFor<Block>, Block::Hash, Block::Header, SignedBlock<Block>>
+impl<Block, Client> ChainApiServer<NumberFor<Block>, Block::Hash, Block::Header, Block>
 	for Chain<Block, Client>
 where
 	Block: BlockT + 'static,
