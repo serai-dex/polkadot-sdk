@@ -23,10 +23,7 @@ use crate::{
 use parity_scale_codec::Encode;
 use sc_executor::sp_wasm_interface::HostFunctions;
 use sp_rpc::{list::ListOrValue, number::NumberOrHex};
-use sp_runtime::{
-	generic::SignedBlock,
-	traits::{Block as BlockT, Header as HeaderT, NumberFor},
-};
+use sp_runtime::traits::{Block as BlockT, Header as HeaderT, NumberFor};
 use std::{fmt::Debug, str::FromStr};
 use substrate_rpc_client::{ws_client, ChainApi};
 
@@ -107,14 +104,11 @@ where
 
 	log::info!(target: LOG_TARGET, "fetching next block: {:?} ", next_hash);
 
-	let block = ChainApi::<(), Block::Hash, Block::Header, SignedBlock<Block>>::block(
-		&rpc,
-		Some(next_hash),
-	)
-	.await
-	.map_err(rpc_err_handler)?
-	.expect("header exists, block should also exist")
-	.block;
+	let block = ChainApi::<(), Block::Hash, Block::Header, Block>::block(&rpc, Some(next_hash))
+		.await
+		.map_err(rpc_err_handler)?
+		.expect("header exists, block should also exist")
+		.block;
 
 	// A digest item gets added when the runtime is processing the block, so we need to pop
 	// the last one to be consistent with what a gossiped block would contain.

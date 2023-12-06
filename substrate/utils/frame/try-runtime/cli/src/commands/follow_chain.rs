@@ -24,10 +24,7 @@ use parity_scale_codec::{Decode, Encode};
 use sc_executor::sp_wasm_interface::HostFunctions;
 use serde::{de::DeserializeOwned, Serialize};
 use sp_core::H256;
-use sp_runtime::{
-	generic::SignedBlock,
-	traits::{Block as BlockT, Header as HeaderT, NumberFor},
-};
+use sp_runtime::traits::{Block as BlockT, Header as HeaderT, NumberFor};
 use std::{fmt::Debug, str::FromStr};
 use substrate_rpc_client::{ws_client, ChainApi, FinalizedHeaders, Subscription, WsClient};
 
@@ -102,24 +99,23 @@ where
 		let hash = header.hash();
 		let number = header.number();
 
-		let block =
-			ChainApi::<(), Block::Hash, Block::Header, SignedBlock<Block>>::block(&rpc, Some(hash))
-				.await
-				.or_else(|e| {
-					if matches!(e, substrate_rpc_client::Error::ParseError(_)) {
-						log::error!(
-							target: LOG_TARGET,
-							"failed to parse the block format of remote against the local \
-							codebase. The block format has changed, and follow-chain cannot run in \
+		let block = ChainApi::<(), Block::Hash, Block::Header, Block>::block(&rpc, Some(hash))
+			.await
+			.or_else(|e| {
+				if matches!(e, substrate_rpc_client::Error::ParseError(_)) {
+					log::error!(
+						target: LOG_TARGET,
+						"failed to parse the block format of remote against the local \
+						codebase. The block format has changed, and follow-chain cannot run in \
 							this case. Try running this command in a branch of your codebase that
 							has the same block format as the remote chain. For now, we replace the \
-							block with an empty one."
-						);
-					}
-					Err(rpc_err_handler(e))
-				})?
-				.expect("if header exists, block should also exist.")
-				.block;
+						block with an empty one."
+					);
+				}
+				Err(rpc_err_handler(e))
+			})?
+			.expect("if header exists, block should also exist.")
+			.block;
 
 		log::debug!(
 			target: LOG_TARGET,
