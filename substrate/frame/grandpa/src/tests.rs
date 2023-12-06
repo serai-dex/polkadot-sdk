@@ -233,68 +233,6 @@ fn dispatch_forced_change() {
 }
 
 #[test]
-fn schedule_pause_only_when_live() {
-	new_test_ext(vec![(1, 1), (2, 1), (3, 1)]).execute_with(|| {
-		// we schedule a pause at block 1 with delay of 1
-		initialize_block(1, Default::default());
-		Grandpa::schedule_pause(1).unwrap();
-
-		// we've switched to the pending pause state
-		assert_eq!(Grandpa::state(), StoredState::PendingPause { scheduled_at: 1u64, delay: 1 });
-
-		Grandpa::on_finalize(1);
-		let _ = System::finalize();
-
-		initialize_block(2, Default::default());
-
-		// signaling a pause now should fail
-		assert_noop!(Grandpa::schedule_pause(1), Error::<Test>::PauseFailed);
-
-		Grandpa::on_finalize(2);
-		let _ = System::finalize();
-
-		// after finalizing block 2 the set should have switched to paused state
-		assert_eq!(Grandpa::state(), StoredState::Paused);
-	});
-}
-
-#[test]
-fn schedule_resume_only_when_paused() {
-	new_test_ext(vec![(1, 1), (2, 1), (3, 1)]).execute_with(|| {
-		initialize_block(1, Default::default());
-
-		// the set is currently live, resuming it is an error
-		assert_noop!(Grandpa::schedule_resume(1), Error::<Test>::ResumeFailed);
-
-		assert_eq!(Grandpa::state(), StoredState::Live);
-
-		// we schedule a pause to be applied instantly
-		Grandpa::schedule_pause(0).unwrap();
-		Grandpa::on_finalize(1);
-		let _ = System::finalize();
-
-		assert_eq!(Grandpa::state(), StoredState::Paused);
-
-		// we schedule the set to go back live in 2 blocks
-		initialize_block(2, Default::default());
-		Grandpa::schedule_resume(2).unwrap();
-		Grandpa::on_finalize(2);
-		let _ = System::finalize();
-
-		initialize_block(3, Default::default());
-		Grandpa::on_finalize(3);
-		let _ = System::finalize();
-
-		initialize_block(4, Default::default());
-		Grandpa::on_finalize(4);
-		let _ = System::finalize();
-
-		// it should be live at block 4
-		assert_eq!(Grandpa::state(), StoredState::Live);
-	});
-}
-
-#[test]
 fn time_slot_have_sane_ord() {
 	// Ensure that `Ord` implementation is sane.
 	const FIXTURE: &[TimeSlot] = &[

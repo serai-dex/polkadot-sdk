@@ -152,35 +152,6 @@ pub mod pallet {
 					<PendingChange<T>>::kill();
 				}
 			}
-
-			// check for scheduled pending state changes
-			match <State<T>>::get() {
-				StoredState::PendingPause { scheduled_at, delay } => {
-					// signal change to pause
-					if block_number == scheduled_at {
-						Self::deposit_log(ConsensusLog::Pause(delay));
-					}
-
-					// enact change to paused state
-					if block_number == scheduled_at + delay {
-						<State<T>>::put(StoredState::Paused);
-						Self::deposit_event(Event::Paused);
-					}
-				},
-				StoredState::PendingResume { scheduled_at, delay } => {
-					// signal change to resume
-					if block_number == scheduled_at {
-						Self::deposit_log(ConsensusLog::Resume(delay));
-					}
-
-					// enact change to live state
-					if block_number == scheduled_at + delay {
-						<State<T>>::put(StoredState::Live);
-						Self::deposit_event(Event::Resumed);
-					}
-				},
-				_ => {},
-			}
 		}
 	}
 
@@ -244,20 +215,10 @@ pub mod pallet {
 	pub enum Event {
 		/// New authority set has been applied.
 		NewAuthorities { authority_set: AuthorityList },
-		/// Current authority set has been paused.
-		Paused,
-		/// Current authority set has been resumed.
-		Resumed,
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-		/// Attempt to signal GRANDPA pause when the authority set isn't live
-		/// (either paused or already pending pause).
-		PauseFailed,
-		/// Attempt to signal GRANDPA resume when the authority set isn't paused
-		/// (either live or already pending resume).
-		ResumeFailed,
 		/// Attempt to signal GRANDPA change with one already pending.
 		ChangePending,
 		/// Cannot signal forced change so soon after last.
@@ -269,17 +230,6 @@ pub mod pallet {
 		/// A given equivocation report is valid but already previously reported.
 		DuplicateOffenceReport,
 	}
-
-	#[pallet::type_value]
-	pub(super) fn DefaultForState<T: Config>() -> StoredState<BlockNumberFor<T>> {
-		StoredState::Live
-	}
-
-	/// State of the current authority set.
-	#[pallet::storage]
-	#[pallet::getter(fn state)]
-	pub(super) type State<T: Config> =
-		StorageValue<_, StoredState<BlockNumberFor<T>>, ValueQuery, DefaultForState<T>>;
 
 	/// Pending change: (signaled at, scheduled change).
 	#[pallet::storage]
@@ -371,63 +321,10 @@ pub struct StoredPendingChange<N, Limit> {
 	pub forced: Option<N>,
 }
 
-/// Current state of the GRANDPA authority set. State transitions must happen in
-/// the same order of states defined below, e.g. `Paused` implies a prior
-/// `PendingPause`.
-#[derive(Decode, Encode, TypeInfo, MaxEncodedLen)]
-#[cfg_attr(test, derive(Debug, PartialEq))]
-pub enum StoredState<N> {
-	/// The current authority set is live, and GRANDPA is enabled.
-	Live,
-	/// There is a pending pause event which will be enacted at the given block
-	/// height.
-	PendingPause {
-		/// Block at which the intention to pause was scheduled.
-		scheduled_at: N,
-		/// Number of blocks after which the change will be enacted.
-		delay: N,
-	},
-	/// The current GRANDPA authority set is paused.
-	Paused,
-	/// There is a pending resume event which will be enacted at the given block
-	/// height.
-	PendingResume {
-		/// Block at which the intention to resume was scheduled.
-		scheduled_at: N,
-		/// Number of blocks after which the change will be enacted.
-		delay: N,
-	},
-}
-
 impl<T: Config> Pallet<T> {
 	/// Get the current set of authorities, along with their respective weights.
 	pub fn grandpa_authorities() -> AuthorityList {
 		Authorities::<T>::get().into_inner()
-	}
-
-	/// Schedule GRANDPA to pause starting in the given number of blocks.
-	/// Cannot be done when already paused.
-	pub fn schedule_pause(in_blocks: BlockNumberFor<T>) -> DispatchResult {
-		if let StoredState::Live = <State<T>>::get() {
-			let scheduled_at = <frame_system::Pallet<T>>::block_number();
-			<State<T>>::put(StoredState::PendingPause { delay: in_blocks, scheduled_at });
-
-			Ok(())
-		} else {
-			Err(Error::<T>::PauseFailed.into())
-		}
-	}
-
-	/// Schedule a resume of GRANDPA after pausing.
-	pub fn schedule_resume(in_blocks: BlockNumberFor<T>) -> DispatchResult {
-		if let StoredState::Paused = <State<T>>::get() {
-			let scheduled_at = <frame_system::Pallet<T>>::block_number();
-			<State<T>>::put(StoredState::PendingResume { delay: in_blocks, scheduled_at });
-
-			Ok(())
-		} else {
-			Err(Error::<T>::ResumeFailed.into())
-		}
 	}
 
 	/// Schedule a change in the authorities.
