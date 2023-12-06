@@ -136,6 +136,7 @@ pub trait PaysFee<T> {
 
 /// Explicit enum to denote if a transaction pays fee or not.
 #[derive(Clone, Copy, Eq, PartialEq, RuntimeDebug, Encode, Decode, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum Pays {
 	/// Transactor will pay related fees.
 	Yes,
@@ -237,6 +238,7 @@ impl<'a> OneOrMany<DispatchClass> for &'a [DispatchClass] {
 
 /// A bundle of static information collected from the `#[pallet::weight]` attributes.
 #[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct DispatchInfo {
 	/// Weight of this transaction's call.
 	pub call_weight: Weight,
