@@ -22,10 +22,10 @@
 pub mod error;
 
 use error::Error;
-use sp_core::bytes::to_hex;
-use sp_runtime::generic::SignedBlock;
 use jsonrpsee::proc_macros::rpc;
+use sp_core::bytes::to_hex;
 use sp_rpc::{list::ListOrValue, number::NumberOrHex};
+use sp_runtime::generic::SignedBlock;
 
 #[rpc(client, server)]
 pub trait ChainApi<Number, Hash, Header, Block: codec::Encode> {

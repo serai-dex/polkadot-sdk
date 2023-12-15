@@ -27,10 +27,10 @@ use assert_matches::assert_matches;
 use codec::{Decode, Encode};
 use futures::Future;
 use jsonrpsee::{
-	core::{error::Error, server::rpc_module::Subscription as RpcSubscription},
-	rpc_params,
-	types::error::CallError,
-	RpcModule,
+	core::{
+		error::Error, server::Subscription as RpcSubscription, EmptyServerParams as EmptyParams,
+	},
+	rpc_params, RpcModule,
 };
 use sc_block_builder::BlockBuilderBuilder;
 use sc_client_api::ChildInfo;
@@ -2206,7 +2206,7 @@ async fn follow_report_multiple_pruned_block() {
 	let block_3_f = block_builder.build().unwrap().block;
 	let block_3_f_hash = block_3_f.hash();
 	client.import(BlockOrigin::Own, block_3_f.clone()).await.unwrap();
-	let mut sub = api.subscribe("chainHead_unstable_follow", [false]).await.unwrap();
+	let mut sub = api.subscribe_unbounded("chainHead_unstable_follow", [false]).await.unwrap();
 
 	// Initialized must always be reported first.
 	let event: FollowEvent<String> = get_next_event(&mut sub).await;

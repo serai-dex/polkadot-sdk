@@ -40,9 +40,7 @@ serde = { version = "1.0.195", features = ["derive"] }
 serde_json = "1.0.111"
 smallvec = "1.11.0"
 thiserror = "1.0"
-tokio = { version = "1.22.0", features = ["macros", "sync"] }
-tokio-stream = "0.1.7"
-unsigned-varint = { version = "0.7.1", features = ["asynchronous_codec", "futures"] }
+unsigned-varint = { version = "0.7.1", features = ["futures", "asynchronous_codec"] }
 zeroize = "1.4.3"
 prometheus-endpoint = { package = "substrate-prometheus-endpoint", path = "../../utils/prometheus" }
 sc-client-api = { path = "../api" }

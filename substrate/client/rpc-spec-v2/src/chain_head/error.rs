@@ -20,7 +20,6 @@
 //! Error helpers for `chainHead` RPC module.
 
 use jsonrpsee::types::error::ErrorObject;
-use sp_blockchain::Error as BlockchainError;
 
 /// ChainHead RPC errors.
 #[derive(Debug, thiserror::Error)]

@@ -285,7 +285,7 @@ where
 		self.client
 			.header(hash)
 			.map(|opt_header| opt_header.map(|h| hex_string(&h.encode())))
-			.map_err(ChainHeadRpcError::FetchBlockHeader)
+			.map_err(|_| ChainHeadRpcError::InvalidBlock)
 	}
 
 	fn chain_head_unstable_storage(
@@ -405,16 +405,9 @@ where
 	fn chain_head_unstable_unpin(
 		&self,
 		follow_subscription: String,
-		hash_or_hashes: ListOrValue<Block::Hash>,
-	) -> RpcResult<()> {
-		let result = match hash_or_hashes {
-			ListOrValue::Value(hash) =>
-				self.subscriptions.unpin_blocks(&follow_subscription, [hash]),
-			ListOrValue::List(hashes) =>
-				self.subscriptions.unpin_blocks(&follow_subscription, hashes),
-		};
-
-		match result {
+		hash: Block::Hash,
+	) -> Result<(), ChainHeadRpcError> {
+		match self.subscriptions.unpin_block(&follow_subscription, hash) {
 			Ok(()) => Ok(()),
 			Err(SubscriptionManagementError::SubscriptionAbsent) => {
 				// Invalid invalid subscription ID.

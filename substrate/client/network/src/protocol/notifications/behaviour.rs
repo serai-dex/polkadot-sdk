@@ -18,18 +18,16 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-	protocol::notifications::{
-		handler::{self, NotificationsSink, NotifsHandler, NotifsHandlerIn, NotifsHandlerOut},
-		service::{metrics, NotificationCommand, ProtocolHandle, ValidationCallResult},
+	protocol::notifications::handler::{
+		self, NotificationsSink, NotifsHandler, NotifsHandlerIn, NotifsHandlerOut,
 	},
 	protocol_controller::{self, IncomingIndex, Message, SetId},
-	service::traits::{Direction, ValidationResult},
 	types::ProtocolName,
 };
 
 use bytes::BytesMut;
 use fnv::FnvHashMap;
-use futures::{future::BoxFuture, prelude::*, stream::FuturesUnordered};
+use futures::prelude::*;
 use libp2p::{
 	core::{ConnectedPoint, Endpoint, Multiaddr},
 	swarm::{
@@ -39,14 +37,11 @@ use libp2p::{
 	},
 	PeerId,
 };
-use log::{debug, error, trace, warn};
+use log::{debug, error, info, trace, warn};
 use parking_lot::RwLock;
 use rand::distributions::{Distribution as _, Uniform};
 use sc_utils::mpsc::TracingUnboundedReceiver;
 use smallvec::SmallVec;
-use tokio::sync::oneshot::error::RecvError;
-use tokio_stream::StreamMap;
-
 use std::{
 	cmp,
 	collections::{hash_map::Entry, VecDeque},
@@ -56,13 +51,6 @@ use std::{
 	task::{Context, Poll},
 	time::{Duration, Instant},
 };
-
-/// Type representing a pending substream validation.
-type PendingInboundValidation =
-	BoxFuture<'static, (Result<ValidationResult, RecvError>, IncomingIndex)>;
-
-/// Logging target for the file.
-const LOG_TARGET: &str = "sub-libp2p";
 
 /// Network behaviour that handles opening substreams for custom protocols with other peers.
 ///
@@ -119,12 +107,6 @@ pub struct Notifications {
 	/// Notification protocols. Entries never change after initialization.
 	notif_protocols: Vec<handler::ProtocolConfig>,
 
-	/// Protocol handles.
-	protocol_handles: Vec<ProtocolHandle>,
-
-	// Command streams.
-	command_streams: StreamMap<usize, Box<dyn Stream<Item = NotificationCommand> + Send + Unpin>>,
-
 	/// Protocol controllers are responsible for peer connections management.
 	protocol_controller_handles: Vec<protocol_controller::ProtocolHandle>,
 
@@ -157,18 +139,6 @@ pub struct Notifications {
 
 	/// Events to produce from `poll()`.
 	events: VecDeque<ToSwarm<NotificationsOut, NotifsHandlerIn>>,
-
-	/// Pending inbound substream validations.
-	//
-	// NOTE: it's possible to read a stale response from `pending_inbound_validations`
-	// as the substream may get closed by the remote peer before the protocol has had
-	// a chance to validate it. [`Notifications`] must compare the `crate::peerset::IncomingIndex`
-	// returned by the completed future against the `crate::peerset::IncomingIndex` stored in
-	// `PeerState::Incoming` to check whether the completed future is stale or not.
-	pending_inbound_validations: FuturesUnordered<PendingInboundValidation>,
-
-	/// Metrics for notifications.
-	metrics: Option<metrics::Metrics>,
 }
 
 /// Configuration for a notifications protocol.
@@ -266,9 +236,6 @@ enum PeerState {
 		/// Incoming index tracking this connection.
 		incoming_index: IncomingIndex,
 
-		/// Peerset has signaled it wants the substream closed.
-		peerset_rejected: bool,
-
 		/// List of connections with this peer, and their state.
 		connections: SmallVec<[(ConnectionId, ConnectionState); crate::MAX_CONNECTIONS_PER_PEER]>,
 	},
@@ -337,8 +304,6 @@ struct IncomingPeer {
 	alive: bool,
 	/// Id that the we sent to the peerset.
 	incoming_id: IncomingIndex,
-	/// Received handshake.
-	handshake: Vec<u8>,
 }
 
 /// Event that can be emitted by the `Notifications`.
@@ -350,8 +315,6 @@ pub enum NotificationsOut {
 		peer_id: PeerId,
 		/// Peerset set ID the substream is tied to.
 		set_id: SetId,
-		/// Direction of the stream.
-		direction: Direction,
 		/// If `Some`, a fallback protocol name has been used rather the main protocol name.
 		/// Always matches one of the fallback names passed at initialization.
 		negotiated_fallback: Option<ProtocolName>,
@@ -402,51 +365,24 @@ pub enum NotificationsOut {
 
 impl Notifications {
 	/// Creates a `CustomProtos`.
-	pub(crate) fn new(
+	pub fn new(
 		protocol_controller_handles: Vec<protocol_controller::ProtocolHandle>,
 		from_protocol_controllers: TracingUnboundedReceiver<Message>,
-		metrics: Option<metrics::Metrics>,
-		notif_protocols: impl Iterator<
-			Item = (
-				ProtocolConfig,
-				ProtocolHandle,
-				Box<dyn Stream<Item = NotificationCommand> + Send + Unpin>,
-			),
-		>,
+		notif_protocols: impl Iterator<Item = ProtocolConfig>,
 	) -> Self {
-		let (notif_protocols, protocol_handles): (Vec<_>, Vec<_>) = notif_protocols
-			.map(|(cfg, protocol_handle, command_stream)| {
-				(
-					handler::ProtocolConfig {
-						name: cfg.name,
-						fallback_names: cfg.fallback_names,
-						handshake: Arc::new(RwLock::new(cfg.handshake)),
-						max_notification_size: cfg.max_notification_size,
-					},
-					(protocol_handle, command_stream),
-				)
+		let notif_protocols = notif_protocols
+			.map(|cfg| handler::ProtocolConfig {
+				name: cfg.name,
+				fallback_names: cfg.fallback_names,
+				handshake: Arc::new(RwLock::new(cfg.handshake)),
+				max_notification_size: cfg.max_notification_size,
 			})
-			.unzip();
+			.collect::<Vec<_>>();
+
 		assert!(!notif_protocols.is_empty());
-
-		let (mut protocol_handles, command_streams): (Vec<_>, Vec<_>) = protocol_handles
-			.into_iter()
-			.enumerate()
-			.map(|(set_id, (mut protocol_handle, command_stream))| {
-				protocol_handle.set_metrics(metrics.clone());
-
-				(protocol_handle, (set_id, command_stream))
-			})
-			.unzip();
-
-		protocol_handles.iter_mut().skip(1).for_each(|handle| {
-			handle.delegate_to_peerset(true);
-		});
 
 		Self {
 			notif_protocols,
-			protocol_handles,
-			command_streams: StreamMap::from_iter(command_streams.into_iter()),
 			protocol_controller_handles,
 			from_protocol_controllers,
 			peers: FnvHashMap::default(),
@@ -455,8 +391,6 @@ impl Notifications {
 			incoming: SmallVec::new(),
 			next_incoming_index: IncomingIndex(0),
 			events: VecDeque::new(),
-			pending_inbound_validations: FuturesUnordered::new(),
-			metrics,
 		}
 	}
 
@@ -874,21 +808,14 @@ impl Notifications {
 				*entry.into_mut() = PeerState::Backoff { timer, timer_deadline }
 			},
 
-			// `ProtocolController` disconnected peer while it was still being validated by the
-			// protocol, mark the connection as rejected and once the validation is received from
-			// the protocol, reject the substream
-			PeerState::Incoming { backoff_until, connections, incoming_index, .. } => {
-				debug!(
+			// Invalid state transitions.
+			st @ PeerState::Incoming { .. } => {
+				info!(
 					target: "sub-libp2p",
 					"PSM => Drop({}, {:?}): Ignoring obsolete disconnect, we are awaiting accept/reject.",
 					entry.key().0, set_id,
 				);
-				*entry.into_mut() = PeerState::Incoming {
-					backoff_until,
-					connections,
-					incoming_index,
-					peerset_rejected: true,
-				};
+				*entry.into_mut() = st;
 			},
 			PeerState::Poisoned => {
 				error!(target: "sub-libp2p", "State of {:?} is poisoned", entry.key());
@@ -897,71 +824,20 @@ impl Notifications {
 		}
 	}
 
-	/// Substream has been accepted by the `ProtocolController` and must now be sent
-	/// to the protocol for validation.
-	fn peerset_report_preaccept(&mut self, index: IncomingIndex) {
-		let Some(pos) = self.incoming.iter().position(|i| i.incoming_id == index) else {
-			error!(target: LOG_TARGET, "PSM => Preaccept({:?}): Invalid index", index);
+	/// Function that is called when the peerset wants us to accept a connection
+	/// request from a peer.
+	fn peerset_report_accept(&mut self, index: IncomingIndex) {
+		let incoming = if let Some(pos) = self.incoming.iter().position(|i| i.incoming_id == index)
+		{
+			self.incoming.remove(pos)
+		} else {
+			error!(target: "sub-libp2p", "PSM => Accept({:?}): Invalid index", index);
 			return
 		};
 
-		trace!(
-			target: LOG_TARGET,
-			"PSM => Preaccept({:?}): Sent to protocol for validation",
-			index
-		);
-		let incoming = &self.incoming[pos];
-
-		match self.protocol_handles[usize::from(incoming.set_id)]
-			.report_incoming_substream(incoming.peer_id, incoming.handshake.clone())
-		{
-			Ok(ValidationCallResult::Delegated) => {
-				self.protocol_report_accept(index);
-			},
-			Ok(ValidationCallResult::WaitForValidation(rx)) => {
-				self.pending_inbound_validations
-					.push(Box::pin(async move { (rx.await, index) }));
-			},
-			Err(err) => {
-				// parachain collators enable the syncing protocol but `NotificationService` for
-				// `SyncingEngine` is not created which causes `report_incoming_substream()` to
-				// fail. This is not a fatal error and should be ignored even though in typical
-				// cases the `NotificationService` not existing is a fatal error and indicates that
-				// the protocol has exited. Until the parachain collator issue is fixed, just report
-				// and error and reject the peer.
-				debug!(target: LOG_TARGET, "protocol has exited: {err:?} {:?}", incoming.set_id);
-
-				self.protocol_report_reject(index);
-			},
-		}
-	}
-
-	/// Function that is called when the peerset wants us to accept a connection
-	/// request from a peer.
-	fn protocol_report_accept(&mut self, index: IncomingIndex) {
-		let (pos, incoming) =
-			if let Some(pos) = self.incoming.iter().position(|i| i.incoming_id == index) {
-				(pos, self.incoming.get(pos))
-			} else {
-				error!(target: "sub-libp2p", "PSM => Accept({:?}): Invalid index", index);
-				return
-			};
-
-		let Some(incoming) = incoming else {
-			error!(target: "sub-libp2p", "Incoming connection ({:?}) doesn't exist", index);
-			debug_assert!(false);
-			return;
-		};
-
 		if !incoming.alive {
-			trace!(
-				target: "sub-libp2p",
-				"PSM => Accept({:?}, {}, {:?}): Obsolete incoming",
-				index,
-				incoming.peer_id,
-				incoming.set_id,
-			);
-
+			trace!(target: "sub-libp2p", "PSM => Accept({:?}, {}, {:?}): Obsolete incoming",
+				index, incoming.peer_id, incoming.set_id);
 			match self.peers.get_mut(&(incoming.peer_id, incoming.set_id)) {
 				Some(PeerState::DisabledPendingEnable { .. }) | Some(PeerState::Enabled { .. }) => {
 				},
@@ -972,42 +848,26 @@ impl Notifications {
 						.dropped(incoming.peer_id);
 				},
 			}
-
-			self.incoming.remove(pos);
 			return
 		}
 
 		let state = match self.peers.get_mut(&(incoming.peer_id, incoming.set_id)) {
 			Some(s) => s,
 			None => {
-				log::debug!(
-					target: "sub-libp2p",
-					"Connection to {:?} closed, ({:?} {:?}), ignoring accept",
-					incoming.peer_id,
-					incoming.set_id,
-					index,
-				);
-				self.incoming.remove(pos);
+				debug_assert!(false);
 				return
 			},
 		};
 
 		match mem::replace(state, PeerState::Poisoned) {
 			// Incoming => Enabled
-			PeerState::Incoming {
-				mut connections,
-				incoming_index,
-				peerset_rejected,
-				backoff_until,
-			} => {
+			PeerState::Incoming { mut connections, incoming_index, .. } => {
 				if index < incoming_index {
 					warn!(
 						target: "sub-libp2p",
 						"PSM => Accept({:?}, {}, {:?}): Ignoring obsolete incoming index, we are already awaiting {:?}.",
 						index, incoming.peer_id, incoming.set_id, incoming_index
 					);
-
-					self.incoming.remove(pos);
 					return
 				} else if index > incoming_index {
 					error!(
@@ -1015,8 +875,6 @@ impl Notifications {
 						"PSM => Accept({:?}, {}, {:?}): Ignoring incoming index from the future, we are awaiting {:?}.",
 						index, incoming.peer_id, incoming.set_id, incoming_index
 					);
-
-					self.incoming.remove(pos);
 					debug_assert!(false);
 					return
 				}
@@ -1066,85 +924,53 @@ impl Notifications {
 					*connec_state = ConnectionState::Opening;
 				}
 
-				self.incoming.remove(pos);
 				*state = PeerState::Enabled { connections };
 			},
-			st @ PeerState::Disabled { .. } | st @ PeerState::Backoff { .. } => {
-				self.incoming.remove(pos);
-				*state = st;
-			},
+
 			// Any state other than `Incoming` is invalid.
 			peer => {
-				error!(
-					target: "sub-libp2p",
+				error!(target: "sub-libp2p",
 					"State mismatch in libp2p: Expected alive incoming. Got {:?}.",
-					peer
-				);
-
-				self.incoming.remove(pos);
+					peer);
 				debug_assert!(false);
 			},
 		}
 	}
 
-	/// Function that is called when `ProtocolController` wants us to reject an incoming peer.
-	fn peerset_report_reject(&mut self, index: IncomingIndex) {
-		let _ = self.report_reject(index);
-	}
-
-	/// Function that is called when the protocol wants us to reject an incoming peer.
-	fn protocol_report_reject(&mut self, index: IncomingIndex) {
-		if let Some((set_id, peer_id)) = self.report_reject(index) {
-			self.protocol_controller_handles[usize::from(set_id)].dropped(peer_id)
-		}
-	}
-
 	/// Function that is called when the peerset wants us to reject an incoming peer.
-	fn report_reject(&mut self, index: IncomingIndex) -> Option<(SetId, PeerId)> {
+	fn peerset_report_reject(&mut self, index: IncomingIndex) {
 		let incoming = if let Some(pos) = self.incoming.iter().position(|i| i.incoming_id == index)
 		{
 			self.incoming.remove(pos)
 		} else {
 			error!(target: "sub-libp2p", "PSM => Reject({:?}): Invalid index", index);
-			return None
+			return
 		};
 
 		if !incoming.alive {
-			trace!(
-				target: "sub-libp2p",
-				"PSM => Reject({:?}, {}, {:?}): Obsolete incoming, ignoring",
-				index,
-				incoming.peer_id,
-				incoming.set_id,
-			);
-
-			return None
+			trace!(target: "sub-libp2p", "PSM => Reject({:?}, {}, {:?}): Obsolete incoming, \
+				ignoring", index, incoming.peer_id, incoming.set_id);
+			return
 		}
 
 		let state = match self.peers.get_mut(&(incoming.peer_id, incoming.set_id)) {
 			Some(s) => s,
 			None => {
-				log::debug!(
-					target: "sub-libp2p",
-					"Connection to {:?} closed, ({:?} {:?}), ignoring accept",
-					incoming.peer_id,
-					incoming.set_id,
-					index,
-				);
-				return None
+				debug_assert!(false);
+				return
 			},
 		};
 
 		match mem::replace(state, PeerState::Poisoned) {
 			// Incoming => Disabled
-			PeerState::Incoming { mut connections, backoff_until, incoming_index, .. } => {
+			PeerState::Incoming { mut connections, backoff_until, incoming_index } => {
 				if index < incoming_index {
 					warn!(
 						target: "sub-libp2p",
 						"PSM => Reject({:?}, {}, {:?}): Ignoring obsolete incoming index, we are already awaiting {:?}.",
 						index, incoming.peer_id, incoming.set_id, incoming_index
 					);
-					return None
+					return
 				} else if index > incoming_index {
 					error!(
 						target: "sub-libp2p",
@@ -1152,7 +978,7 @@ impl Notifications {
 						index, incoming.peer_id, incoming.set_id, incoming_index
 					);
 					debug_assert!(false);
-					return None
+					return
 				}
 
 				trace!(target: "sub-libp2p", "PSM => Reject({:?}, {}, {:?}): Rejecting connections.",
@@ -1176,20 +1002,10 @@ impl Notifications {
 				}
 
 				*state = PeerState::Disabled { connections, backoff_until };
-				Some((incoming.set_id, incoming.peer_id))
 			},
-			// connection to peer may have been closed already
-			st @ PeerState::Disabled { .. } | st @ PeerState::Backoff { .. } => {
-				*state = st;
-				None
-			},
-			peer => {
-				error!(
-					target: LOG_TARGET,
-					"State mismatch in libp2p: Expected alive incoming. Got {peer:?}.",
-				);
-				None
-			},
+			peer => error!(target: "sub-libp2p",
+				"State mismatch in libp2p: Expected alive incoming. Got {:?}.",
+				peer),
 		}
 	}
 }
@@ -1231,7 +1047,6 @@ impl NetworkBehaviour for Notifications {
 				send_back_addr: remote_addr.clone(),
 			},
 			self.notif_protocols.clone(),
-			self.metrics.clone(),
 		))
 	}
 
@@ -1246,7 +1061,6 @@ impl NetworkBehaviour for Notifications {
 			peer,
 			ConnectedPoint::Dialer { address: addr.clone(), role_override },
 			self.notif_protocols.clone(),
-			self.metrics.clone(),
 		))
 	}
 
@@ -1407,12 +1221,7 @@ impl NetworkBehaviour for Notifications {
 						},
 
 						// Incoming => Incoming | Disabled | Backoff | Ø
-						PeerState::Incoming {
-							mut connections,
-							backoff_until,
-							incoming_index,
-							peerset_rejected,
-						} => {
+						PeerState::Incoming { mut connections, backoff_until, incoming_index } => {
 							trace!(
 								target: "sub-libp2p",
 								"Libp2p => Disconnected({}, {:?}, {:?}): OpenDesiredByRemote.",
@@ -1491,7 +1300,6 @@ impl NetworkBehaviour for Notifications {
 									connections,
 									backoff_until,
 									incoming_index,
-									peerset_rejected,
 								};
 							}
 						},
@@ -1531,7 +1339,7 @@ impl NetworkBehaviour for Notifications {
 											let event = NotificationsOut::CustomProtocolReplaced {
 												peer_id,
 												set_id,
-												notifications_sink: replacement_sink.clone(),
+												notifications_sink: replacement_sink,
 											};
 											self.events.push_back(ToSwarm::GenerateEvent(event));
 										}
@@ -1693,7 +1501,7 @@ impl NetworkBehaviour for Notifications {
 		event: THandlerOutEvent<Self>,
 	) {
 		match event {
-			NotifsHandlerOut::OpenDesiredByRemote { protocol_index, handshake } => {
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index } => {
 				let set_id = SetId::from(protocol_index);
 
 				trace!(target: "sub-libp2p",
@@ -1714,12 +1522,7 @@ impl NetworkBehaviour for Notifications {
 
 				match mem::replace(entry.get_mut(), PeerState::Poisoned) {
 					// Incoming => Incoming
-					PeerState::Incoming {
-						mut connections,
-						backoff_until,
-						incoming_index,
-						peerset_rejected,
-					} => {
+					PeerState::Incoming { mut connections, backoff_until, incoming_index } => {
 						debug_assert!(connections
 							.iter()
 							.any(|(_, s)| matches!(s, ConnectionState::OpenDesiredByRemote)));
@@ -1747,12 +1550,8 @@ impl NetworkBehaviour for Notifications {
 							debug_assert!(false);
 						}
 
-						*entry.into_mut() = PeerState::Incoming {
-							connections,
-							backoff_until,
-							incoming_index,
-							peerset_rejected,
-						};
+						*entry.into_mut() =
+							PeerState::Incoming { connections, backoff_until, incoming_index };
 					},
 
 					PeerState::Enabled { mut connections } => {
@@ -1816,13 +1615,11 @@ impl NetworkBehaviour for Notifications {
 									set_id,
 									alive: true,
 									incoming_id,
-									handshake,
 								});
 
 								*entry.into_mut() = PeerState::Incoming {
 									connections,
 									backoff_until,
-									peerset_rejected: false,
 									incoming_index: incoming_id,
 								};
 							} else {
@@ -1955,7 +1752,7 @@ impl NetworkBehaviour for Notifications {
 								let event = NotificationsOut::CustomProtocolReplaced {
 									peer_id,
 									set_id,
-									notifications_sink: replacement_sink.clone(),
+									notifications_sink: replacement_sink,
 								};
 								self.events.push_back(ToSwarm::GenerateEvent(event));
 							}
@@ -2060,13 +1857,8 @@ impl NetworkBehaviour for Notifications {
 									peer_id,
 									set_id,
 									inbound,
-									direction: if inbound {
-										Direction::Inbound
-									} else {
-										Direction::Outbound
-									},
-									received_handshake: received_handshake.clone(),
-									negotiated_fallback: negotiated_fallback.clone(),
+									negotiated_fallback,
+									received_handshake,
 									notifications_sink: notifications_sink.clone(),
 								};
 								self.events.push_back(ToSwarm::GenerateEvent(event));
@@ -2214,11 +2006,8 @@ impl NetworkBehaviour for Notifications {
 						peer_id,
 						set_id,
 					);
-					let event = NotificationsOut::Notification {
-						peer_id,
-						set_id,
-						message: message.clone(),
-					};
+					let event = NotificationsOut::Notification { peer_id, set_id, message };
+
 					self.events.push_back(ToSwarm::GenerateEvent(event));
 				} else {
 					trace!(
@@ -2247,10 +2036,10 @@ impl NetworkBehaviour for Notifications {
 		loop {
 			match futures::Stream::poll_next(Pin::new(&mut self.from_protocol_controllers), cx) {
 				Poll::Ready(Some(Message::Accept(index))) => {
-					self.peerset_report_preaccept(index);
+					self.peerset_report_accept(index);
 				},
 				Poll::Ready(Some(Message::Reject(index))) => {
-					let _ = self.peerset_report_reject(index);
+					self.peerset_report_reject(index);
 				},
 				Poll::Ready(Some(Message::Connect { peer_id, set_id, .. })) => {
 					self.peerset_report_connect(peer_id, set_id);
@@ -2266,43 +2055,6 @@ impl NetworkBehaviour for Notifications {
 					break
 				},
 				Poll::Pending => break,
-			}
-		}
-
-		// poll commands from protocols
-		loop {
-			match futures::Stream::poll_next(Pin::new(&mut self.command_streams), cx) {
-				Poll::Ready(Some((set_id, command))) => match command {
-					NotificationCommand::SetHandshake(handshake) => {
-						self.set_notif_protocol_handshake(set_id.into(), handshake);
-					},
-					NotificationCommand::OpenSubstream(_peer) |
-					NotificationCommand::CloseSubstream(_peer) => {
-						todo!("substream control not implemented");
-					},
-				},
-				Poll::Ready(None) => {
-					error!(target: LOG_TARGET, "Protocol command streams have been shut down");
-					break
-				},
-				Poll::Pending => break,
-			}
-		}
-
-		while let Poll::Ready(Some((result, index))) =
-			self.pending_inbound_validations.poll_next_unpin(cx)
-		{
-			match result {
-				Ok(ValidationResult::Accept) => {
-					self.protocol_report_accept(index);
-				},
-				Ok(ValidationResult::Reject) => {
-					self.protocol_report_reject(index);
-				},
-				Err(_) => {
-					error!(target: LOG_TARGET, "Protocol has shut down");
-					break
-				},
 			}
 		}
 
@@ -2410,10 +2162,7 @@ mod tests {
 		}
 	}
 
-	fn development_notifs(
-	) -> (Notifications, ProtocolController, Box<dyn crate::service::traits::NotificationService>) {
-		let (protocol_handle_pair, notif_service) =
-			crate::protocol::notifications::service::notification_service("/proto/1".into());
+	fn development_notifs() -> (Notifications, ProtocolController) {
 		let (to_notifications, from_controller) =
 			tracing_unbounded("test_controller_to_notifications", 10_000);
 
@@ -2429,31 +2178,24 @@ mod tests {
 			Box::new(MockPeerStore {}),
 		);
 
-		let (notif_handle, command_stream) = protocol_handle_pair.split();
 		(
 			Notifications::new(
 				vec![handle],
 				from_controller,
-				None,
-				iter::once((
-					ProtocolConfig {
-						name: "/foo".into(),
-						fallback_names: Vec::new(),
-						handshake: vec![1, 2, 3, 4],
-						max_notification_size: u64::MAX,
-					},
-					notif_handle,
-					command_stream,
-				)),
+				iter::once(ProtocolConfig {
+					name: "/foo".into(),
+					fallback_names: Vec::new(),
+					handshake: vec![1, 2, 3, 4],
+					max_notification_size: u64::MAX,
+				}),
 			),
 			controller,
-			notif_service,
 		)
 	}
 
 	#[test]
 	fn update_handshake() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 
 		let inner = notif.notif_protocols.get_mut(0).unwrap().handshake.read().clone();
 		assert_eq!(inner, vec![1, 2, 3, 4]);
@@ -2468,14 +2210,14 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn update_unknown_handshake() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 
 		notif.set_notif_protocol_handshake(1337.into(), vec![5, 6, 7, 8]);
 	}
 
 	#[test]
 	fn disconnect_backoff_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 
 		let peer = PeerId::random();
 		notif.peers.insert(
@@ -2492,7 +2234,7 @@ mod tests {
 
 	#[test]
 	fn disconnect_pending_request() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 
 		notif.peers.insert(
@@ -2509,7 +2251,7 @@ mod tests {
 
 	#[test]
 	fn disconnect_requested_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 
 		let peer = PeerId::random();
 		notif.peers.insert((peer, 0.into()), PeerState::Requested);
@@ -2520,7 +2262,7 @@ mod tests {
 
 	#[test]
 	fn disconnect_disabled_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		notif.peers.insert(
 			(peer, 0.into()),
@@ -2536,7 +2278,7 @@ mod tests {
 
 	#[test]
 	fn remote_opens_connection_and_substream() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let connected = ConnectedPoint::Listener {
@@ -2566,10 +2308,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 
 		if let Some(&PeerState::Incoming { ref connections, backoff_until: None, .. }) =
@@ -2589,7 +2328,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn disconnect_remote_substream_before_handled_by_controller() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let connected = ConnectedPoint::Listener {
@@ -2609,10 +2348,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		notif.disconnect_peer(&peer, 0.into());
 
@@ -2628,7 +2364,7 @@ mod tests {
 
 	#[test]
 	fn peerset_report_connect_backoff() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -2666,7 +2402,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -2693,7 +2429,7 @@ mod tests {
 
 	#[test]
 	fn peerset_connect_incoming() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -2717,22 +2453,19 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 
 		// attempt to connect to the peer and verify that the peer state is `Enabled`;
 		// we rely on implementation detail that incoming indices are counted from 0
 		// to not mock the `Peerset`
-		notif.protocol_report_accept(IncomingIndex(0));
+		notif.peerset_report_accept(IncomingIndex(0));
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Enabled { .. })));
 	}
 
 	#[test]
 	fn peerset_disconnect_disable_pending_enable() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -2779,7 +2512,7 @@ mod tests {
 
 	#[test]
 	fn peerset_disconnect_enabled() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -2801,14 +2534,11 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		// we rely on the implementation detail that incoming indices are counted from 0
 		// to not mock the `Peerset`
-		notif.protocol_report_accept(IncomingIndex(0));
+		notif.peerset_report_accept(IncomingIndex(0));
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Enabled { .. })));
 
 		// disconnect peer and verify that the state is `Disabled`
@@ -2818,7 +2548,7 @@ mod tests {
 
 	#[test]
 	fn peerset_disconnect_requested() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 
@@ -2833,7 +2563,7 @@ mod tests {
 
 	#[test]
 	fn peerset_disconnect_pending_request() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -2866,7 +2596,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -2886,7 +2616,7 @@ mod tests {
 
 	#[test]
 	fn peerset_accept_peer_not_alive() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -2910,10 +2640,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -2929,14 +2656,14 @@ mod tests {
 			IncomingPeer { alive: false, incoming_id: IncomingIndex(0), .. },
 		));
 
-		notif.protocol_report_accept(IncomingIndex(0));
+		notif.peerset_report_accept(IncomingIndex(0));
 		assert_eq!(notif.incoming.len(), 0);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(PeerState::Disabled { .. })));
 	}
 
 	#[test]
 	fn secondary_connection_peer_state_incoming() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let conn2 = ConnectionId::new_unchecked(1);
@@ -2960,10 +2687,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		if let Some(PeerState::Incoming { connections, .. }) = notif.peers.get(&(peer, set_id)) {
 			assert_eq!(connections.len(), 1);
@@ -2994,7 +2718,7 @@ mod tests {
 
 	#[test]
 	fn close_connection_for_disabled_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -3019,7 +2743,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3028,7 +2752,7 @@ mod tests {
 
 	#[test]
 	fn close_connection_for_incoming_peer_one_connection() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -3051,10 +2775,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -3063,7 +2784,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3076,7 +2797,7 @@ mod tests {
 
 	#[test]
 	fn close_connection_for_incoming_peer_two_connections() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let conn1 = ConnectionId::new_unchecked(1);
@@ -3103,10 +2824,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -3133,7 +2851,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3148,7 +2866,7 @@ mod tests {
 
 	#[test]
 	fn connection_and_substream_open() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -3173,16 +2891,13 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
 		// We rely on the implementation detail that incoming indices are counted
 		// from 0 to not mock the `Peerset`.
-		notif.protocol_report_accept(IncomingIndex(0));
+		notif.peerset_report_accept(IncomingIndex(0));
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Enabled { .. })));
 
 		// open new substream
@@ -3205,7 +2920,7 @@ mod tests {
 
 	#[test]
 	fn connection_closed_sink_replaced() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn1 = ConnectionId::new_unchecked(0);
 		let conn2 = ConnectionId::new_unchecked(1);
@@ -3241,10 +2956,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn2,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 
 		if let Some(PeerState::Enabled { connections, .. }) = notif.peers.get(&(peer, set_id)) {
@@ -3281,7 +2993,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn1,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3302,7 +3014,7 @@ mod tests {
 
 	#[test]
 	fn dial_failure_for_requested_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 
@@ -3325,7 +3037,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn write_notification() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -3374,7 +3086,7 @@ mod tests {
 
 	#[test]
 	fn peerset_report_connect_backoff_expired() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -3407,7 +3119,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3422,7 +3134,7 @@ mod tests {
 
 	#[test]
 	fn peerset_report_disconnect_disabled() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 		let conn = ConnectionId::new_unchecked(0);
@@ -3448,7 +3160,7 @@ mod tests {
 
 	#[test]
 	fn peerset_report_disconnect_backoff() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -3481,7 +3193,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3494,7 +3206,7 @@ mod tests {
 
 	#[test]
 	fn peer_is_backed_off_if_both_connections_get_closed_while_peer_is_disabled_with_back_off() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn1 = ConnectionId::new_unchecked(0);
@@ -3544,7 +3256,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn1,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected.clone(), vec![], None),
+				handler: NotifsHandler::new(peer, connected.clone(), vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3558,7 +3270,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn2,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3567,7 +3279,7 @@ mod tests {
 
 	#[test]
 	fn inject_connection_closed_incoming_with_backoff() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 		let conn = ConnectionId::new_unchecked(0);
@@ -3591,10 +3303,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 
 		// manually add backoff for the entry
@@ -3612,7 +3321,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3621,7 +3330,7 @@ mod tests {
 
 	#[test]
 	fn two_connections_inactive_connection_gets_closed_peer_state_is_still_incoming() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn1 = ConnectionId::new_unchecked(0);
 		let conn2 = ConnectionId::new_unchecked(1);
@@ -3655,10 +3364,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn1,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(
 			notif.peers.get_mut(&(peer, 0.into())),
@@ -3670,7 +3376,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn2,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3679,7 +3385,7 @@ mod tests {
 
 	#[test]
 	fn two_connections_active_connection_gets_closed_peer_state_is_disabled() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn1 = ConnectionId::new_unchecked(0);
 		let conn2 = ConnectionId::new_unchecked(1);
@@ -3716,10 +3422,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn1,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(
 			notif.peers.get_mut(&(peer, 0.into())),
@@ -3731,7 +3434,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn1,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3740,7 +3443,7 @@ mod tests {
 
 	#[test]
 	fn inject_connection_closed_for_active_connection() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn1 = ConnectionId::new_unchecked(0);
 		let conn2 = ConnectionId::new_unchecked(1);
@@ -3800,7 +3503,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn1,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3808,7 +3511,7 @@ mod tests {
 
 	#[test]
 	fn inject_dial_failure_for_pending_request() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -3841,7 +3544,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -3871,7 +3574,7 @@ mod tests {
 
 	#[test]
 	fn peerstate_incoming_open_desired_by_remote() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 		let conn1 = ConnectionId::new_unchecked(0);
@@ -3905,10 +3608,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn1,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -3916,10 +3616,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn2,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 
 		if let Some(PeerState::Incoming { ref connections, .. }) = notif.peers.get(&(peer, set_id))
@@ -3931,7 +3628,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn remove_backoff_peer_after_timeout() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 		let conn = ConnectionId::new_unchecked(0);
@@ -3964,7 +3661,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4009,7 +3706,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn reschedule_disabled_pending_enable_when_connection_not_closed() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4038,16 +3735,13 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
 		// we rely on the implementation detail that incoming indices are counted from 0
 		// to not mock the `Peerset`
-		notif.protocol_report_accept(IncomingIndex(0));
+		notif.peerset_report_accept(IncomingIndex(0));
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Enabled { .. })));
 
 		let event = conn_yielder.open_substream(peer, 0, connected, vec![1, 2, 3, 4]);
@@ -4130,7 +3824,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn peerset_report_connect_with_enabled_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4155,10 +3849,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -4183,7 +3874,7 @@ mod tests {
 	#[test]
 	#[cfg(debug_assertions)]
 	fn peerset_report_connect_with_disabled_pending_enable_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -4229,7 +3920,7 @@ mod tests {
 	#[test]
 	#[cfg(debug_assertions)]
 	fn peerset_report_connect_with_requested_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 
@@ -4245,7 +3936,7 @@ mod tests {
 	#[test]
 	#[cfg(debug_assertions)]
 	fn peerset_report_connect_with_pending_requested() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -4278,7 +3969,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4302,7 +3993,7 @@ mod tests {
 	#[test]
 	#[cfg(debug_assertions)]
 	fn peerset_report_connect_with_incoming_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 		let conn = ConnectionId::new_unchecked(0);
@@ -4326,10 +4017,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -4340,7 +4028,7 @@ mod tests {
 	#[test]
 	#[cfg(debug_assertions)]
 	fn peerset_report_disconnect_with_incoming_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 		let conn = ConnectionId::new_unchecked(0);
@@ -4364,282 +4052,60 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
 		notif.peerset_report_disconnect(peer, set_id);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
-	}
-
-	#[test]
-	#[cfg(debug_assertions)]
-	fn peerset_report_disconnect_with_incoming_peer_protocol_accepts() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
-		let peer = PeerId::random();
-		let set_id = SetId::from(0);
-		let conn = ConnectionId::new_unchecked(0);
-		let connected = ConnectedPoint::Listener {
-			local_addr: Multiaddr::empty(),
-			send_back_addr: Multiaddr::empty(),
-		};
-
-		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
-			libp2p::swarm::behaviour::ConnectionEstablished {
-				peer_id: peer,
-				connection_id: conn,
-				endpoint: &connected,
-				failed_addresses: &[],
-				other_established: 0usize,
-			},
-		));
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
-
-		// remote opens a substream, verify that peer state is updated to `Incoming`
-		notif.on_connection_handler_event(
-			peer,
-			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
-		);
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
-
-		// `Peerset` wants to disconnect the peer but since it's still under validation,
-		// it won't be disabled automatically
-		notif.peerset_report_disconnect(peer, set_id);
-
-		let incoming_index = match notif.peers.get(&(peer, set_id)) {
-			Some(&PeerState::Incoming { peerset_rejected, incoming_index, .. }) => {
-				assert!(peerset_rejected);
-				incoming_index
-			},
-			state => panic!("invalid state: {state:?}"),
-		};
-
-		// protocol accepted peer but since `Peerset` wanted to disconnect it, the peer will be
-		// disabled
-		notif.protocol_report_accept(incoming_index);
-
-		match notif.peers.get(&(peer, set_id)) {
-			Some(&PeerState::Disabled { .. }) => {},
-			state => panic!("invalid state: {state:?}"),
-		};
-	}
-
-	#[test]
-	#[cfg(debug_assertions)]
-	fn peer_disconnected_protocol_accepts() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
-		let peer = PeerId::random();
-		let set_id = SetId::from(0);
-		let conn = ConnectionId::new_unchecked(0);
-		let connected = ConnectedPoint::Listener {
-			local_addr: Multiaddr::empty(),
-			send_back_addr: Multiaddr::empty(),
-		};
-
-		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
-			libp2p::swarm::behaviour::ConnectionEstablished {
-				peer_id: peer,
-				connection_id: conn,
-				endpoint: &connected,
-				failed_addresses: &[],
-				other_established: 0usize,
-			},
-		));
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
-
-		// remote opens a substream, verify that peer state is updated to `Incoming`
-		notif.on_connection_handler_event(
-			peer,
-			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
-		);
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
-
-		assert!(notif.incoming.iter().any(|entry| entry.incoming_id == IncomingIndex(0)));
-		notif.disconnect_peer(&peer, set_id);
-
-		// since the connection was closed, nothing happens for the peer state because
-		// there is nothing actionable
-		notif.protocol_report_accept(IncomingIndex(0));
-
-		match notif.peers.get(&(peer, set_id)) {
-			Some(&PeerState::Disabled { .. }) => {},
-			state => panic!("invalid state: {state:?}"),
-		};
-
-		assert!(!notif.incoming.iter().any(|entry| entry.incoming_id == IncomingIndex(0)));
-	}
-
-	#[test]
-	#[cfg(debug_assertions)]
-	fn connection_closed_protocol_accepts() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
-		let peer = PeerId::random();
-		let set_id = SetId::from(0);
-		let conn = ConnectionId::new_unchecked(0);
-		let connected = ConnectedPoint::Listener {
-			local_addr: Multiaddr::empty(),
-			send_back_addr: Multiaddr::empty(),
-		};
-
-		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
-			libp2p::swarm::behaviour::ConnectionEstablished {
-				peer_id: peer,
-				connection_id: conn,
-				endpoint: &connected,
-				failed_addresses: &[],
-				other_established: 0usize,
-			},
-		));
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
-
-		// remote opens a substream, verify that peer state is updated to `Incoming`
-		notif.on_connection_handler_event(
-			peer,
-			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
-		);
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
-
-		notif.on_swarm_event(FromSwarm::ConnectionClosed(
-			libp2p::swarm::behaviour::ConnectionClosed {
-				peer_id: peer,
-				connection_id: ConnectionId::new_unchecked(0),
-				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
-				remaining_established: 0usize,
-			},
-		));
-
-		// connection closed, nothing to do
-		notif.protocol_report_accept(IncomingIndex(0));
-
-		match notif.peers.get(&(peer, set_id)) {
-			None => {},
-			state => panic!("invalid state: {state:?}"),
-		};
-	}
-
-	#[test]
-	#[cfg(debug_assertions)]
-	fn peer_disconnected_protocol_reject() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
-		let peer = PeerId::random();
-		let set_id = SetId::from(0);
-		let conn = ConnectionId::new_unchecked(0);
-		let connected = ConnectedPoint::Listener {
-			local_addr: Multiaddr::empty(),
-			send_back_addr: Multiaddr::empty(),
-		};
-
-		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
-			libp2p::swarm::behaviour::ConnectionEstablished {
-				peer_id: peer,
-				connection_id: conn,
-				endpoint: &connected,
-				failed_addresses: &[],
-				other_established: 0usize,
-			},
-		));
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
-
-		// remote opens a substream, verify that peer state is updated to `Incoming`
-		notif.on_connection_handler_event(
-			peer,
-			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
-		);
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
-
-		assert!(notif.incoming.iter().any(|entry| entry.incoming_id == IncomingIndex(0)));
-		notif.disconnect_peer(&peer, set_id);
-
-		// since the connection was closed, nothing happens for the peer state because
-		// there is nothing actionable
-		notif.protocol_report_reject(IncomingIndex(0));
-
-		match notif.peers.get(&(peer, set_id)) {
-			Some(&PeerState::Disabled { .. }) => {},
-			state => panic!("invalid state: {state:?}"),
-		};
-
-		assert!(!notif.incoming.iter().any(|entry| entry.incoming_id == IncomingIndex(0)));
-	}
-
-	#[test]
-	#[cfg(debug_assertions)]
-	fn connection_closed_protocol_rejects() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
-		let peer = PeerId::random();
-		let set_id = SetId::from(0);
-		let conn = ConnectionId::new_unchecked(0);
-		let connected = ConnectedPoint::Listener {
-			local_addr: Multiaddr::empty(),
-			send_back_addr: Multiaddr::empty(),
-		};
-
-		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
-			libp2p::swarm::behaviour::ConnectionEstablished {
-				peer_id: peer,
-				connection_id: conn,
-				endpoint: &connected,
-				failed_addresses: &[],
-				other_established: 0usize,
-			},
-		));
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
-
-		// remote opens a substream, verify that peer state is updated to `Incoming`
-		notif.on_connection_handler_event(
-			peer,
-			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
-		);
-		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
-
-		notif.on_swarm_event(FromSwarm::ConnectionClosed(
-			libp2p::swarm::behaviour::ConnectionClosed {
-				peer_id: peer,
-				connection_id: ConnectionId::new_unchecked(0),
-				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
-				remaining_established: 0usize,
-			},
-		));
-
-		// connection closed, nothing to do
-		notif.protocol_report_reject(IncomingIndex(0));
-
-		match notif.peers.get(&(peer, set_id)) {
-			None => {},
-			state => panic!("invalid state: {state:?}"),
-		};
 	}
 
 	#[test]
 	#[should_panic]
 	#[cfg(debug_assertions)]
-	fn protocol_report_accept_not_incoming_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+	fn peerset_report_accept_incoming_peer() {
+		let (mut notif, _controller) = development_notifs();
+		let peer = PeerId::random();
+		let conn = ConnectionId::new_unchecked(0);
+		let set_id = SetId::from(0);
+		let connected = ConnectedPoint::Listener {
+			local_addr: Multiaddr::empty(),
+			send_back_addr: Multiaddr::empty(),
+		};
+
+		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
+			libp2p::swarm::behaviour::ConnectionEstablished {
+				peer_id: peer,
+				connection_id: conn,
+				endpoint: &connected,
+				failed_addresses: &[],
+				other_established: 0usize,
+			},
+		));
+		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
+
+		// remote opens a substream, verify that peer state is updated to `Incoming`
+		notif.on_connection_handler_event(
+			peer,
+			conn,
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
+		);
+		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
+
+		assert!(std::matches!(
+			notif.incoming[0],
+			IncomingPeer { alive: true, incoming_id: IncomingIndex(0), .. },
+		));
+
+		notif.peers.remove(&(peer, set_id));
+		notif.peerset_report_accept(IncomingIndex(0));
+	}
+
+	#[test]
+	#[should_panic]
+	#[cfg(debug_assertions)]
+	fn peerset_report_accept_not_incoming_peer() {
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4664,10 +4130,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -4684,14 +4147,14 @@ mod tests {
 
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Enabled { .. })));
 		notif.incoming[0].alive = true;
-		notif.protocol_report_accept(IncomingIndex(0));
+		notif.peerset_report_accept(IncomingIndex(0));
 	}
 
 	#[test]
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn inject_connection_closed_non_existent_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let endpoint = ConnectedPoint::Listener {
 			local_addr: Multiaddr::empty(),
@@ -4703,7 +4166,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: ConnectionId::new_unchecked(0),
 				endpoint: &endpoint.clone(),
-				handler: NotifsHandler::new(peer, endpoint, vec![], None),
+				handler: NotifsHandler::new(peer, endpoint, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4711,7 +4174,7 @@ mod tests {
 
 	#[test]
 	fn disconnect_non_existent_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let set_id = SetId::from(0);
 
@@ -4723,9 +4186,9 @@ mod tests {
 
 	#[test]
 	fn accept_non_existent_connection() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 
-		notif.protocol_report_accept(0.into());
+		notif.peerset_report_accept(0.into());
 
 		assert!(notif.peers.is_empty());
 		assert!(notif.incoming.is_empty());
@@ -4733,9 +4196,9 @@ mod tests {
 
 	#[test]
 	fn reject_non_existent_connection() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 
-		notif.protocol_report_reject(0.into());
+		notif.peerset_report_reject(0.into());
 
 		assert!(notif.peers.is_empty());
 		assert!(notif.incoming.is_empty());
@@ -4743,7 +4206,7 @@ mod tests {
 
 	#[test]
 	fn reject_non_active_connection() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4767,15 +4230,12 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
 		notif.incoming[0].alive = false;
-		notif.protocol_report_reject(0.into());
+		notif.peerset_report_reject(0.into());
 
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 	}
@@ -4783,8 +4243,8 @@ mod tests {
 	#[test]
 	#[should_panic]
 	#[cfg(debug_assertions)]
-	fn inject_non_existent_connection_closed_for_incoming_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+	fn reject_non_existent_peer_but_alive_connection() {
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4808,10 +4268,47 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
+		);
+		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
+		assert!(std::matches!(
+			notif.incoming[0],
+			IncomingPeer { alive: true, incoming_id: IncomingIndex(0), .. },
+		));
+
+		notif.peers.remove(&(peer, set_id));
+		notif.peerset_report_reject(0.into());
+	}
+
+	#[test]
+	#[should_panic]
+	#[cfg(debug_assertions)]
+	fn inject_non_existent_connection_closed_for_incoming_peer() {
+		let (mut notif, _controller) = development_notifs();
+		let peer = PeerId::random();
+		let conn = ConnectionId::new_unchecked(0);
+		let set_id = SetId::from(0);
+		let connected = ConnectedPoint::Listener {
+			local_addr: Multiaddr::empty(),
+			send_back_addr: Multiaddr::empty(),
+		};
+
+		notif.on_swarm_event(FromSwarm::ConnectionEstablished(
+			libp2p::swarm::behaviour::ConnectionEstablished {
+				peer_id: peer,
+				connection_id: conn,
+				endpoint: &connected,
+				failed_addresses: &[],
+				other_established: 0usize,
 			},
+		));
+		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Disabled { .. })));
+
+		// remote opens a substream, verify that peer state is updated to `Incoming`
+		notif.on_connection_handler_event(
+			peer,
+			conn,
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -4820,7 +4317,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: ConnectionId::new_unchecked(1337),
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4830,7 +4327,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn inject_non_existent_connection_closed_for_disabled_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -4855,7 +4352,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: ConnectionId::new_unchecked(1337),
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4865,7 +4362,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn inject_non_existent_connection_closed_for_disabled_pending_enable() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -4906,7 +4403,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: ConnectionId::new_unchecked(1337),
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4916,7 +4413,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn inject_connection_closed_for_incoming_peer_state_mismatch() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4940,10 +4437,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 		notif.incoming[0].alive = false;
@@ -4953,7 +4447,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -4963,7 +4457,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn inject_connection_closed_for_enabled_state_mismatch() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
 		let set_id = SetId::from(0);
@@ -4987,10 +4481,7 @@ mod tests {
 		notif.on_connection_handler_event(
 			peer,
 			conn,
-			NotifsHandlerOut::OpenDesiredByRemote {
-				protocol_index: 0,
-				handshake: vec![1, 3, 3, 7],
-			},
+			NotifsHandlerOut::OpenDesiredByRemote { protocol_index: 0 },
 		);
 		assert!(std::matches!(notif.peers.get(&(peer, set_id)), Some(&PeerState::Incoming { .. })));
 
@@ -5003,7 +4494,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: ConnectionId::new_unchecked(1337),
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -5013,7 +4504,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn inject_connection_closed_for_backoff_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let set_id = SetId::from(0);
 		let peer = PeerId::random();
 		let conn = ConnectionId::new_unchecked(0);
@@ -5046,7 +4537,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected.clone(), vec![], None),
+				handler: NotifsHandler::new(peer, connected.clone(), vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -5057,7 +4548,7 @@ mod tests {
 				peer_id: peer,
 				connection_id: conn,
 				endpoint: &connected.clone(),
-				handler: NotifsHandler::new(peer, connected, vec![], None),
+				handler: NotifsHandler::new(peer, connected, vec![]),
 				remaining_established: 0usize,
 			},
 		));
@@ -5067,7 +4558,7 @@ mod tests {
 	#[should_panic]
 	#[cfg(debug_assertions)]
 	fn open_result_ok_non_existent_peer() {
-		let (mut notif, _controller, _notif_service) = development_notifs();
+		let (mut notif, _controller) = development_notifs();
 		let conn = ConnectionId::new_unchecked(0);
 		let connected = ConnectedPoint::Listener {
 			local_addr: Multiaddr::empty(),

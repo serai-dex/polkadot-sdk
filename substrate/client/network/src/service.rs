@@ -55,7 +55,6 @@ use crate::{
 	ReputationChange,
 };
 
-use codec::DecodeAll;
 use either::Either;
 use futures::{channel::oneshot, prelude::*};
 #[allow(deprecated)]
@@ -73,13 +72,10 @@ use libp2p::{
 	Multiaddr, PeerId,
 };
 use log::{debug, error, info, trace, warn};
-use metrics::{Histogram, MetricSources, Metrics};
+use metrics::{Histogram, HistogramVec, MetricSources, Metrics};
 use parking_lot::Mutex;
 
-use sc_network_common::{
-	role::{ObservedRole, Roles},
-	ExHashT,
-};
+use sc_network_common::ExHashT;
 use sc_utils::mpsc::{tracing_unbounded, TracingUnboundedReceiver, TracingUnboundedSender};
 use sp_runtime::traits::Block as BlockT;
 
@@ -126,6 +122,12 @@ pub struct NetworkService<B: BlockT + 'static, H: ExHashT> {
 	peer_store_handle: PeerStoreHandle,
 	/// Channel that sends messages to the actual worker.
 	to_worker: TracingUnboundedSender<ServiceToWorkerMsg>,
+	/// For each peer and protocol combination, an object that allows sending notifications to
+	/// that peer. Updated by the [`NetworkWorker`].
+	peers_notifications_sinks: Arc<Mutex<HashMap<(PeerId, ProtocolName), NotificationsSink>>>,
+	/// Field extracted from the [`Metrics`] struct and necessary to report the
+	/// notifications-related metrics.
+	notifications_sizes_metric: Option<HistogramVec>,
 	/// Protocol name -> `SetId` mapping for notification protocols. The map never changes after
 	/// initialization.
 	notification_protocol_ids: HashMap<ProtocolName, SetId>,
@@ -201,7 +203,7 @@ where
 		)?;
 		for notification_protocol in &notification_protocols {
 			ensure_addresses_consistent_with_transport(
-				notification_protocol.set_config().reserved_nodes.iter().map(|x| &x.multiaddr),
+				notification_protocol.set_config.reserved_nodes.iter().map(|x| &x.multiaddr),
 				&network_config.transport,
 			)?;
 		}
@@ -243,7 +245,7 @@ where
 					.map(|cfg| usize::try_from(cfg.max_response_size).unwrap_or(usize::MAX));
 				let notifs_max = notification_protocols
 					.iter()
-					.map(|cfg| usize::try_from(cfg.max_notification_size()).unwrap_or(usize::MAX));
+					.map(|cfg| usize::try_from(cfg.max_notification_size).unwrap_or(usize::MAX));
 
 				// A "default" max is added to cover all the other protocols: ping, identify,
 				// kademlia, block announces, and transactions.
@@ -275,7 +277,7 @@ where
 
 		// We must prepend a hardcoded default peer set to notification protocols.
 		let all_peer_sets_iter = iter::once(&network_config.default_peers_set)
-			.chain(notification_protocols.iter().map(|protocol| protocol.set_config()));
+			.chain(notification_protocols.iter().map(|protocol| &protocol.set_config));
 
 		let (protocol_handles, protocol_controllers): (Vec<_>, Vec<_>) = all_peer_sets_iter
 			.enumerate()
@@ -314,8 +316,20 @@ where
 			iter::once(&params.block_announce_config)
 				.chain(notification_protocols.iter())
 				.enumerate()
-				.map(|(index, protocol)| (protocol.protocol_name().clone(), SetId::from(index)))
+				.map(|(index, protocol)| {
+					(protocol.notifications_protocol.clone(), SetId::from(index))
+				})
 				.collect();
+
+		let protocol = Protocol::new(
+			From::from(&params.role),
+			notification_protocols.clone(),
+			params.block_announce_config,
+			params.peer_store.clone(),
+			protocol_handles.clone(),
+			from_protocol_controllers,
+			params.tx,
+		)?;
 
 		let known_addresses = {
 			// Collect all reserved nodes and bootnodes addresses.
@@ -326,7 +340,7 @@ where
 				.map(|reserved| (reserved.peer_id, reserved.multiaddr.clone()))
 				.chain(notification_protocols.iter().flat_map(|protocol| {
 					protocol
-						.set_config()
+						.set_config
 						.reserved_nodes
 						.iter()
 						.map(|reserved| (reserved.peer_id, reserved.multiaddr.clone()))
@@ -378,16 +392,6 @@ where
 
 		let num_connected = Arc::new(AtomicUsize::new(0));
 		let external_addresses = Arc::new(Mutex::new(HashSet::new()));
-
-		let (protocol, notif_protocol_handles) = Protocol::new(
-			From::from(&params.role),
-			&params.metrics_registry,
-			notification_protocols,
-			params.block_announce_config,
-			params.peer_store.clone(),
-			protocol_handles.clone(),
-			from_protocol_controllers,
-		)?;
 
 		// Build the swarm.
 		let (mut swarm, bandwidth): (Swarm<Behaviour<B>>, _) = {
@@ -503,6 +507,7 @@ where
 		}
 
 		let listen_addresses = Arc::new(Mutex::new(HashSet::new()));
+		let peers_notifications_sinks = Arc::new(Mutex::new(HashMap::new()));
 
 		let service = Arc::new(NetworkService {
 			bandwidth,
@@ -512,10 +517,13 @@ where
 			local_peer_id,
 			local_identity,
 			to_worker,
+			peers_notifications_sinks: peers_notifications_sinks.clone(),
+			notifications_sizes_metric: metrics
+				.as_ref()
+				.map(|metrics| metrics.notifications_sizes.clone()),
 			notification_protocol_ids,
 			protocol_handles,
 			sync_protocol_handle,
-			peer_store_handle: params.peer_store.clone(),
 			_marker: PhantomData,
 			_block: Default::default(),
 		});
@@ -530,6 +538,7 @@ where
 			metrics,
 			boot_node_ids,
 			reported_invalid_boot_nodes: Default::default(),
+			peers_notifications_sinks,
 			peer_store_handle: params.peer_store,
 			peer_endpoints: HashMap::new(),
 			_marker: Default::default(),
@@ -558,7 +567,7 @@ where
 
 	/// Returns the number of peers we're connected to.
 	pub fn num_connected_peers(&self) -> usize {
-		self.network_service.behaviour().user_protocol().num_sync_peers()
+		self.network_service.behaviour().user_protocol().num_connected_peers()
 	}
 
 	/// Adds an address for a node.
@@ -987,16 +996,6 @@ where
 	fn sync_num_connected(&self) -> usize {
 		self.num_connected.load(Ordering::Relaxed)
 	}
-
-	fn peer_role(&self, peer_id: PeerId, handshake: Vec<u8>) -> Option<ObservedRole> {
-		match Roles::decode_all(&mut &handshake[..]) {
-			Ok(role) => Some(role.into()),
-			Err(_) => {
-				log::debug!(target: "sub-libp2p", "handshake doesn't contain peer role: {handshake:?}");
-				self.peer_store_handle.peer_role(&peer_id)
-			},
-		}
-	}
 }
 
 impl<B, H> NetworkEventStream for NetworkService<B, H>
@@ -1016,20 +1015,68 @@ where
 	B: BlockT + 'static,
 	H: ExHashT,
 {
-	fn write_notification(&self, _target: PeerId, _protocol: ProtocolName, _message: Vec<u8>) {
-		unimplemented!();
+	fn write_notification(&self, target: PeerId, protocol: ProtocolName, message: Vec<u8>) {
+		// We clone the `NotificationsSink` in order to be able to unlock the network-wide
+		// `peers_notifications_sinks` mutex as soon as possible.
+		let sink = {
+			let peers_notifications_sinks = self.peers_notifications_sinks.lock();
+			if let Some(sink) = peers_notifications_sinks.get(&(target, protocol.clone())) {
+				sink.clone()
+			} else {
+				// Notification silently discarded, as documented.
+				debug!(
+					target: "sub-libp2p",
+					"Attempted to send notification on missing or closed substream: {}, {:?}",
+					target, protocol,
+				);
+				return
+			}
+		};
+
+		if let Some(notifications_sizes_metric) = self.notifications_sizes_metric.as_ref() {
+			notifications_sizes_metric
+				.with_label_values(&["out", &protocol])
+				.observe(message.len() as f64);
+		}
+
+		// Sending is communicated to the `NotificationsSink`.
+		trace!(
+			target: "sub-libp2p",
+			"External API => Notification({:?}, {:?}, {} bytes)",
+			target, protocol, message.len()
+		);
+		trace!(target: "sub-libp2p", "Handler({:?}) <= Sync notification", target);
+		sink.send_sync_notification(message);
 	}
 
 	fn notification_sender(
 		&self,
-		_target: PeerId,
-		_protocol: ProtocolName,
+		target: PeerId,
+		protocol: ProtocolName,
 	) -> Result<Box<dyn NotificationSenderT>, NotificationSenderError> {
-		unimplemented!();
+		// We clone the `NotificationsSink` in order to be able to unlock the network-wide
+		// `peers_notifications_sinks` mutex as soon as possible.
+		let sink = {
+			let peers_notifications_sinks = self.peers_notifications_sinks.lock();
+			if let Some(sink) = peers_notifications_sinks.get(&(target, protocol.clone())) {
+				sink.clone()
+			} else {
+				return Err(NotificationSenderError::Closed)
+			}
+		};
+
+		let notification_size_metric = self
+			.notifications_sizes_metric
+			.as_ref()
+			.map(|histogram| histogram.with_label_values(&["out", &protocol]));
+
+		Ok(Box::new(NotificationSender { sink, protocol_name: protocol, notification_size_metric }))
 	}
 
-	fn set_notification_handshake(&self, _protocol: ProtocolName, _handshake: Vec<u8>) {
-		unimplemented!();
+	fn set_notification_handshake(&self, protocol: ProtocolName, handshake: Vec<u8>) {
+		let _ = self
+			.to_worker
+			.unbounded_send(ServiceToWorkerMsg::SetNotificationHandshake(protocol, handshake));
 	}
 }
 
@@ -1170,6 +1217,7 @@ enum ServiceToWorkerMsg {
 		pending_response: oneshot::Sender<Result<NetworkState, RequestFailure>>,
 	},
 	DisconnectPeer(PeerId, ProtocolName),
+	SetNotificationHandshake(ProtocolName, Vec<u8>),
 }
 
 /// Main network worker. Must be polled in order for the network to advance.
@@ -1199,6 +1247,9 @@ where
 	boot_node_ids: Arc<HashMap<PeerId, Vec<Multiaddr>>>,
 	/// Boot nodes that we already have reported as invalid.
 	reported_invalid_boot_nodes: HashSet<PeerId>,
+	/// For each peer and protocol combination, an object that allows sending notifications to
+	/// that peer. Shared with the [`NetworkService`].
+	peers_notifications_sinks: Arc<Mutex<HashMap<(PeerId, ProtocolName), NotificationsSink>>>,
 	/// Peer reputation store handle.
 	peer_store_handle: PeerStoreHandle,
 	/// Peer dialer/listener roles, used to report external addresses.
@@ -1241,7 +1292,8 @@ where
 		};
 
 		// Update the `num_connected` count shared with the `NetworkService`.
-		let num_connected_peers = self.network_service.behaviour().user_protocol().num_sync_peers();
+		let num_connected_peers =
+			self.network_service.behaviour_mut().user_protocol_mut().num_connected_peers();
 		self.num_connected.store(num_connected_peers, Ordering::Relaxed);
 
 		if let Some(metrics) = self.metrics.as_ref() {
@@ -1311,6 +1363,11 @@ where
 				.behaviour_mut()
 				.user_protocol_mut()
 				.disconnect_peer(&who, protocol_name),
+			ServiceToWorkerMsg::SetNotificationHandshake(protocol, handshake) => self
+				.network_service
+				.behaviour_mut()
+				.user_protocol_mut()
+				.set_notification_handshake(protocol, handshake),
 		}
 	}
 
@@ -1437,27 +1494,47 @@ where
 			},
 			SwarmEvent::Behaviour(BehaviourOut::NotificationStreamOpened {
 				remote,
-				set_id,
-				direction,
+				protocol,
 				negotiated_fallback,
 				notifications_sink,
+				role,
 				received_handshake,
 			}) => {
-				let _ = self.notif_protocol_handles[usize::from(set_id)].report_substream_opened(
+				if let Some(metrics) = self.metrics.as_ref() {
+					metrics
+						.notifications_streams_opened_total
+						.with_label_values(&[&protocol])
+						.inc();
+				}
+				{
+					let mut peers_notifications_sinks = self.peers_notifications_sinks.lock();
+					let _previous_value = peers_notifications_sinks
+						.insert((remote, protocol.clone()), notifications_sink);
+					debug_assert!(_previous_value.is_none());
+				}
+				self.event_streams.send(Event::NotificationStreamOpened {
 					remote,
-					direction,
-					received_handshake,
+					protocol,
 					negotiated_fallback,
-					notifications_sink,
-				);
+					role,
+					received_handshake,
+				});
 			},
 			SwarmEvent::Behaviour(BehaviourOut::NotificationStreamReplaced {
 				remote,
-				set_id,
+				protocol,
 				notifications_sink,
 			}) => {
-				let _ = self.notif_protocol_handles[usize::from(set_id)]
-					.report_notification_sink_replaced(remote, notifications_sink);
+				let mut peers_notifications_sinks = self.peers_notifications_sinks.lock();
+				if let Some(s) = peers_notifications_sinks.get_mut(&(remote, protocol)) {
+					*s = notifications_sink;
+				} else {
+					error!(
+						target: "sub-libp2p",
+						"NotificationStreamReplaced for non-existing substream"
+					);
+					debug_assert!(false);
+				}
 
 				// TODO: Notifications might have been lost as a result of the previous
 				// connection being dropped, and as a result it would be preferable to notify
@@ -1480,17 +1557,31 @@ where
 				// role,
 				// });
 			},
-			SwarmEvent::Behaviour(BehaviourOut::NotificationStreamClosed { remote, set_id }) => {
-				let _ = self.notif_protocol_handles[usize::from(set_id)]
-					.report_substream_closed(remote);
+			SwarmEvent::Behaviour(BehaviourOut::NotificationStreamClosed { remote, protocol }) => {
+				if let Some(metrics) = self.metrics.as_ref() {
+					metrics
+						.notifications_streams_closed_total
+						.with_label_values(&[&protocol[..]])
+						.inc();
+				}
+				self.event_streams
+					.send(Event::NotificationStreamClosed { remote, protocol: protocol.clone() });
+				{
+					let mut peers_notifications_sinks = self.peers_notifications_sinks.lock();
+					let _previous_value = peers_notifications_sinks.remove(&(remote, protocol));
+					debug_assert!(_previous_value.is_some());
+				}
 			},
-			SwarmEvent::Behaviour(BehaviourOut::NotificationsReceived {
-				remote,
-				set_id,
-				notification,
-			}) => {
-				let _ = self.notif_protocol_handles[usize::from(set_id)]
-					.report_notification_received(remote, notification);
+			SwarmEvent::Behaviour(BehaviourOut::NotificationsReceived { remote, messages }) => {
+				if let Some(metrics) = self.metrics.as_ref() {
+					for (protocol, message) in &messages {
+						metrics
+							.notifications_sizes
+							.with_label_values(&["in", protocol])
+							.observe(message.len() as f64);
+					}
+				}
+				self.event_streams.send(Event::NotificationsReceived { remote, messages });
 			},
 			SwarmEvent::Behaviour(BehaviourOut::Dht(event, duration)) => {
 				if let Some(metrics) = self.metrics.as_ref() {

@@ -23,7 +23,6 @@ use crate::{
 	peer_store::PeerStore,
 	protocol::notifications::{Notifications, NotificationsOut, ProtocolConfig},
 	protocol_controller::{ProtoSetConfig, ProtocolController, SetId},
-	service::traits::{NotificationEvent, ValidationResult},
 };
 
 use futures::{future::BoxFuture, prelude::*};
@@ -71,8 +70,6 @@ fn build_nodes() -> (Swarm<CustomProtoWithAddr>, Swarm<CustomProtoWithAddr>) {
 			.timeout(Duration::from_secs(20))
 			.boxed();
 
-		let (protocol_handle_pair, mut notif_service) =
-			crate::protocol::notifications::service::notification_service("/foo".into());
 		let peer_store = PeerStore::new(if index == 0 {
 			keypairs.iter().skip(1).map(|keypair| keypair.public().to_peer_id()).collect()
 		} else {
@@ -94,22 +91,16 @@ fn build_nodes() -> (Swarm<CustomProtoWithAddr>, Swarm<CustomProtoWithAddr>) {
 			Box::new(peer_store.handle()),
 		);
 
-		let (notif_handle, command_stream) = protocol_handle_pair.split();
 		let behaviour = CustomProtoWithAddr {
 			inner: Notifications::new(
 				vec![controller_handle],
 				from_controller,
-				None,
-				iter::once((
-					ProtocolConfig {
-						name: "/foo".into(),
-						fallback_names: Vec::new(),
-						handshake: Vec::new(),
-						max_notification_size: 1024 * 1024,
-					},
-					notif_handle,
-					command_stream,
-				)),
+				iter::once(ProtocolConfig {
+					name: "/foo".into(),
+					fallback_names: Vec::new(),
+					handshake: Vec::new(),
+					max_notification_size: 1024 * 1024,
+				}),
 			),
 			peer_store_future: peer_store.run().boxed(),
 			protocol_controller_future: controller.run().boxed(),

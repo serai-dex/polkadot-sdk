@@ -59,12 +59,9 @@
 //! [`NotifsHandlerIn::Open`] has gotten an answer.
 
 use crate::{
-	protocol::notifications::{
-		service::metrics,
-		upgrade::{
-			NotificationsIn, NotificationsInSubstream, NotificationsOut, NotificationsOutSubstream,
-			UpgradeCollec,
-		},
+	protocol::notifications::upgrade::{
+		NotificationsIn, NotificationsInSubstream, NotificationsOut, NotificationsOutSubstream,
+		UpgradeCollec,
 	},
 	types::ProtocolName,
 };
@@ -96,7 +93,7 @@ use std::{
 
 /// Number of pending notifications in asynchronous contexts.
 /// See [`NotificationsSink::reserve_notification`] for context.
-pub(crate) const ASYNC_NOTIFICATIONS_BUFFER_SIZE: usize = 8;
+const ASYNC_NOTIFICATIONS_BUFFER_SIZE: usize = 8;
 
 /// Number of pending notifications in synchronous contexts.
 const SYNC_NOTIFICATIONS_BUFFER_SIZE: usize = 2048;
@@ -130,19 +127,11 @@ pub struct NotifsHandler {
 	events_queue: VecDeque<
 		ConnectionHandlerEvent<NotificationsOut, usize, NotifsHandlerOut, NotifsHandlerError>,
 	>,
-
-	/// Metrics.
-	metrics: Option<Arc<metrics::Metrics>>,
 }
 
 impl NotifsHandler {
 	/// Creates new [`NotifsHandler`].
-	pub fn new(
-		peer_id: PeerId,
-		endpoint: ConnectedPoint,
-		protocols: Vec<ProtocolConfig>,
-		metrics: Option<metrics::Metrics>,
-	) -> Self {
+	pub fn new(peer_id: PeerId, endpoint: ConnectedPoint, protocols: Vec<ProtocolConfig>) -> Self {
 		Self {
 			protocols: protocols
 				.into_iter()
@@ -160,7 +149,6 @@ impl NotifsHandler {
 			endpoint,
 			when_connection_open: Instant::now(),
 			events_queue: VecDeque::with_capacity(16),
-			metrics: metrics.map_or(None, |metrics| Some(Arc::new(metrics))),
 		}
 	}
 }
@@ -316,8 +304,6 @@ pub enum NotifsHandlerOut {
 	OpenDesiredByRemote {
 		/// Index of the protocol in the list of protocols passed at initialization.
 		protocol_index: usize,
-		/// Received handshake.
-		handshake: Vec<u8>,
 	},
 
 	/// The remote would like the substreams to be closed. Send a [`NotifsHandlerIn::Close`] in
@@ -346,36 +332,6 @@ pub enum NotifsHandlerOut {
 #[derive(Debug, Clone)]
 pub struct NotificationsSink {
 	inner: Arc<NotificationsSinkInner>,
-	metrics: Option<Arc<metrics::Metrics>>,
-}
-
-impl NotificationsSink {
-	/// Create new [`NotificationsSink`].
-	/// NOTE: only used for testing but must be `pub` as other crates in `client/network` use this.
-	pub fn new(
-		peer_id: PeerId,
-	) -> (Self, mpsc::Receiver<NotificationsSinkMessage>, mpsc::Receiver<NotificationsSinkMessage>)
-	{
-		let (async_tx, async_rx) = mpsc::channel(ASYNC_NOTIFICATIONS_BUFFER_SIZE);
-		let (sync_tx, sync_rx) = mpsc::channel(SYNC_NOTIFICATIONS_BUFFER_SIZE);
-		(
-			NotificationsSink {
-				inner: Arc::new(NotificationsSinkInner {
-					peer_id,
-					async_channel: FuturesMutex::new(async_tx),
-					sync_channel: Mutex::new(Some(sync_tx)),
-				}),
-				metrics: None,
-			},
-			async_rx,
-			sync_rx,
-		)
-	}
-
-	/// Get reference to metrics.
-	pub fn metrics(&self) -> &Option<Arc<metrics::Metrics>> {
-		&self.metrics
-	}
 }
 
 #[derive(Debug)]
@@ -395,8 +351,8 @@ struct NotificationsSinkInner {
 
 /// Message emitted through the [`NotificationsSink`] and processed by the background task
 /// dedicated to the peer.
-#[derive(Debug, PartialEq, Eq)]
-pub enum NotificationsSinkMessage {
+#[derive(Debug)]
+enum NotificationsSinkMessage {
 	/// Message emitted by [`NotificationsSink::reserve_notification`] and
 	/// [`NotificationsSink::write_notification_now`].
 	Notification { message: Vec<u8> },
@@ -424,8 +380,8 @@ impl NotificationsSink {
 		let mut lock = self.inner.sync_channel.lock();
 
 		if let Some(tx) = lock.as_mut() {
-			let message = message.into();
-			let result = tx.try_send(NotificationsSinkMessage::Notification { message });
+			let result =
+				tx.try_send(NotificationsSinkMessage::Notification { message: message.into() });
 
 			if result.is_err() {
 				// Cloning the `mpsc::Sender` guarantees the allocation of an extra spot in the
@@ -576,7 +532,6 @@ impl ConnectionHandler for NotifsHandler {
 								async_channel: FuturesMutex::new(async_tx),
 								sync_channel: Mutex::new(Some(sync_tx)),
 							}),
-							metrics: self.metrics.clone(),
 						};
 
 						self.protocols[protocol_index].state = State::Open {
@@ -921,7 +876,6 @@ pub mod tests {
 					async_channel: FuturesMutex::new(async_tx),
 					sync_channel: Mutex::new(Some(sync_tx)),
 				}),
-				metrics: None,
 			};
 			let (in_substream, out_substream) = MockSubstream::new();
 

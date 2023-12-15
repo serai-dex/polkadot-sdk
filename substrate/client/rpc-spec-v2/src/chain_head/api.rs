@@ -20,9 +20,11 @@
 #![allow(non_snake_case)]
 
 //! API trait of the chain head.
-use crate::chain_head::event::{FollowEvent, MethodResponse, StorageQuery};
-use jsonrpsee::{core::RpcResult, proc_macros::rpc};
-use sp_rpc::list::ListOrValue;
+use crate::chain_head::{
+	error::Error,
+	event::{FollowEvent, MethodResponse, StorageQuery},
+};
+use jsonrpsee::proc_macros::rpc;
 
 #[rpc(client, server)]
 pub trait ChainHeadApi<Hash> {
@@ -117,8 +119,8 @@ pub trait ChainHeadApi<Hash> {
 	fn chain_head_unstable_unpin(
 		&self,
 		follow_subscription: String,
-		hash_or_hashes: ListOrValue<Hash>,
-	) -> RpcResult<()>;
+		hash: Hash,
+	) -> Result<(), Error>;
 
 	/// Resumes a storage fetch started with `chainHead_storage` after it has generated an
 	/// `operationWaitingForContinue` event.

@@ -194,7 +194,7 @@ impl Keystore for LocalKeystore {
 		key_type: KeyTypeId,
 		public: &sr25519::Public,
 		input: &sr25519::vrf::VrfInput,
-	) -> std::result::Result<Option<sr25519::vrf::VrfPreOutput>, TraitError> {
+	) -> std::result::Result<Option<sr25519::vrf::VrfOutput>, TraitError> {
 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
 	}
 
@@ -261,7 +261,7 @@ impl Keystore for LocalKeystore {
 			key_type: KeyTypeId,
 			public: &bandersnatch::Public,
 			input: &bandersnatch::vrf::VrfInput,
-		) -> std::result::Result<Option<bandersnatch::vrf::VrfPreOutput>, TraitError> {
+		) -> std::result::Result<Option<bandersnatch::vrf::VrfOutput>, TraitError> {
 			self.vrf_pre_output::<bandersnatch::Pair>(key_type, public, input)
 		}
 

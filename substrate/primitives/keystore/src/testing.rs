@@ -161,7 +161,7 @@ impl Keystore for MemoryKeystore {
 		key_type: KeyTypeId,
 		public: &sr25519::Public,
 		input: &sr25519::vrf::VrfInput,
-	) -> Result<Option<sr25519::vrf::VrfPreOutput>, Error> {
+	) -> Result<Option<sr25519::vrf::VrfOutput>, Error> {
 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
 	}
 
@@ -240,7 +240,7 @@ impl Keystore for MemoryKeystore {
 		key_type: KeyTypeId,
 		public: &bandersnatch::Public,
 		input: &bandersnatch::vrf::VrfInput,
-	) -> Result<Option<bandersnatch::vrf::VrfPreOutput>, Error> {
+	) -> Result<Option<bandersnatch::vrf::VrfOutput>, Error> {
 		self.vrf_pre_output::<bandersnatch::Pair>(key_type, public, input)
 	}
 
