@@ -254,7 +254,7 @@ pub fn construct_runtime(input: TokenStream) -> TokenStream {
 	let res = res.unwrap_or_else(|e| e.to_compile_error());
 
 	let res = expander::Expander::new("construct_runtime")
-		.dry(std::env::var("FRAME_EXPAND").is_err())
+		.dry(std::env::var("EXPAND_MACROS").is_err())
 		.verbose(true)
 		.write_to_out_dir(res)
 		.expect("Does not fail because of IO in OUT_DIR");
@@ -603,15 +603,6 @@ fn decl_all_pallets<'a>(
 
 	quote!(
 		#types
-
-		/// All pallets included in the runtime as a nested tuple of types.
-		#[deprecated(note = "The type definition has changed from representing all pallets \
-			excluding system, in reversed order to become the representation of all pallets \
-			including system pallet in regular order. For this reason it is encouraged to use \
-			explicitly one of `AllPalletsWithSystem`, `AllPalletsWithoutSystem`. \
-			Note that the type `frame_executive::Executive` expects one of `AllPalletsWithSystem`. \
-			More details in https://github.com/paritytech/substrate/pull/10043")]
-		pub type AllPallets = AllPalletsWithSystem;
 
 		#( #all_pallets_with_system )*
 

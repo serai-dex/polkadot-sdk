@@ -22,7 +22,7 @@
 use crate::keyring::*;
 use kitchensink_runtime::{
 	constants::currency::*, AccountId, AssetsConfig, BabeConfig, BalancesConfig, GluttonConfig,
-	GrandpaConfig, RuntimeGenesisConfig, SessionConfig, StakerStatus, StakingConfig, SystemConfig,
+	GrandpaConfig, RuntimeGenesisConfig, SessionConfig, StakerStatus, StakingConfig,
 	BABE_GENESIS_EPOCH_CONFIG,
 };
 use sp_keyring::{Ed25519Keyring, Sr25519Keyring};

@@ -213,41 +213,6 @@ pub fn new_full(config: Configuration, consensus: Consensus) -> Result<TaskManag
 				authorship_future,
 			);
 		},
-		Consensus::ManualSeal(block_time) => {
-			let (mut sink, commands_stream) = futures::channel::mpsc::channel(1024);
-			task_manager.spawn_handle().spawn("block_authoring", None, async move {
-				loop {
-					futures_timer::Delay::new(std::time::Duration::from_millis(block_time)).await;
-					sink.try_send(sc_consensus_manual_seal::EngineCommand::SealNewBlock {
-						create_empty: true,
-						finalize: true,
-						parent_hash: None,
-						sender: None,
-					})
-					.unwrap();
-				}
-			});
-
-			let params = sc_consensus_manual_seal::ManualSealParams {
-				block_import: client.clone(),
-				env: proposer,
-				client,
-				pool: transaction_pool,
-				select_chain,
-				commands_stream: Box::pin(commands_stream),
-				consensus_data_provider: None,
-				create_inherent_data_providers: move |_, ()| async move {
-					Ok(sp_timestamp::InherentDataProvider::from_system_time())
-				},
-			};
-			let authorship_future = sc_consensus_manual_seal::run_manual_seal(params);
-
-			task_manager.spawn_essential_handle().spawn_blocking(
-				"manual-seal",
-				None,
-				authorship_future,
-			);
-		},
 	}
 
 	network_starter.start_network();

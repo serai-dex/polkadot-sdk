@@ -17,7 +17,7 @@
 // limitations under the License.
 
 use frame_support::{
-	assert_ok,
+	assert_ok, derive_impl,
 	dispatch::{DispatchClass, DispatchInfo, GetDispatchInfo, Parameter, Pays},
 	dispatch_context::with_context,
 	pallet_prelude::{StorageInfoTrait, ValueQuery},
@@ -653,6 +653,7 @@ frame_support::parameter_types!(
 	pub const MyGetParam3: u32 = 12;
 );
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type RuntimeOrigin = RuntimeOrigin;

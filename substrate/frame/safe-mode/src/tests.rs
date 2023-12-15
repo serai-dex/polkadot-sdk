@@ -170,6 +170,7 @@ fn can_filter_balance_in_batch_when_activated() {
 	});
 }
 
+#[docify::export]
 #[test]
 fn can_activate() {
 	new_test_ext().execute_with(|| {
@@ -252,6 +253,7 @@ fn fails_force_deactivate_if_not_activated() {
 	});
 }
 
+#[docify::export]
 #[test]
 fn can_force_activate_with_config_origin() {
 	new_test_ext().execute_with(|| {
@@ -269,6 +271,7 @@ fn can_force_activate_with_config_origin() {
 	});
 }
 
+#[docify::export]
 #[test]
 fn can_force_deactivate_with_config_origin() {
 	new_test_ext().execute_with(|| {

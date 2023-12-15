@@ -442,6 +442,7 @@ mod tests {
 	use codec::Encode;
 	use sp_api::{Core, RuntimeApiInfo};
 	use sp_runtime::RuntimeString;
+	use sp_version::{create_apis_vec, RuntimeVersion};
 	use sp_wasm_interface::HostFunctions;
 	use substrate_test_runtime::Block;
 
@@ -467,7 +468,7 @@ mod tests {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
 			spec_version: 1,
-			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 1)]),
+			apis: create_apis_vec!([(<dyn Core::<Block>>::ID, 1)]),
 		};
 
 		let version = decode_version(&old_runtime_version.encode()).unwrap();
@@ -480,7 +481,7 @@ mod tests {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
 			spec_version: 1,
-			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
+			apis: create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
 		};
 
 		decode_version(&old_runtime_version.encode()).unwrap_err();
@@ -488,22 +489,22 @@ mod tests {
 
 	#[test]
 	fn new_runtime_version_decodes() {
-		let old_runtime_version = sp_api::RuntimeVersion {
+		let old_runtime_version = RuntimeVersion {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
 			spec_version: 1,
-			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
+			apis: create_apis_vec!([(<dyn Core::<Block>>::ID, 3)]),
 			state_version: 4,
 		};
 
 		let version = decode_version(&old_runtime_version.encode()).unwrap();
 		assert_eq!(0, version.state_version);
 
-		let old_runtime_version = sp_api::RuntimeVersion {
+		let old_runtime_version = RuntimeVersion {
 			spec_name: "test".into(),
 			impl_name: "test".into(),
 			spec_version: 1,
-			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
+			apis: create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
 			state_version: 4,
 		};
 
@@ -522,7 +523,7 @@ mod tests {
 			spec_name: "test_replace".into(),
 			impl_name: "test_replace".into(),
 			spec_version: 100,
-			apis: sp_api::create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
+			apis: create_apis_vec!([(<dyn Core::<Block>>::ID, 4)]),
 			state_version: 1,
 		};
 

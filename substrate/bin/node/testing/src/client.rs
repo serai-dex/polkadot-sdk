@@ -24,7 +24,7 @@ use sp_runtime::BuildStorage;
 pub use substrate_test_client::*;
 
 /// Call executor for `kitchensink-runtime` `TestClient`.
-pub type ExecutorDispatch = sc_executor::WasmExecutor<node_executor::ExtendHostFunctions>;
+use node_cli::service::RuntimeExecutor;
 
 /// Default backend type.
 pub type Backend = sc_client_db::Backend<node_primitives::Block>;
@@ -32,7 +32,7 @@ pub type Backend = sc_client_db::Backend<node_primitives::Block>;
 /// Test client type.
 pub type Client = client::Client<
 	Backend,
-	client::LocalCallExecutor<node_primitives::Block, Backend, ExecutorDispatch>,
+	client::LocalCallExecutor<node_primitives::Block, Backend, RuntimeExecutor>,
 	node_primitives::Block,
 	kitchensink_runtime::RuntimeApi,
 >;
@@ -64,7 +64,7 @@ pub trait TestClientBuilderExt: Sized {
 impl TestClientBuilderExt
 	for substrate_test_client::TestClientBuilder<
 		node_primitives::Block,
-		client::LocalCallExecutor<node_primitives::Block, Backend, ExecutorDispatch>,
+		client::LocalCallExecutor<node_primitives::Block, Backend, RuntimeExecutor>,
 		Backend,
 		GenesisParameters,
 	>
@@ -72,8 +72,17 @@ impl TestClientBuilderExt
 	fn new() -> Self {
 		Self::default()
 	}
-
 	fn build(self) -> Client {
-		self.build_with_native_executor(None).0
+		let executor = RuntimeExecutor::builder().build();
+		use sc_service::client::LocalCallExecutor;
+		use std::sync::Arc;
+		let executor = LocalCallExecutor::new(
+			self.backend().clone(),
+			executor.clone(),
+			Default::default(),
+			ExecutionExtensions::new(None, Arc::new(executor)),
+		)
+		.expect("Creates LocalCallExecutor");
+		self.build_with_executor(executor).0
 	}
 }

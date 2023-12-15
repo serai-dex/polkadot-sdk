@@ -11,3 +11,7 @@ publish = false
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+
+[dev-dependencies]
+trybuild = { version = "1.0.74", features = ["diff"] }
+sc-service = { path = "../client/service" }

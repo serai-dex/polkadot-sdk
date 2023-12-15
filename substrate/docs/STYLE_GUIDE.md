@@ -156,7 +156,7 @@ format looks like this:
 - The feature is written as a single line if it fits within 80 chars:
 ```toml
 [features]
-default = [ "std" ]
+default = ["std"]
 ```
 
 - Otherwise the feature is broken down into multiple lines with one entry per line. Each line is padded with one tab and

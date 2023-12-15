@@ -1,0 +1,70 @@
+{
+  "system": {},
+  "babe": {
+    "authorities": [],
+    "epochConfig": null
+  },
+  "balances": {
+    "balances": []
+  },
+  "transactionPayment": {
+    "multiplier": "1000000000000000000"
+  },
+  "staking": {
+    "validatorCount": 0,
+    "minimumValidatorCount": 0,
+    "invulnerables": [],
+    "forceEra": "NotForcing",
+    "slashRewardFraction": 0,
+    "canceledPayout": 0,
+    "stakers": [],
+    "minNominatorBond": 0,
+    "minValidatorBond": 0,
+    "maxValidatorCount": null,
+    "maxNominatorCount": null
+  },
+  "session": {
+    "keys": []
+  },
+  "grandpa": {
+    "authorities": []
+  },
+  "sudo": {
+    "key": null
+  },
+  "imOnline": {
+    "keys": []
+  },
+  "glutton": {
+    "compute": "0",
+    "storage": "0",
+    "trashDataCount": 0
+  },
+  "assets": {
+    "assets": [],
+    "metadata": [],
+    "accounts": []
+  },
+  "poolAssets": {
+    "assets": [],
+    "metadata": [],
+    "accounts": []
+  },
+  "transactionStorage": {
+    "byteFee": 10,
+    "entryFee": 1000,
+    "storagePeriod": 100800
+  },
+  "allianceMotion": {
+    "members": []
+  },
+  "mixnet": {
+    "mixnodes": []
+  },
+  "txPause": {
+    "paused": []
+  },
+  "safeMode": {
+    "enteredUntil": null
+  }
+}

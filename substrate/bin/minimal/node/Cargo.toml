@@ -17,9 +17,8 @@ targets = ["x86_64-unknown-linux-gnu"]
 name = "minimal-node"
 
 [dependencies]
-clap = { version = "4.0.9", features = ["derive"] }
+clap = { version = "4.4.10", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"] }
-futures-timer = "3.0.1"
 jsonrpsee = { version = "0.16.2", features = ["server"] }
 serde_json = "1.0.108"
 
@@ -31,7 +30,6 @@ sc-telemetry = { path = "../../../client/telemetry" }
 sc-transaction-pool = { path = "../../../client/transaction-pool" }
 sc-transaction-pool-api = { path = "../../../client/transaction-pool/api" }
 sc-consensus = { path = "../../../client/consensus/common" }
-sc-consensus-manual-seal = { path = "../../../client/consensus/manual-seal" }
 sc-rpc-api = { path = "../../../client/rpc-api", features = ["mixnet"] }
 sc-basic-authorship = { path = "../../../client/basic-authorship" }
 sc-offchain = { path = "../../../client/offchain" }
@@ -43,11 +41,10 @@ sp-api = { path = "../../../primitives/api" }
 sp-blockchain = { path = "../../../primitives/blockchain" }
 sp-block-builder = { path = "../../../primitives/block-builder" }
 sp-io = { path = "../../../primitives/io" }
-sp-runtime = { path = "../../../primitives/runtime" }
 
 substrate-frame-rpc-system = { path = "../../../utils/frame/rpc/system" }
 
-frame = { path = "../../../frame", features = ["runtime", "experimental"] }
+frame = { path = "../../../frame", features = ["experimental", "runtime"] }
 runtime = { package = "minimal-runtime", path = "../runtime" }
 
 [build-dependencies]

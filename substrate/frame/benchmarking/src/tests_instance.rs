@@ -20,7 +20,7 @@
 
 #![cfg(test)]
 
-use frame_support::traits::ConstU32;
+use frame_support::{derive_impl, traits::ConstU32};
 use sp_runtime::{
 	testing::H256,
 	traits::{BlakeTwo256, IdentityLookup},
@@ -86,6 +86,7 @@ frame_support::construct_runtime!(
 	}
 );
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type BlockWeights = ();

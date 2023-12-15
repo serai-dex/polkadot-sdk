@@ -8,13 +8,13 @@ license = "GPL-3.0-only"
 resolver = "2"
 
 members = [
-  "substrate",
-  "substrate/bin/node-template/node",
-  "substrate/bin/node-template/pallets/template",
-  "substrate/bin/node-template/runtime",
+	"substrate/bin/minimal/node",
+	"substrate/bin/minimal/runtime",
+	"substrate/bin/node-template/node",
+	"substrate/bin/node-template/pallets/template",
+	"substrate/bin/node-template/runtime",
 	"substrate/bin/node/bench",
 	"substrate/bin/node/cli",
-	"substrate/bin/node/executor",
 	"substrate/bin/node/inspect",
 	"substrate/bin/node/primitives",
 	"substrate/bin/node/rpc",
@@ -46,8 +46,8 @@ members = [
 	"substrate/client/informant",
 	"substrate/client/keystore",
 	"substrate/client/mixnet",
-	"substrate/client/network-gossip",
 	"substrate/client/network",
+	"substrate/client/network-gossip",
 	"substrate/client/network/common",
 	"substrate/client/network/light",
 	"substrate/client/network/sync",
@@ -55,10 +55,10 @@ members = [
 	"substrate/client/network/transactions",
 	"substrate/client/offchain",
 	"substrate/client/proposer-metrics",
+	"substrate/client/rpc",
 	"substrate/client/rpc-api",
 	"substrate/client/rpc-servers",
 	"substrate/client/rpc-spec-v2",
-	"substrate/client/rpc",
 	"substrate/client/service",
 	"substrate/client/service/test",
 	"substrate/client/state-db",
@@ -146,6 +146,7 @@ members = [
 	"substrate/primitives/consensus/sassafras",
 	"substrate/primitives/consensus/slots",
 	"substrate/primitives/core",
+	"substrate/primitives/core/fuzz",
 	"substrate/primitives/core/hashing",
 	"substrate/primitives/core/hashing/proc-macro",
 	"substrate/primitives/crypto/ec-utils",
@@ -165,12 +166,12 @@ members = [
 	"substrate/primitives/offchain",
 	"substrate/primitives/panic-handler",
 	"substrate/primitives/rpc",
+	"substrate/primitives/runtime",
 	"substrate/primitives/runtime-interface",
 	"substrate/primitives/runtime-interface/proc-macro",
-	"substrate/primitives/runtime-interface/test-wasm-deprecated",
-	"substrate/primitives/runtime-interface/test-wasm",
 	"substrate/primitives/runtime-interface/test",
-	"substrate/primitives/runtime",
+	"substrate/primitives/runtime-interface/test-wasm",
+	"substrate/primitives/runtime-interface/test-wasm-deprecated",
 	"substrate/primitives/session",
 	"substrate/primitives/staking",
 	"substrate/primitives/state-machine",
@@ -207,15 +208,14 @@ members = [
 	"substrate/utils/prometheus",
 	"substrate/utils/wasm-builder",
 ]
-default-members = [ "substrate/bin/node/cli" ]
+default-members = ["substrate/bin/node/cli"]
 
 [profile.release]
 # Polkadot runtime requires unwinding.
 panic = "unwind"
 opt-level = 3
 
-# make sure dev builds with backtrace do
-# not slow us down
+# make sure dev builds with backtrace do not slow us down
 [profile.dev.package.backtrace]
 inherits = "release"
 

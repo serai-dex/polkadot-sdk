@@ -1120,8 +1120,17 @@ mod tests {
 			_method: &str,
 			_data: &[u8],
 			_: CallContext,
-		) -> CallResult<Self::Error> {
-			Ok(vec![ext.storage(b"value1").unwrap()[0] + ext.storage(b"value2").unwrap()[0]])
+		) -> (CallResult<Self::Error>, bool) {
+			let using_native = self.native_available;
+			match (using_native, self.native_succeeds, self.fallback_succeeds) {
+				(true, true, _) | (false, _, true) => (
+					Ok(vec![
+						ext.storage(b"value1").unwrap()[0] + ext.storage(b"value2").unwrap()[0],
+					]),
+					using_native,
+				),
+				_ => (Err(0), using_native),
+			}
 		}
 	}
 

@@ -558,19 +558,12 @@ impl BenchKeyring {
 		&self,
 		xt: CheckedExtrinsic,
 		spec_version: u32,
-		tx_version: u32,
 		genesis_hash: [u8; 32],
 	) -> UncheckedExtrinsic {
 		match xt.signed {
 			Some((signed, extra)) => {
-				let payload = (
-					xt.function,
-					extra.clone(),
-					spec_version,
-					tx_version,
-					genesis_hash,
-					genesis_hash,
-				);
+				let payload =
+					(xt.function, extra.clone(), spec_version, genesis_hash, genesis_hash);
 				let key = self.accounts.get(&signed).expect("Account id not found in keyring");
 				let signature = payload.using_encoded(|b| {
 					if b.len() > 256 {
