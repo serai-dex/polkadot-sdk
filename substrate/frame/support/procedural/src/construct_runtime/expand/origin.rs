@@ -206,8 +206,6 @@ pub fn expand_outer_origin(
 			#[codec(index = #system_index)]
 			system(#system_path::Origin<#runtime>),
 			#caller_variants
-			#[allow(dead_code)]
-			Void(#scrate::__private::Void)
 		}
 
 		// For backwards compatibility and ease of accessing these functions.
