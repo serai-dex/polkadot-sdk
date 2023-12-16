@@ -61,16 +61,7 @@ pub mod pallet {
 
 			Weight::zero()
 		}
-
-		fn on_finalize(_: BlockNumberFor<T>) {
-			// ensure we never go to trie with these values.
-			<Author<T>>::kill();
-		}
 	}
-
-	#[pallet::storage]
-	/// Author of current block.
-	pub(super) type Author<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 }
 
 impl<T: Config> Pallet<T> {
@@ -79,17 +70,9 @@ impl<T: Config> Pallet<T> {
 	/// This is safe to invoke in `on_initialize` implementations, as well
 	/// as afterwards.
 	pub fn author() -> Option<T::AccountId> {
-		// Check the memorized storage value.
-		if let Some(author) = <Author<T>>::get() {
-			return Some(author)
-		}
-
 		let digest = <frame_system::Pallet<T>>::digest();
 		let pre_runtime_digests = digest.logs.iter().filter_map(|d| d.as_pre_runtime());
-		T::FindAuthor::find_author(pre_runtime_digests).map(|a| {
-			<Author<T>>::put(&a);
-			a
-		})
+		T::FindAuthor::find_author(pre_runtime_digests)
 	}
 }
 
