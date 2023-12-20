@@ -493,9 +493,11 @@ where
 				// element in it.
 				// See <https://github.com/polkadot-fellows/RFCs/blob/main/text/0056-one-transaction-per-notification.md>
 				for to_send in to_send {
-					let _ = self
-						.notification_service
-						.send_sync_notification(who, vec![to_send].encode());
+					self.network.write_notification(
+						*who,
+						self.protocol_name.clone(),
+						vec![to_send].encode(),
+					);
 				}
 			}
 		}

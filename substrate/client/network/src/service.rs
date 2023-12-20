@@ -524,6 +524,7 @@ where
 			notification_protocol_ids,
 			protocol_handles,
 			sync_protocol_handle,
+			peer_store_handle: params.peer_store.clone(),
 			_marker: PhantomData,
 			_block: Default::default(),
 		});

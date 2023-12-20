@@ -879,26 +879,6 @@ impl Notifications {
 					return
 				}
 
-				// while the substream was being validated by the protocol, `Peerset` had request
-				// for the it to be closed so reject the substream now
-				if peerset_rejected {
-					trace!(
-						target: "sub-libp2p",
-						"Protocol accepted ({:?} {:?} {:?}) but Peerset had request disconnection, rejecting",
-						index,
-						incoming.peer_id,
-						incoming.set_id
-					);
-
-					*state = PeerState::Incoming {
-						connections,
-						backoff_until,
-						peerset_rejected,
-						incoming_index,
-					};
-					return self.report_reject(index).map_or((), |_| ())
-				}
-
 				trace!(
 					target: "sub-libp2p",
 					"PSM => Accept({:?}, {}, {:?}): Enabling connections.",

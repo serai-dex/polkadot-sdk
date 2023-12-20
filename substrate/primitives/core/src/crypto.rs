@@ -1154,8 +1154,10 @@ pub struct CryptoTypeId(pub [u8; 4]);
 pub mod key_types {
 	use super::KeyTypeId;
 
-	/// Key type for Babe module, built-in. Identified as `babe`.
-	pub const BABE: KeyTypeId = KeyTypeId(*b"babe");
+	const SR25519: KeyTypeId = KeyTypeId(*b"rist");
+	pub const BABE: KeyTypeId = SR25519;
+	pub const AUTHORITY_DISCOVERY: KeyTypeId = SR25519;
+
 	/// Key type for Sassafras module, built-in. Identified as `sass`.
 	pub const SASSAFRAS: KeyTypeId = KeyTypeId(*b"sass");
 	/// Key type for Grandpa module, built-in. Identified as `gran`.
@@ -1164,16 +1166,10 @@ pub mod key_types {
 	pub const ACCOUNT: KeyTypeId = KeyTypeId(*b"acco");
 	/// Key type for Aura module, built-in. Identified as `aura`.
 	pub const AURA: KeyTypeId = KeyTypeId(*b"aura");
-	/// Key type for BEEFY module.
-	pub const BEEFY: KeyTypeId = KeyTypeId(*b"beef");
 	/// Key type for ImOnline module, built-in. Identified as `imon`.
 	pub const IM_ONLINE: KeyTypeId = KeyTypeId(*b"imon");
-	/// Key type for AuthorityDiscovery module, built-in. Identified as `audi`.
-	pub const AUTHORITY_DISCOVERY: KeyTypeId = KeyTypeId(*b"audi");
 	/// Key type for staking, built-in. Identified as `stak`.
 	pub const STAKING: KeyTypeId = KeyTypeId(*b"stak");
-	/// A key type for signing statements
-	pub const STATEMENT: KeyTypeId = KeyTypeId(*b"stmt");
 	/// Key type for Mixnet module, used to sign key-exchange public keys. Identified as `mixn`.
 	pub const MIXNET: KeyTypeId = KeyTypeId(*b"mixn");
 	/// A key type ID useful for tests.

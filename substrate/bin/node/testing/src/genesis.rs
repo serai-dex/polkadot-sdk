@@ -52,9 +52,9 @@ pub fn config_endowed(extra_endowed: Vec<AccountId>) -> RuntimeGenesisConfig {
 		balances: BalancesConfig { balances: endowed },
 		session: SessionConfig {
 			keys: vec![
-				(alice(), dave(), to_session_keys(&Sr25519Keyring::Alice)),
-				(bob(), eve(), to_session_keys(&Sr25519Keyring::Bob)),
-				(charlie(), ferdie(), to_session_keys(&Sr25519Keyring::Charlie)),
+				(alice(), dave(), session_keys_from_seed(Sr25519Keyring::Alice.into())),
+				(bob(), eve(), session_keys_from_seed(Sr25519Keyring::Bob.into())),
+				(charlie(), ferdie(), session_keys_from_seed(Sr25519Keyring::Charlie.into())),
 			],
 		},
 		staking: StakingConfig {

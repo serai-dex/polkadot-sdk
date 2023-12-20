@@ -349,7 +349,7 @@ pub mod vrf {
 	/// bytes and is often called pre-output to emphasize that this is not the actual
 	/// output of the VRF but an object capable of generating the output.
 	#[derive(Clone, Debug, PartialEq, Eq)]
-	pub struct VrfPreOutput(pub(super) bandersnatch_vrfs::VrfPreOut);
+	pub struct VrfPreOutput(pub(super) bandersnatch_vrfs::VrfPreOutput);
 
 	impl Encode for VrfPreOutput {
 		fn encode(&self) -> Vec<u8> {
@@ -365,7 +365,7 @@ pub mod vrf {
 		fn decode<R: codec::Input>(i: &mut R) -> Result<Self, codec::Error> {
 			let buf = <[u8; PREOUT_SERIALIZED_SIZE]>::decode(i)?;
 			let preout =
-				bandersnatch_vrfs::VrfPreOut::deserialize_compressed_unchecked(buf.as_slice())
+				bandersnatch_vrfs::VrfPreOutput::deserialize_compressed_unchecked(buf.as_slice())
 					.map_err(|_| "vrf-preout decode error: bad preout")?;
 			Ok(VrfPreOutput(preout))
 		}
@@ -584,7 +584,7 @@ pub mod vrf {
 				return false
 			};
 
-			let preouts: [bandersnatch_vrfs::VrfPreOut; N] =
+			let preouts: [bandersnatch_vrfs::VrfPreOutput; N] =
 				core::array::from_fn(|i| signature.pre_outputs[i].0);
 
 			// Deserialize only the proof, the rest has already been deserialized
@@ -890,7 +890,7 @@ pub mod ring_vrf {
 				return false
 			};
 
-			let preouts: [bandersnatch_vrfs::VrfPreOut; N] =
+			let preouts: [bandersnatch_vrfs::VrfPreOutput; N] =
 				core::array::from_fn(|i| self.pre_outputs[i].0);
 
 			let signature =

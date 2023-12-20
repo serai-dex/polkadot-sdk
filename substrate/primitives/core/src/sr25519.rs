@@ -630,7 +630,7 @@ pub mod vrf {
 	#[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 	pub struct VrfSignature {
 		/// VRF pre-output.
-		pub pre_output: VrfOutput,
+		pub pre_output: VrfPreOutput,
 		/// VRF proof.
 		pub proof: VrfProof,
 	}
@@ -639,20 +639,20 @@ pub mod vrf {
 	#[derive(Clone, Debug, PartialEq, Eq)]
 	pub struct VrfPreOutput(pub schnorrkel::vrf::VRFPreOut);
 
-	impl Encode for VrfOutput {
+	impl Encode for VrfPreOutput {
 		fn encode(&self) -> Vec<u8> {
 			self.0.as_bytes().encode()
 		}
 	}
 
-	impl Decode for VrfOutput {
+	impl Decode for VrfPreOutput {
 		fn decode<R: codec::Input>(i: &mut R) -> Result<Self, codec::Error> {
 			let decoded = <[u8; VRF_PREOUT_LENGTH]>::decode(i)?;
 			Ok(Self(schnorrkel::vrf::VRFPreOut::from_bytes(&decoded).map_err(convert_error)?))
 		}
 	}
 
-	impl MaxEncodedLen for VrfOutput {
+	impl MaxEncodedLen for VrfPreOutput {
 		fn max_encoded_len() -> usize {
 			<[u8; VRF_PREOUT_LENGTH]>::max_encoded_len()
 		}
@@ -700,7 +700,7 @@ pub mod vrf {
 	#[cfg(feature = "full_crypto")]
 	impl VrfCrypto for Pair {
 		type VrfInput = VrfTranscript;
-		type VrfPreOutput = VrfOutput;
+		type VrfPreOutput = VrfPreOutput;
 		type VrfSignData = VrfSignData;
 		type VrfSignature = VrfSignature;
 	}
@@ -729,7 +729,7 @@ pub mod vrf {
 
 	impl VrfCrypto for Public {
 		type VrfInput = VrfTranscript;
-		type VrfPreOutput = VrfOutput;
+		type VrfPreOutput = VrfPreOutput;
 		type VrfSignData = VrfSignData;
 		type VrfSignature = VrfSignature;
 	}
@@ -805,7 +805,7 @@ pub mod vrf {
 			&self,
 			context: &[u8],
 			input: &VrfInput,
-			pre_output: &VrfOutput,
+			pre_output: &VrfPreOutput,
 		) -> Result<[u8; N], codec::Error>
 		where
 			[u8; N]: Default,
@@ -819,7 +819,7 @@ pub mod vrf {
 		}
 	}
 
-	impl VrfOutput {
+	impl VrfPreOutput {
 		/// Generate output bytes from the given VRF configuration.
 		pub fn make_bytes<const N: usize>(
 			&self,

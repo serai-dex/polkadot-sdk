@@ -60,7 +60,7 @@ pub fn ferdie() -> AccountId {
 /// Convert keyrings into `SessionKeys`.
 pub fn session_keys_from_seed(seed: &str) -> SessionKeys {
 	SessionKeys {
-		grandpa: get_from_seed::<ed25519::Public>(seed).into(),
+		grandpa: get_from_seed::<sr25519::Public>(seed).into(),
 		babe: get_from_seed::<sr25519::Public>(seed).into(),
 		im_online: get_from_seed::<sr25519::Public>(seed).into(),
 		mixnet: get_from_seed::<sr25519::Public>(seed).into(),
