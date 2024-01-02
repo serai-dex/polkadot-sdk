@@ -24,7 +24,6 @@ toml = { workspace = true }
 walkdir = { workspace = true }
 sp-maybe-compressed-blob.workspace = true
 sp-maybe-compressed-blob.default-features = true
-filetime = { workspace = true }
 wasm-opt = { workspace = true }
 parity-wasm = { workspace = true }
 polkavm-linker = { workspace = true }

@@ -370,7 +370,6 @@ exit-future = { version = "0.2.0" }
 expander = { version = "2.0.0" }
 fatality = { version = "0.1.1" }
 fdlimit = { version = "0.3.0" }
-filetime = { version = "0.2.16" }
 finality-grandpa = { version = "0.16.2", default-features = false }
 flate2 = { version = "1.0" }
 fnv = { version = "1.0.6" }
