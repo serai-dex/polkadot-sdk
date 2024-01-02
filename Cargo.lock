@@ -10131,7 +10131,6 @@ version = "5.0.0-dev"
 dependencies = [
  "anstyle",
  "cargo_metadata",
- "filetime",
  "parity-wasm",
  "sp-maybe-compressed-blob",
  "strum 0.25.0",

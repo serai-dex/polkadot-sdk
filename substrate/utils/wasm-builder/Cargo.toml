@@ -19,6 +19,5 @@ tempfile = "3.1.0"
 toml = "0.8"
 walkdir = "2.3.2"
 sp-maybe-compressed-blob = { path = "../../primitives/maybe-compressed-blob" }
-filetime = "0.2.16"
 wasm-opt = "0.116"
 parity-wasm = "0.45"
