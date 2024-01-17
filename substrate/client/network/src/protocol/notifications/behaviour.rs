@@ -1038,7 +1038,7 @@ impl Notifications {
 						peerset_rejected,
 						incoming_index,
 					};
-					return self.report_reject(index).map_or((), |_| ());
+					return self.report_reject(index).map_or((), |_| ())
 				}
 
 				trace!(

@@ -387,6 +387,7 @@ fn construct_runtime_final_expansion(
 	let pallet_to_index = decl_pallet_runtime_setup(&pallets, &scrate);
 
 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
+	let tasks = expand::expand_outer_task(&name, &pallets, &scrate);
 	let metadata = expand::expand_runtime_metadata(
 		&name,
 		&pallets,
@@ -475,6 +476,8 @@ fn construct_runtime_final_expansion(
 		#pallet_to_index
 
 		#dispatch
+
+		#tasks
 
 		#metadata
 

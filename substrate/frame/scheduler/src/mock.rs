@@ -22,7 +22,7 @@ use super::*;
 
 use crate as scheduler;
 use frame_support::{
-	ord_parameter_types, parameter_types,
+	derive_impl, ord_parameter_types, parameter_types,
 	traits::{
 		ConstU32, ConstU64, Contains, EitherOfDiverse, EqualPrivilegeOnly, OnFinalize, OnInitialize,
 	},
@@ -119,6 +119,8 @@ parameter_types! {
 			Weight::from_parts(2_000_000_000_000, u64::MAX),
 		);
 }
+
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl system::Config for Test {
 	type BaseCallFilter = BaseFilter;
 	type BlockWeights = BlockWeights;

@@ -17,13 +17,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#[allow(unused_imports)] // False positive. These are exported and therefore used
+#[cfg(test)]
+pub(crate) use self::notifications::{
+	NotificationsInOpen, NotificationsInSubstreamHandshake, NotificationsOutOpen,
+};
 pub use self::{
 	collec::UpgradeCollec,
 	notifications::{
-		NotificationsIn, NotificationsInOpen, NotificationsInSubstream,
-		NotificationsInSubstreamHandshake, NotificationsOut, NotificationsOutOpen,
-		NotificationsOutSubstream,
+		NotificationsIn, NotificationsInSubstream, NotificationsOut, NotificationsOutSubstream,
 	},
 };
 

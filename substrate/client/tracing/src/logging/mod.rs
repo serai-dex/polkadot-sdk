@@ -34,7 +34,7 @@ pub(crate) type DefaultLogger = stderr_writer::MakeStderrWriter;
 pub use directives::*;
 pub use sc_tracing_proc_macro::*;
 
-use std::io;
+use std::io::{self, IsTerminal};
 use tracing::Subscriber;
 use tracing_subscriber::{
 	filter::LevelFilter,
@@ -171,9 +171,7 @@ where
 		_ => true,
 	} || detailed_output;
 
-	use std::io::IsTerminal;
-
-	let enable_color = force_colors.unwrap_or_else(|| std::io::stderr().is_terminal());
+	let enable_color = force_colors.unwrap_or_else(|| io::stderr().is_terminal());
 	let timer = fast_local_time::FastLocalTime { with_fractional: detailed_output };
 
 	let event_format = EventFormat {
@@ -182,7 +180,7 @@ where
 		display_level: detailed_output,
 		display_thread_name: detailed_output,
 		enable_color,
-		dup_to_stdout: !std::io::stderr().is_terminal() && std::io::stdout().is_terminal(),
+		dup_to_stdout: !io::stderr().is_terminal() && io::stdout().is_terminal(),
 	};
 	let builder = FmtSubscriber::builder().with_env_filter(env_filter);
 
