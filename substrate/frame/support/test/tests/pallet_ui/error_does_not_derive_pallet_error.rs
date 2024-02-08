@@ -17,6 +17,7 @@
 // limitations under the License.
 
 #[frame_support::pallet]
+#[allow(unused_imports)]
 mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {}
@@ -33,5 +34,4 @@ mod pallet {
 #[derive(scale_info::TypeInfo, codec::Encode, codec::Decode)]
 enum MyError {}
 
-fn main() {
-}
+fn main() {}

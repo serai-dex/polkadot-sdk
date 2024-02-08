@@ -19,7 +19,7 @@
 
 //! Console informant. Prints sync progress and block events. Runs on the calling thread.
 
-use anstyle::{AnsiColor, Reset};
+use ansi_term::{Colour, Style};
 use futures::prelude::*;
 use futures_timer::Delay;
 use log::{debug, info, trace};
@@ -49,6 +49,47 @@ pub struct OutputFormat {
 impl Default for OutputFormat {
 	fn default() -> Self {
 		Self { enable_color: true }
+	}
+}
+
+enum ColorOrStyle {
+	Color(Colour),
+	Style(Style),
+}
+
+impl From<Colour> for ColorOrStyle {
+	fn from(value: Colour) -> Self {
+		Self::Color(value)
+	}
+}
+
+impl From<Style> for ColorOrStyle {
+	fn from(value: Style) -> Self {
+		Self::Style(value)
+	}
+}
+
+impl ColorOrStyle {
+	fn paint(&self, data: String) -> impl Display {
+		match self {
+			Self::Color(c) => c.paint(data),
+			Self::Style(s) => s.paint(data),
+		}
+	}
+}
+
+impl OutputFormat {
+	/// Print with color if `self.enable_color == true`.
+	fn print_with_color(
+		&self,
+		color: impl Into<ColorOrStyle>,
+		data: impl ToString,
+	) -> impl Display {
+		if self.enable_color {
+			color.into().paint(data.to_string()).to_string()
+		} else {
+			data.to_string()
+		}
 	}
 }
 
@@ -90,11 +131,14 @@ where
 
 	futures::select! {
 		() = display_notifications.fuse() => (),
-		() = display_block_import(client).fuse() => (),
+		() = display_block_import(client, format).fuse() => (),
 	};
 }
 
-fn display_block_import<B: BlockT, C>(client: Arc<C>) -> impl Future<Output = ()>
+fn display_block_import<B: BlockT, C>(
+	client: Arc<C>,
+	format: OutputFormat,
+) -> impl Future<Output = ()>
 where
 	C: UsageProvider<B> + HeaderMetadata<B> + BlockchainEvents<B>,
 	<C as HeaderMetadata<B>>::Error: Display,
@@ -118,26 +162,11 @@ where
 				match maybe_ancestor {
 					Ok(ref ancestor) if ancestor.hash != *last_hash => info!(
 						"Reorg on #{},{} to #{},{}, common ancestor #{},{}",
-						format!(
-							"{}{}{}",
-							AnsiColor::Red.on_default().bold().render(),
-							last_num,
-							Reset.render()
-						),
+						format.print_with_color(Colour::Red.bold(), last_num),
 						last_hash,
-						format!(
-							"{}{}{}",
-							AnsiColor::Green.on_default().bold().render(),
-							n.header.number(),
-							Reset.render()
-						),
+						format.print_with_color(Colour::Green.bold(), n.header.number()),
 						n.hash,
-						format!(
-							"{}{}{}",
-							AnsiColor::White.on_default().bold().render(),
-							ancestor.number,
-							Reset.render()
-						),
+						format.print_with_color(Colour::White.bold(), ancestor.number),
 						ancestor.hash,
 					),
 					Ok(_) => {},
@@ -162,7 +191,7 @@ where
 			info!(
 				target: "substrate",
 				"Imported #{} ({})",
-				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), n.header.number(), Reset.render()),
+				format.print_with_color(Colour::White.bold(), n.header.number()),
 				n.hash,
 			);
 		}

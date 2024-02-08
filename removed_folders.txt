@@ -25,6 +25,7 @@
 ./substrate/frame/authority-discovery
 ./substrate/frame/beefy
 ./substrate/frame/beefy-mmr
+./substrate/frame/benchmarking/pov
 ./substrate/frame/bounties
 ./substrate/frame/broker
 ./substrate/frame/child-bounties

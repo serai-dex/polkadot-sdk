@@ -18,8 +18,8 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 //! Substrate child state API
-use crate::state::ReadProof;
-use jsonrpsee::{core::RpcResult, proc_macros::rpc};
+use crate::state::{Error, ReadProof};
+use jsonrpsee::proc_macros::rpc;
 use sp_core::storage::{PrefixedStorageKey, StorageData, StorageKey};
 
 /// Substrate child state API
@@ -36,7 +36,7 @@ pub trait ChildStateApi<Hash> {
 		child_storage_key: PrefixedStorageKey,
 		prefix: StorageKey,
 		hash: Option<Hash>,
-	) -> RpcResult<Vec<StorageKey>>;
+	) -> Result<Vec<StorageKey>, Error>;
 
 	/// Returns the keys with prefix from a child storage with pagination support.
 	/// Up to `count` keys will be returned.
@@ -49,7 +49,7 @@ pub trait ChildStateApi<Hash> {
 		count: u32,
 		start_key: Option<StorageKey>,
 		hash: Option<Hash>,
-	) -> RpcResult<Vec<StorageKey>>;
+	) -> Result<Vec<StorageKey>, Error>;
 
 	/// Returns a child storage entry at a specific block's state.
 	#[method(name = "childstate_getStorage", blocking)]
@@ -58,7 +58,7 @@ pub trait ChildStateApi<Hash> {
 		child_storage_key: PrefixedStorageKey,
 		key: StorageKey,
 		hash: Option<Hash>,
-	) -> RpcResult<Option<StorageData>>;
+	) -> Result<Option<StorageData>, Error>;
 
 	/// Returns child storage entries for multiple keys at a specific block's state.
 	#[method(name = "childstate_getStorageEntries", blocking)]
@@ -67,7 +67,7 @@ pub trait ChildStateApi<Hash> {
 		child_storage_key: PrefixedStorageKey,
 		keys: Vec<StorageKey>,
 		hash: Option<Hash>,
-	) -> RpcResult<Vec<Option<StorageData>>>;
+	) -> Result<Vec<Option<StorageData>>, Error>;
 
 	/// Returns the hash of a child storage entry at a block's state.
 	#[method(name = "childstate_getStorageHash", blocking)]
@@ -76,7 +76,7 @@ pub trait ChildStateApi<Hash> {
 		child_storage_key: PrefixedStorageKey,
 		key: StorageKey,
 		hash: Option<Hash>,
-	) -> RpcResult<Option<Hash>>;
+	) -> Result<Option<Hash>, Error>;
 
 	/// Returns the size of a child storage entry at a block's state.
 	#[method(name = "childstate_getStorageSize", blocking)]
@@ -85,7 +85,7 @@ pub trait ChildStateApi<Hash> {
 		child_storage_key: PrefixedStorageKey,
 		key: StorageKey,
 		hash: Option<Hash>,
-	) -> RpcResult<Option<u64>>;
+	) -> Result<Option<u64>, Error>;
 
 	/// Returns proof of storage for child key entries at a specific block's state.
 	#[method(name = "state_getChildReadProof", blocking)]
@@ -94,5 +94,5 @@ pub trait ChildStateApi<Hash> {
 		child_storage_key: PrefixedStorageKey,
 		keys: Vec<StorageKey>,
 		hash: Option<Hash>,
-	) -> RpcResult<ReadProof<Hash>>;
+	) -> Result<ReadProof<Hash>, Error>;
 }

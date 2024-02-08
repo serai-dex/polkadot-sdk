@@ -91,7 +91,7 @@ pub fn sign(xt: CheckedExtrinsic, spec_version: u32, genesis_hash: [u8; 32]) -> 
 			let signature = payload
 				.using_encoded(|b| {
 					if b.len() > 256 {
-						key.sign(&sp_io::hashing::blake2_256(b))
+						key.sign(&sp_crypto_hashing::blake2_256(b))
 					} else {
 						key.sign(b)
 					}

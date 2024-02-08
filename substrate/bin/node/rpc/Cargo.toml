@@ -16,7 +16,7 @@ workspace = true
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-jsonrpsee = { version = "0.16.2", features = ["server"] }
+jsonrpsee = { version = "0.20.3", features = ["server"] }
 node-primitives = { path = "../primitives" }
 pallet-transaction-payment-rpc = { path = "../../../frame/transaction-payment/rpc" }
 sc-chain-spec = { path = "../../../client/chain-spec" }
@@ -27,7 +27,7 @@ sc-consensus-grandpa = { path = "../../../client/consensus/grandpa" }
 sc-consensus-grandpa-rpc = { path = "../../../client/consensus/grandpa/rpc" }
 sc-mixnet = { path = "../../../client/mixnet" }
 sc-rpc = { path = "../../../client/rpc", features = ["mixnet"] }
-sc-rpc-api = { path = "../../../client/rpc-api", features = ["mixnet"] }
+sc-rpc-api = { path = "../../../client/rpc-api" }
 sc-rpc-spec-v2 = { path = "../../../client/rpc-spec-v2" }
 sc-sync-state-rpc = { path = "../../../client/sync-state-rpc" }
 sc-transaction-pool-api = { path = "../../../client/transaction-pool/api" }

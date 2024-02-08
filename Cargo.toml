@@ -8,6 +8,8 @@ license = "GPL-3.0-only"
 resolver = "2"
 
 members = [
+  "patches/ahash",
+
 	"substrate/bin/minimal/node",
 	"substrate/bin/minimal/runtime",
 	"substrate/bin/node-template/node",
@@ -71,6 +73,8 @@ members = [
 	"substrate/client/transaction-pool",
 	"substrate/client/transaction-pool/api",
 	"substrate/client/utils",
+	"substrate/deprecated/hashing",
+	"substrate/deprecated/hashing/proc-macro",
 	"substrate/frame",
 	"substrate/frame/asset-conversion",
 	"substrate/frame/assets",
@@ -82,7 +86,6 @@ members = [
 	"substrate/frame/bags-list/remote-tests",
 	"substrate/frame/balances",
 	"substrate/frame/benchmarking",
-	"substrate/frame/benchmarking/pov",
 	"substrate/frame/election-provider-support",
 	"substrate/frame/election-provider-support/benchmarking",
 	"substrate/frame/election-provider-support/solution-type",
@@ -147,9 +150,9 @@ members = [
 	"substrate/primitives/consensus/slots",
 	"substrate/primitives/core",
 	"substrate/primitives/core/fuzz",
-	"substrate/primitives/core/hashing",
-	"substrate/primitives/core/hashing/proc-macro",
 	"substrate/primitives/crypto/ec-utils",
+	"substrate/primitives/crypto/hashing",
+	"substrate/primitives/crypto/hashing/proc-macro",
 	"substrate/primitives/database",
 	"substrate/primitives/debug-derive",
 	"substrate/primitives/externalities",
@@ -311,6 +314,8 @@ zeroize = { opt-level = 3 }
 [patch.crates-io]
 # https://github.com/rust-lang-nursery/lazy-static.rs/issues/201
 lazy_static = { git = "https://github.com/rust-lang-nursery/lazy-static.rs", rev = "5735630d46572f1e5377c8f2ba0f79d18f53b10c" }
+
+ahash = { path = "patches/ahash" }
 
 # The external arkworks-substrate repo refers back to the polkadot-sdk repo,
 # hence patching it to point to the path

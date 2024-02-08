@@ -18,15 +18,14 @@
 
 use crate::{write_file_if_changed, CargoCommand, CargoCommandVersioned};
 
+use console::style;
 use std::{fs, path::Path};
-
-use anstyle::{AnsiColor, Reset};
 use tempfile::tempdir;
 
 /// Print an error message.
 fn print_error_message(message: &str) -> String {
 	if super::color_output_enabled() {
-		format!("{}{}{}", AnsiColor::Red.on_default().bold().render(), message, Reset.render())
+		style(message).red().bold().to_string()
 	} else {
 		message.into()
 	}
@@ -116,15 +115,12 @@ fn check_wasm_toolchain_installed(
 				Err(print_error_message("Cannot compile the WASM runtime: `rust-lld` not found!")),
 
 			Ok(ref err) => Err(format!(
-				"{}\n\n{}Further error information:\n{}{}\n{}{}{}{}\n",
+				"{}\n\n{}\n{}\n{}{}\n",
 				err_msg,
-				anstyle::AnsiColor::Yellow.on_default().bold().render(),
-				"-".repeat(60),
-				anstyle::Reset.render(),
+				style("Further error information:").yellow().bold(),
+				style("-".repeat(60)).yellow().bold(),
 				err,
-				anstyle::AnsiColor::Yellow.on_default().bold().render(),
-				"-".repeat(60),
-				anstyle::Reset.render(),
+				style("-".repeat(60)).yellow().bold(),
 			)),
 
 			Err(_) => Err(err_msg),

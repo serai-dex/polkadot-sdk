@@ -21,11 +21,11 @@
 use super::{Pallet as SafeMode, *};
 
 use frame_benchmarking::v2::*;
-use frame_support::traits::{fungible::Mutate as FunMutate, UnfilteredDispatchable};
+use frame_support::traits::{fungible, UnfilteredDispatchable};
 use frame_system::{Pallet as System, RawOrigin};
 use sp_runtime::traits::{Bounded, One, Zero};
 
-#[benchmarks(where T::Currency: FunMutate<T::AccountId>)]
+#[benchmarks(where T::Currency: fungible::Mutate<T::AccountId>)]
 mod benchmarks {
 	use super::*;
 
@@ -59,7 +59,7 @@ mod benchmarks {
 
 		let caller: T::AccountId = whitelisted_caller();
 		let origin = RawOrigin::Signed(caller.clone());
-		T::Currency::set_balance(&caller, init_bal::<T>());
+		<T::Currency as fungible::Mutate<_>>::set_balance(&caller, init_bal::<T>());
 
 		#[extrinsic_call]
 		_(origin);
@@ -92,7 +92,7 @@ mod benchmarks {
 		T::ExtendDepositAmount::get().ok_or_else(|| BenchmarkError::Weightless)?;
 
 		let alice: T::AccountId = whitelisted_caller();
-		T::Currency::set_balance(&alice, init_bal::<T>());
+		<T::Currency as fungible::Mutate<_>>::set_balance(&alice, init_bal::<T>());
 
 		System::<T>::set_block_number(1u32.into());
 		assert!(SafeMode::<T>::do_enter(None, 1u32.into()).is_ok());
@@ -153,7 +153,7 @@ mod benchmarks {
 		let alice: T::AccountId = whitelisted_caller();
 		let origin = RawOrigin::Signed(alice.clone());
 
-		T::Currency::set_balance(&alice, init_bal::<T>());
+		<T::Currency as fungible::Mutate<_>>::set_balance(&alice, init_bal::<T>());
 		// Mock the storage. This is needed in case the `EnterDepositAmount` is zero.
 		let block: BlockNumberFor<T> = 1u32.into();
 		let bal: BalanceOf<T> = 1u32.into();
@@ -170,7 +170,7 @@ mod benchmarks {
 		_(origin, alice.clone(), 1u32.into());
 
 		assert!(!Deposits::<T>::contains_key(&alice, &block));
-		assert_eq!(T::Currency::balance(&alice), init_bal::<T>());
+		assert_eq!(<T::Currency as fungible::Inspect<_>>::balance(&alice), init_bal::<T>());
 		Ok(())
 	}
 
@@ -181,7 +181,7 @@ mod benchmarks {
 			.map_err(|_| BenchmarkError::Weightless)?;
 
 		let alice: T::AccountId = whitelisted_caller();
-		T::Currency::set_balance(&alice, init_bal::<T>());
+		<T::Currency as fungible::Mutate<_>>::set_balance(&alice, init_bal::<T>());
 
 		// Mock the storage. This is needed in case the `EnterDepositAmount` is zero.
 		let block: BlockNumberFor<T> = 1u32.into();
@@ -190,7 +190,10 @@ mod benchmarks {
 		T::Currency::hold(&&HoldReason::EnterOrExtend.into(), &alice, bal)?;
 		EnteredUntil::<T>::put(&block);
 
-		assert_eq!(T::Currency::balance(&alice), init_bal::<T>() - 1u32.into());
+		assert_eq!(
+			<T::Currency as fungible::Inspect<_>>::balance(&alice),
+			init_bal::<T>() - 1u32.into()
+		);
 		assert!(SafeMode::<T>::do_exit(ExitReason::Force).is_ok());
 
 		System::<T>::set_block_number(System::<T>::block_number() + One::one());
@@ -201,7 +204,7 @@ mod benchmarks {
 		_(force_origin as T::RuntimeOrigin, alice.clone(), block);
 
 		assert!(!Deposits::<T>::contains_key(&alice, block));
-		assert_eq!(T::Currency::balance(&alice), init_bal::<T>());
+		assert_eq!(<T::Currency as fungible::Inspect<_>>::balance(&alice), init_bal::<T>());
 		Ok(())
 	}
 
@@ -211,7 +214,7 @@ mod benchmarks {
 			.map_err(|_| BenchmarkError::Weightless)?;
 
 		let alice: T::AccountId = whitelisted_caller();
-		T::Currency::set_balance(&alice, init_bal::<T>());
+		<T::Currency as fungible::Mutate<_>>::set_balance(&alice, init_bal::<T>());
 
 		// Mock the storage. This is needed in case the `EnterDepositAmount` is zero.
 		let block: BlockNumberFor<T> = 1u32.into();
@@ -225,7 +228,10 @@ mod benchmarks {
 		_(force_origin as T::RuntimeOrigin, alice.clone(), block);
 
 		assert!(!Deposits::<T>::contains_key(&alice, block));
-		assert_eq!(T::Currency::balance(&alice), init_bal::<T>() - 1u32.into());
+		assert_eq!(
+			<T::Currency as fungible::Inspect<_>>::balance(&alice),
+			init_bal::<T>() - 1u32.into()
+		);
 		Ok(())
 	}
 

@@ -69,8 +69,8 @@ mod tests {
 	construct_runtime! {
 		pub struct Runtime
 		{
-			System: frame_system::{Pallet, Call, Storage, Config<T>, Event<T>},
-			Pallet: pallet::{Pallet, Config<T>},
+			System: frame_system,
+			Pallet: pallet,
 		}
 	}
 }

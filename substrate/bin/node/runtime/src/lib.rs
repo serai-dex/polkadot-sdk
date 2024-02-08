@@ -379,7 +379,6 @@ impl pallet_balances::Config for Runtime {
 	type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 	type FreezeIdentifier = RuntimeFreezeReason;
 	type MaxFreezes = ConstU32<1>;
-	type MaxHolds = ConstU32<6>;
 }
 
 parameter_types! {
@@ -890,6 +889,7 @@ impl pallet_state_trie_migration::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ControlOrigin = EnsureRoot<AccountId>;
 	type Currency = Balances;
+	type RuntimeHoldReason = RuntimeHoldReason;
 	type MaxKeyLen = MigrationMaxKeyLen;
 	type SignedDepositPerItem = MigrationSignedDepositPerItem;
 	type SignedDepositBase = MigrationSignedDepositBase;
@@ -899,10 +899,6 @@ impl pallet_state_trie_migration::Config for Runtime {
 	// migrations.
 	type SignedFilter = EnsureSigned<Self::AccountId>;
 	type WeightInfo = ();
-}
-
-impl frame_benchmarking_pallet_pov::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
 }
 
 parameter_types! {
@@ -929,8 +925,7 @@ impl pallet_mixnet::Config for Runtime {
 }
 
 construct_runtime!(
-	pub struct Runtime
-	{
+	pub enum Runtime {
 		System: frame_system,
 		Utility: pallet_utility,
 		Babe: pallet_babe,
@@ -960,7 +955,6 @@ construct_runtime!(
 		Remark: pallet_remark,
 		RootTesting: pallet_root_testing,
 		AssetConversion: pallet_asset_conversion,
-		Pov: frame_benchmarking_pallet_pov,
 		TxPause: pallet_tx_pause,
 		SafeMode: pallet_safe_mode,
 		Mixnet: pallet_mixnet,
@@ -1021,7 +1015,6 @@ type Migrations = ();
 mod benches {
 	frame_benchmarking::define_benchmarks!(
 		[frame_benchmarking, BaselineBench::<Runtime>]
-		[frame_benchmarking_pallet_pov, Pov]
 		[pallet_assets, Assets]
 		[pallet_babe, Babe]
 		[pallet_bags_list, VoterList]

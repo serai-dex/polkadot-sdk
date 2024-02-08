@@ -288,7 +288,7 @@ mod tests {
 	}
 
 	fn random_u128(seed: u32) -> u128 {
-		u128::decode(&mut &seed.using_encoded(sp_core::hashing::twox_128)[..]).unwrap_or(0)
+		u128::decode(&mut &seed.using_encoded(sp_crypto_hashing::twox_128)[..]).unwrap_or(0)
 	}
 
 	#[test]

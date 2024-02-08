@@ -17,6 +17,7 @@
 // limitations under the License.
 
 mod call;
+mod composite;
 mod config;
 mod constants;
 mod doc_only;
@@ -77,6 +78,7 @@ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
 	let validate_unsigned = validate_unsigned::expand_validate_unsigned(&mut def);
 	let tt_default_parts = tt_default_parts::expand_tt_default_parts(&mut def);
 	let doc_only = doc_only::expand_doc_only(&mut def);
+	let composites = composite::expand_composites(&mut def);
 
 	def.item.attrs.insert(
 		0,
@@ -118,6 +120,7 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
 		#validate_unsigned
 		#tt_default_parts
 		#doc_only
+		#composites
 	);
 
 	def.item

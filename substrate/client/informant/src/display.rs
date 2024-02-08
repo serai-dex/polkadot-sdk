@@ -18,14 +18,11 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::OutputFormat;
-use anstyle::{AnsiColor, Reset};
+use ansi_term::Colour;
 use log::info;
 use sc_client_api::ClientInfo;
 use sc_network::NetworkStatus;
-use sc_network_sync::{
-	warp::{WarpSyncPhase, WarpSyncProgress},
-	SyncState, SyncStatus,
-};
+use sc_network_sync::{SyncState, SyncStatus, WarpSyncPhase, WarpSyncProgress};
 use sp_runtime::traits::{Block as BlockT, CheckedDiv, NumberFor, Saturating, Zero};
 use std::{fmt, time::Instant};
 
@@ -130,10 +127,11 @@ impl<B: BlockT> InformantDisplay<B> {
 						),
 					),
 				(_, Some(state), _) => (
-					"",
-					"Downloading state".into(),
+					" ",
+					"State sync".into(),
 					format!(
-						", {}%, {:.2} Mib",
+						", {}, {}%, {:.2} Mib",
+						state.phase,
 						state.percentage,
 						(state.size as f32) / (1024f32 * 1024f32)
 					),
@@ -145,37 +143,20 @@ impl<B: BlockT> InformantDisplay<B> {
 					("", format!("Preparing{}", speed), format!(", target=#{target}")),
 			};
 
-		if self.format.enable_color {
-			info!(
-				target: "substrate",
-				"{} {}{} ({} peers), best: #{} ({}), finalized #{} ({}), {} {}",
-				level,
-				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), &status, Reset.render()),
-				target,
-				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), num_connected_peers, Reset.render()),
-				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), best_number, Reset.render()),
-				best_hash,
-				format!("{}{}{}", AnsiColor::White.on_default().bold().render(), finalized_number, Reset.render()),
-				info.chain.finalized_hash,
-				format!("{}⬇ {}{}", AnsiColor::Green.on_default().render(), TransferRateFormat(avg_bytes_per_sec_inbound), Reset.render()),
-				format!("{}⬆ {}{}", AnsiColor::Red.on_default().render(), TransferRateFormat(avg_bytes_per_sec_outbound), Reset.render()),
-			)
-		} else {
-			info!(
-				target: "substrate",
-				"{} {}{} ({} peers), best: #{} ({}), finalized #{} ({}), ⬇ {} ⬆ {}",
-				level,
-				status,
-				target,
-				num_connected_peers,
-				best_number,
-				best_hash,
-				finalized_number,
-				info.chain.finalized_hash,
-				TransferRateFormat(avg_bytes_per_sec_inbound),
-				TransferRateFormat(avg_bytes_per_sec_outbound),
-			)
-		}
+		info!(
+			target: "substrate",
+			"{} {}{} ({} peers), best: #{} ({}), finalized #{} ({}), {} {}",
+			level,
+			self.format.print_with_color(Colour::White.bold(), status),
+			target,
+			self.format.print_with_color(Colour::White.bold(), num_connected_peers),
+			self.format.print_with_color(Colour::White.bold(), best_number),
+			best_hash,
+			self.format.print_with_color(Colour::White.bold(), finalized_number),
+			info.chain.finalized_hash,
+			self.format.print_with_color(Colour::Green, format!("⬇ {}", TransferRateFormat(avg_bytes_per_sec_inbound))),
+			self.format.print_with_color(Colour::Red, format!("⬆ {}", TransferRateFormat(avg_bytes_per_sec_outbound))),
+		)
 	}
 }
 

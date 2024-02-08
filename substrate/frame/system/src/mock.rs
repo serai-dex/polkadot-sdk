@@ -32,7 +32,7 @@ type Block = mocking::MockBlock<Test>;
 frame_support::construct_runtime!(
 	pub enum Test
 	{
-		System: frame_system::{Pallet, Call, Config<T>, Storage, Event<T>},
+		System: frame_system,
 	}
 );
 

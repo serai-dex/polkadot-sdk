@@ -25,12 +25,13 @@ use sp_rpc::{list::ListOrValue, number::NumberOrHex};
 use sp_runtime::generic::SignedBlock;
 
 pub mod error;
+use error::Error;
 
 #[rpc(client, server)]
 pub trait ChainApi<Number, Hash, Header, Block: codec::Encode> {
 	/// Get header.
 	#[method(name = "chain_getHeader", blocking)]
-	fn header(&self, hash: Option<Hash>) -> RpcResult<Option<Header>>;
+	fn header(&self, hash: Option<Hash>) -> Result<Option<Header>, Error>;
 
 	/// Get header and body of a block.
 	#[method(name = "chain_getBlock", blocking)]
@@ -50,11 +51,11 @@ pub trait ChainApi<Number, Hash, Header, Block: codec::Encode> {
 	fn block_hash(
 		&self,
 		hash: Option<ListOrValue<NumberOrHex>>,
-	) -> RpcResult<ListOrValue<Option<Hash>>>;
+	) -> Result<ListOrValue<Option<Hash>>, Error>;
 
 	/// Get hash of the last finalized block in the canon chain.
 	#[method(name = "chain_getFinalizedHead", aliases = ["chain_getFinalisedHead"], blocking)]
-	fn finalized_head(&self) -> RpcResult<Hash>;
+	fn finalized_head(&self) -> Result<Hash, Error>;
 
 	/// All head subscription.
 	#[subscription(

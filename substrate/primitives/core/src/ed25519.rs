@@ -373,7 +373,7 @@ impl Derive for Public {}
 /// Derive a single hard junction.
 #[cfg(feature = "full_crypto")]
 fn derive_hard_junction(secret_seed: &Seed, cc: &[u8; 32]) -> Seed {
-	("Ed25519HDKD", secret_seed, cc).using_encoded(sp_core_hashing::blake2_256)
+	("Ed25519HDKD", secret_seed, cc).using_encoded(sp_crypto_hashing::blake2_256)
 }
 
 #[cfg(feature = "full_crypto")]
@@ -424,7 +424,9 @@ impl TraitPair for Pair {
 	/// Returns true if the signature is good.
 	fn verify<M: AsRef<[u8]>>(sig: &Signature, message: M, public: &Public) -> bool {
 		let Ok(public) = VerificationKey::try_from(public.as_slice()) else { return false };
-		let Ok(signature) = ed25519_zebra::Signature::try_from(sig.as_ref()) else { return false };
+		let Ok(signature) = ed25519_zebra::Signature::try_from(sig.0.as_ref()) else {
+			return false
+		};
 		public.verify(&signature, message.as_ref()).is_ok()
 	}
 

@@ -25,6 +25,7 @@ use crate::{
 		BlockResponse as BlockResponseSchema, BlockResponse, Direction,
 	},
 	service::network::NetworkServiceHandle,
+	LOG_TARGET,
 };
 
 use codec::{Decode, DecodeAll, Encode};
@@ -57,7 +58,6 @@ use std::{
 /// Maximum blocks per response.
 pub(crate) const MAX_BLOCKS_IN_RESPONSE: usize = 128;
 
-const LOG_TARGET: &str = "sync";
 const MAX_BODY_BYTES: usize = 8 * 1024 * 1024;
 const MAX_NUMBER_OF_SAME_REQUESTS_PER_PEER: usize = 2;
 
@@ -228,8 +228,8 @@ where
 			min(request.max_blocks as usize, MAX_BLOCKS_IN_RESPONSE)
 		};
 
-		let direction = Direction::try_from(request.direction)
-			.map_err(|_| HandleRequestError::ParseDirection)?;
+		let direction =
+			i32::try_into(request.direction).map_err(|_| HandleRequestError::ParseDirection)?;
 
 		let attributes = BlockAttributes::from_be_u32(request.fields)?;
 
