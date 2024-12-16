@@ -48,7 +48,7 @@ use std::{
 	time::{Duration, Instant},
 };
 
-pub use libp2p::{identity::SigningError, kad::record::Key as KademliaKey};
+pub use libp2p::{identity::SigningError, kad::RecordKey as KademliaKey};
 
 /// Supertrait defining the services provided by [`NetworkBackend`] service handle.
 pub trait NetworkService:

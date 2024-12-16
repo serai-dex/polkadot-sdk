@@ -40,7 +40,7 @@ use crate::{
 		NetworkState, NotConnectedPeer as NetworkStateNotConnectedPeer, Peer as NetworkStatePeer,
 	},
 	peer_store::{PeerStore, PeerStoreProvider},
-	protocol::{self, NotifsHandlerError, Protocol, Ready},
+	protocol::{self, Protocol, Ready},
 	protocol_controller::{self, ProtoSetConfig, ProtocolController, SetId},
 	request_responses::{IfDisconnected, ProtocolConfig as RequestResponseConfig, RequestFailure},
 	service::{
@@ -58,16 +58,13 @@ use crate::{
 };
 
 use codec::DecodeAll;
-use either::Either;
 use futures::{channel::oneshot, prelude::*};
-#[allow(deprecated)]
-use libp2p::swarm::THandlerErr;
 use libp2p::{
 	connection_limits::{ConnectionLimits, Exceeded},
 	core::{upgrade, ConnectedPoint, Endpoint},
 	identify::Info as IdentifyInfo,
 	identity::ed25519,
-	kad::{record::Key as KademliaKey, Record},
+	kad::{Record, RecordKey as KademliaKey},
 	multiaddr::{self, Multiaddr},
 	swarm::{
 		Config as SwarmConfig, ConnectionError, ConnectionId, DialError, Executor, ListenError,
@@ -92,7 +89,6 @@ pub use libp2p::identity::{DecodingError, Keypair, PublicKey};
 pub use metrics::NotificationMetrics;
 pub use protocol::NotificationsSink;
 use std::{
-	cmp,
 	collections::{HashMap, HashSet},
 	fs, iter,
 	marker::PhantomData,
@@ -113,6 +109,7 @@ pub mod signature;
 pub mod traits;
 
 struct Libp2pBandwidthSink {
+	#[allow(deprecated)]
 	sink: Arc<transport::BandwidthSinks>,
 }
 
@@ -325,7 +322,7 @@ where
 			"🏷  Local node identity is: {}",
 			local_peer_id.to_base58(),
 		);
-		log::info!(target: "sub-libp2p", "Running libp2p network backend");
+		info!(target: "sub-libp2p", "Running libp2p network backend");
 
 		let (transport, bandwidth) = {
 			let config_mem = match network_config.transport {
@@ -333,46 +330,7 @@ where
 				TransportConfig::Normal { .. } => false,
 			};
 
-			// The yamux buffer size limit is configured to be equal to the maximum frame size
-			// of all protocols. 10 bytes are added to each limit for the length prefix that
-			// is not included in the upper layer protocols limit but is still present in the
-			// yamux buffer. These 10 bytes correspond to the maximum size required to encode
-			// a variable-length-encoding 64bits number. In other words, we make the
-			// assumption that no notification larger than 2^64 will ever be sent.
-			let yamux_maximum_buffer_size = {
-				let requests_max = request_response_protocols
-					.iter()
-					.map(|cfg| usize::try_from(cfg.max_request_size).unwrap_or(usize::MAX));
-				let responses_max = request_response_protocols
-					.iter()
-					.map(|cfg| usize::try_from(cfg.max_response_size).unwrap_or(usize::MAX));
-				let notifs_max = notification_protocols
-					.iter()
-					.map(|cfg| usize::try_from(cfg.max_notification_size()).unwrap_or(usize::MAX));
-
-				// A "default" max is added to cover all the other protocols: ping, identify,
-				// kademlia, block announces, and transactions.
-				let default_max = cmp::max(
-					1024 * 1024,
-					usize::try_from(protocol::BLOCK_ANNOUNCES_TRANSACTIONS_SUBSTREAM_SIZE)
-						.unwrap_or(usize::MAX),
-				);
-
-				iter::once(default_max)
-					.chain(requests_max)
-					.chain(responses_max)
-					.chain(notifs_max)
-					.max()
-					.expect("iterator known to always yield at least one element; qed")
-					.saturating_add(10)
-			};
-
-			transport::build_transport(
-				local_identity.clone().into(),
-				config_mem,
-				network_config.yamux_window_size,
-				yamux_maximum_buffer_size,
-			)
+			transport::build_transport(local_identity.clone().into(), config_mem)
 		};
 
 		let (to_notifications, from_protocol_controllers) =
@@ -1490,8 +1448,7 @@ where
 	}
 
 	/// Process the next event coming from `Swarm`.
-	#[allow(deprecated)]
-	fn handle_swarm_event(&mut self, event: SwarmEvent<BehaviourOut, THandlerErr<Behaviour<B>>>) {
+	fn handle_swarm_event(&mut self, event: SwarmEvent<BehaviourOut>) {
 		match event {
 			SwarmEvent::Behaviour(BehaviourOut::InboundRequest { protocol, result, .. }) => {
 				if let Some(metrics) = self.metrics.as_ref() {
@@ -1516,6 +1473,7 @@ where
 									Some("busy-omitted"),
 								ResponseFailure::Network(InboundFailure::ConnectionClosed) =>
 									Some("connection-closed"),
+								ResponseFailure::Network(InboundFailure::Io(_)) => Some("io"),
 							};
 
 							if let Some(reason) = reason {
@@ -1555,6 +1513,7 @@ where
 									"connection-closed",
 								RequestFailure::Network(OutboundFailure::UnsupportedProtocols) =>
 									"unsupported",
+								RequestFailure::Network(OutboundFailure::Io(_)) => "io",
 							};
 
 							metrics
@@ -1721,15 +1680,6 @@ where
 					};
 					let reason = match cause {
 						Some(ConnectionError::IO(_)) => "transport-error",
-						Some(ConnectionError::Handler(Either::Left(Either::Left(
-							Either::Left(Either::Right(
-								NotifsHandlerError::SyncNotificationsClogged,
-							)),
-						)))) => "sync-notifications-clogged",
-						Some(ConnectionError::Handler(Either::Left(Either::Left(
-							Either::Right(Either::Left(_)),
-						)))) => "ping-timeout",
-						Some(ConnectionError::Handler(_)) => "protocol-error",
 						Some(ConnectionError::KeepAliveTimeout) => "keep-alive-timeout",
 						None => "actively-closed",
 					};
@@ -1768,7 +1718,12 @@ where
 						not_reported.then(|| self.boot_node_ids.get(&peer_id)).flatten()
 					{
 						if let DialError::WrongPeerId { obtained, endpoint } = &error {
-							if let ConnectedPoint::Dialer { address, role_override: _ } = endpoint {
+							if let ConnectedPoint::Dialer {
+								address,
+								role_override: _,
+								port_use: _,
+							} = endpoint
+							{
 								let address_without_peer_id = parse_addr(address.clone().into())
 									.map_or_else(|_| address.clone(), |r| r.1.into());
 
@@ -1789,7 +1744,6 @@ where
 				}
 
 				if let Some(metrics) = self.metrics.as_ref() {
-					#[allow(deprecated)]
 					let reason = match error {
 						DialError::Denied { cause } =>
 							if cause.downcast::<Exceeded>().is_ok() {
@@ -1829,7 +1783,6 @@ where
 					"Libp2p => IncomingConnectionError({local_addr},{send_back_addr} via {connection_id:?}): {error}"
 				);
 				if let Some(metrics) = self.metrics.as_ref() {
-					#[allow(deprecated)]
 					let reason = match error {
 						ListenError::Denied { cause } =>
 							if cause.downcast::<Exceeded>().is_ok() {
@@ -1881,6 +1834,21 @@ where
 				if let Some(metrics) = self.metrics.as_ref() {
 					metrics.listeners_errors_total.inc();
 				}
+			},
+			SwarmEvent::NewExternalAddrCandidate { address } => {
+				trace!(target: "sub-libp2p", "Libp2p => NewExternalAddrCandidate: {address:?}");
+			},
+			SwarmEvent::ExternalAddrConfirmed { address } => {
+				trace!(target: "sub-libp2p", "Libp2p => ExternalAddrConfirmed: {address:?}");
+			},
+			SwarmEvent::ExternalAddrExpired { address } => {
+				trace!(target: "sub-libp2p", "Libp2p => ExternalAddrExpired: {address:?}");
+			},
+			SwarmEvent::NewExternalAddrOfPeer { peer_id, address } => {
+				trace!(target: "sub-libp2p", "Libp2p => NewExternalAddrOfPeer({peer_id:?}): {address:?}")
+			},
+			event => {
+				warn!(target: "sub-libp2p", "New unknown SwarmEvent libp2p event: {event:?}");
 			},
 		}
 	}
