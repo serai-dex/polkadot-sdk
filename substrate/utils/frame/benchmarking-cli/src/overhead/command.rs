@@ -42,7 +42,6 @@ use fake_runtime_api::RuntimeApi as FakeRuntimeApi;
 use frame_support::Deserialize;
 use genesis_state::WARN_SPEC_GENESIS_CTOR;
 use log::info;
-use polkadot_parachain_primitives::primitives::Id as ParaId;
 use sc_block_builder::BlockBuilderApi;
 use sc_chain_spec::{ChainSpec, ChainSpecExtension, GenesisBlockBuilder};
 use sc_cli::{CliConfiguration, Database, ImportParams, Result, SharedParams};
@@ -201,20 +200,10 @@ fn create_inherent_data<Client: UsageProvider<Block> + HeaderBackend<Block>, Blo
 
 	let mut inherent_data = InherentData::new();
 
-	// Parachain inherent that is used on relay chains to perform parachain validation.
-	let para_inherent = polkadot_primitives::InherentData {
-		bitfields: Vec::new(),
-		backed_candidates: Vec::new(),
-		disputes: Vec::new(),
-		parent_header: header,
-	};
-
 	// Timestamp inherent that is very common in substrate chains.
 	let timestamp = sp_timestamp::InherentDataProvider::new(std::time::Duration::default().into());
 
 	let _ = futures::executor::block_on(timestamp.provide_inherent_data(&mut inherent_data));
-	let _ =
-		inherent_data.put_data(polkadot_primitives::PARACHAINS_INHERENT_IDENTIFIER, &para_inherent);
 
 	inherent_data
 }

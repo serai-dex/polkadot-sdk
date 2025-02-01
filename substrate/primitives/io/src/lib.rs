@@ -1751,7 +1751,7 @@ pub fn unreachable() -> ! {
 #[cfg(all(not(feature = "disable_panic_handler"), substrate_runtime))]
 #[panic_handler]
 #[no_mangle]
-pub fn panic(info: &core::panic::PanicInfo) -> ! {
+pub fn panic(info: &core::panic::PanicHookInfo) -> ! {
 	let message = alloc::format!("{}", info);
 	#[cfg(feature = "improved_panic_error_reporting")]
 	{

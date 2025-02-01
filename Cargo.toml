@@ -104,7 +104,6 @@ members = [
 	"substrate/frame/child-bounties",
 	"substrate/frame/collective",
 	"substrate/frame/conviction-voting",
-	"substrate/frame/core-fellowship",
 	"substrate/frame/delegated-staking",
 	"substrate/frame/democracy",
 	"substrate/frame/election-provider-multi-phase",
@@ -346,8 +345,6 @@ zero-prefixed-literal = { level = "allow", priority = 2 }            # 00_1000_0
 Inflector = { version = "0.11.4" }
 aes-gcm = { version = "0.10" }
 ahash = { version = "0.8.2" }
-alloy-primitives = { version = "0.4.2", default-features = false }
-alloy-sol-types = { version = "0.4.2", default-features = false }
 always-assert = { version = "0.1" }
 anyhow = { version = "1.0.81", default-features = false }
 approx = { version = "0.5.1" }
@@ -427,14 +424,10 @@ enumflags2 = { version = "0.7.7" }
 enumn = { version = "0.1.13" }
 env_logger = { version = "0.11.2" }
 environmental = { version = "1.1.4", default-features = false }
-ethabi = { version = "2.0.0", default-features = false, package = "ethabi-decode" }
-ethbloom = { version = "0.14.1", default-features = false }
-ethereum-types = { version = "0.15.1", default-features = false }
 exit-future = { version = "0.2.0" }
 expander = { version = "2.0.0" }
 fatality = { version = "0.1.1" }
 fdlimit = { version = "0.3.0" }
-femme = { version = "2.2.1" }
 filetime = { version = "0.2.16" }
 finality-grandpa = { version = "0.16.2", default-features = false }
 flate2 = { version = "1.0" }
@@ -574,7 +567,6 @@ pallet-broker = { path = "substrate/frame/broker", default-features = false, ver
 pallet-child-bounties = { path = "substrate/frame/child-bounties", default-features = false, version = "38.0.0" }
 pallet-collective = { path = "substrate/frame/collective", default-features = false, version = "39.0.0" }
 pallet-conviction-voting = { path = "substrate/frame/conviction-voting", default-features = false, version = "39.0.0" }
-pallet-core-fellowship = { path = "substrate/frame/core-fellowship", default-features = false, version = "23.0.0" }
 pallet-default-config-example = { path = "substrate/frame/examples/default-config", default-features = false, version = "10.0.0" }
 pallet-delegated-staking = { path = "substrate/frame/delegated-staking", default-features = false, version = "6.0.0" }
 pallet-democracy = { path = "substrate/frame/democracy", default-features = false, version = "39.0.0" }

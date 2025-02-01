@@ -7454,23 +7454,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-core-fellowship"
-version = "23.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-ranked-collective",
- "parity-scale-codec",
- "scale-info",
- "sp-arithmetic 26.0.0",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-default-config-example"
 version = "10.0.0"
 dependencies = [
@@ -9329,7 +9312,6 @@ dependencies = [
  "pallet-child-bounties",
  "pallet-collective",
  "pallet-conviction-voting",
- "pallet-core-fellowship",
  "pallet-delegated-staking",
  "pallet-democracy",
  "pallet-dev-mode",
