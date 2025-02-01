@@ -1,0 +1,7 @@
+./bridges
+./cumulus
+./docs
+./polkadot
+./substrate/frame/contracts
+./substrate/frame/revive
+./templates/parachain

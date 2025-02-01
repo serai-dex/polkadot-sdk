@@ -38,7 +38,6 @@ use crate::{
 };
 use clap::{error::ErrorKind, Args, CommandFactory, Parser};
 use codec::Encode;
-use cumulus_client_parachain_inherent::MockValidationDataInherentDataProvider;
 use fake_runtime_api::RuntimeApi as FakeRuntimeApi;
 use frame_support::Deserialize;
 use genesis_state::WARN_SPEC_GENESIS_CTOR;
@@ -173,7 +172,6 @@ pub(crate) enum BenchmarkType {
 
 /// Hostfunctions that are typically used by parachains.
 pub type ParachainHostFunctions = (
-	cumulus_primitives_proof_size_hostfunction::storage_proof_size::HostFunctions,
 	sp_io::SubstrateHostFunctions,
 );
 
@@ -202,19 +200,6 @@ fn create_inherent_data<Client: UsageProvider<Block> + HeaderBackend<Block>, Blo
 	let header = client.header(genesis).unwrap().unwrap();
 
 	let mut inherent_data = InherentData::new();
-
-	// Para inherent can only makes sense when we are handling a parachain.
-	if let Parachain(para_id) = chain_type {
-		let parachain_validation_data_provider = MockValidationDataInherentDataProvider::<()> {
-			para_id: ParaId::from(*para_id),
-			current_para_block_head: Some(header.encode().into()),
-			relay_offset: 1,
-			..Default::default()
-		};
-		let _ = futures::executor::block_on(
-			parachain_validation_data_provider.provide_inherent_data(&mut inherent_data),
-		);
-	}
 
 	// Parachain inherent that is used on relay chains to perform parachain validation.
 	let para_inherent = polkadot_primitives::InherentData {
@@ -683,33 +668,6 @@ mod tests {
 	};
 	use clap::Parser;
 	use sc_executor::WasmExecutor;
-
-	#[test]
-	fn test_chain_type_relaychain() {
-		let executor: WasmExecutor<ParachainHostFunctions> = WasmExecutor::builder().build();
-		let code_bytes = westend_runtime::WASM_BINARY
-			.expect("To run this test, build the wasm binary of westend-runtime")
-			.to_vec();
-		let metadata =
-			super::fetch_latest_metadata_from_code_blob(&executor, code_bytes.into()).unwrap();
-		let chain_type = identify_chain(&metadata, None);
-		assert_eq!(chain_type, ChainType::Relaychain);
-		assert_eq!(chain_type.requires_proof_recording(), false);
-	}
-
-	#[test]
-	fn test_chain_type_parachain() {
-		let executor: WasmExecutor<ParachainHostFunctions> = WasmExecutor::builder().build();
-		let code_bytes = cumulus_test_runtime::WASM_BINARY
-			.expect("To run this test, build the wasm binary of cumulus-test-runtime")
-			.to_vec();
-		let metadata =
-			super::fetch_latest_metadata_from_code_blob(&executor, code_bytes.into()).unwrap();
-		let chain_type = identify_chain(&metadata, Some(100));
-		assert_eq!(chain_type, ChainType::Parachain(100));
-		assert!(chain_type.requires_proof_recording());
-		assert_eq!(identify_chain(&metadata, None), ChainType::Parachain(DEFAULT_PARA_ID));
-	}
 
 	#[test]
 	fn test_chain_type_custom() {

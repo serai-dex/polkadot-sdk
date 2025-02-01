@@ -122,8 +122,8 @@ mod tests {
 	#[test]
 	fn test_fetch_latest_metadata_from_blob_fetches_metadata() {
 		let executor: WasmExecutor<ParachainHostFunctions> = WasmExecutor::builder().build();
-		let code_bytes = cumulus_test_runtime::WASM_BINARY
-			.expect("To run this test, build the wasm binary of cumulus-test-runtime")
+		let code_bytes = substrate_test_runtime::WASM_BINARY
+			.expect("To run this test, build the wasm binary of substrate-test-runtime")
 			.to_vec();
 		let metadata =
 			super::fetch_latest_metadata_from_code_blob(&executor, code_bytes.into()).unwrap();
@@ -133,8 +133,8 @@ mod tests {
 	#[test]
 	fn test_runtime_caller_can_call_into_runtime() {
 		let executor: WasmExecutor<ParachainHostFunctions> = WasmExecutor::builder().build();
-		let code_bytes = cumulus_test_runtime::WASM_BINARY
-			.expect("To run this test, build the wasm binary of cumulus-test-runtime")
+		let code_bytes = substrate_test_runtime::WASM_BINARY
+			.expect("To run this test, build the wasm binary of substrate-test-runtime")
 			.to_vec();
 		let runtime_caller = super::RuntimeCaller::new(&executor, code_bytes.into());
 		let runtime_version = runtime_caller

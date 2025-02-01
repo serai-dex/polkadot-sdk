@@ -13,8 +13,6 @@ workspace = true
 
 [dependencies]
 clap = { features = ["derive"], workspace = true }
-cumulus-primitives-proof-size-hostfunction.workspace = true
-cumulus-primitives-proof-size-hostfunction.default-features = true
 frame-benchmarking-cli.workspace = true
 sc-cli.workspace = true
 sc-cli.default-features = true
@@ -28,7 +26,6 @@ log = { workspace = true }
 [dev-dependencies]
 tempfile = { workspace = true }
 assert_cmd = { workspace = true }
-cumulus-test-runtime = { path = "../../../../cumulus/test/runtime" }
 sp-tracing = { default-features = true, path = "../../../primitives/tracing" }
 sp-genesis-builder = { default-features = true, path = "../../../primitives/genesis-builder" }
 sc-chain-spec = { path = "../../../client/chain-spec", default-features = false }

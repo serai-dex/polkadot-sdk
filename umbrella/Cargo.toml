@@ -8,39 +8,7 @@ publish = false
 [features]
 default = ["std"]
 std = [
-	"asset-test-utils?/std",
-	"assets-common?/std",
 	"binary-merkle-tree?/std",
-	"bp-header-chain?/std",
-	"bp-messages?/std",
-	"bp-parachains?/std",
-	"bp-polkadot-core?/std",
-	"bp-polkadot?/std",
-	"bp-relayers?/std",
-	"bp-runtime?/std",
-	"bp-test-utils?/std",
-	"bp-xcm-bridge-hub-router?/std",
-	"bp-xcm-bridge-hub?/std",
-	"bridge-hub-common?/std",
-	"bridge-hub-test-utils?/std",
-	"bridge-runtime-common?/std",
-	"cumulus-pallet-aura-ext?/std",
-	"cumulus-pallet-dmp-queue?/std",
-	"cumulus-pallet-parachain-system-proc-macro?/std",
-	"cumulus-pallet-parachain-system?/std",
-	"cumulus-pallet-session-benchmarking?/std",
-	"cumulus-pallet-solo-to-para?/std",
-	"cumulus-pallet-xcm?/std",
-	"cumulus-pallet-xcmp-queue?/std",
-	"cumulus-ping?/std",
-	"cumulus-primitives-aura?/std",
-	"cumulus-primitives-core?/std",
-	"cumulus-primitives-parachain-inherent?/std",
-	"cumulus-primitives-proof-size-hostfunction?/std",
-	"cumulus-primitives-storage-weight-reclaim?/std",
-	"cumulus-primitives-timestamp?/std",
-	"cumulus-primitives-utility?/std",
-	"cumulus-test-relay-sproof-builder?/std",
 	"frame-benchmarking-pallet-pov?/std",
 	"frame-benchmarking?/std",
 	"frame-election-provider-support?/std",
@@ -70,17 +38,9 @@ std = [
 	"pallet-beefy-mmr?/std",
 	"pallet-beefy?/std",
 	"pallet-bounties?/std",
-	"pallet-bridge-grandpa?/std",
-	"pallet-bridge-messages?/std",
-	"pallet-bridge-parachains?/std",
-	"pallet-bridge-relayers?/std",
 	"pallet-broker?/std",
 	"pallet-child-bounties?/std",
-	"pallet-collator-selection?/std",
-	"pallet-collective-content?/std",
 	"pallet-collective?/std",
-	"pallet-contracts-mock-network?/std",
-	"pallet-contracts?/std",
 	"pallet-conviction-voting?/std",
 	"pallet-core-fellowship?/std",
 	"pallet-delegated-staking?/std",
@@ -121,9 +81,6 @@ std = [
 	"pallet-recovery?/std",
 	"pallet-referenda?/std",
 	"pallet-remark?/std",
-	"pallet-revive-fixtures?/std",
-	"pallet-revive-mock-network?/std",
-	"pallet-revive?/std",
 	"pallet-root-offences?/std",
 	"pallet-root-testing?/std",
 	"pallet-safe-mode?/std",
@@ -152,36 +109,8 @@ std = [
 	"pallet-verify-signature?/std",
 	"pallet-vesting?/std",
 	"pallet-whitelist?/std",
-	"pallet-xcm-benchmarks?/std",
-	"pallet-xcm-bridge-hub-router?/std",
-	"pallet-xcm-bridge-hub?/std",
-	"pallet-xcm?/std",
-	"parachains-common?/std",
-	"parachains-runtimes-test-utils?/std",
-	"polkadot-core-primitives?/std",
-	"polkadot-parachain-primitives?/std",
-	"polkadot-primitives?/std",
-	"polkadot-runtime-common?/std",
-	"polkadot-runtime-metrics?/std",
-	"polkadot-runtime-parachains?/std",
 	"polkadot-sdk-frame?/std",
 	"sc-executor?/std",
-	"slot-range-helper?/std",
-	"snowbridge-beacon-primitives?/std",
-	"snowbridge-core?/std",
-	"snowbridge-ethereum?/std",
-	"snowbridge-outbound-queue-merkle-tree?/std",
-	"snowbridge-outbound-queue-runtime-api?/std",
-	"snowbridge-pallet-ethereum-client-fixtures?/std",
-	"snowbridge-pallet-ethereum-client?/std",
-	"snowbridge-pallet-inbound-queue-fixtures?/std",
-	"snowbridge-pallet-inbound-queue?/std",
-	"snowbridge-pallet-outbound-queue?/std",
-	"snowbridge-pallet-system?/std",
-	"snowbridge-router-primitives?/std",
-	"snowbridge-runtime-common?/std",
-	"snowbridge-runtime-test-common?/std",
-	"snowbridge-system-runtime-api?/std",
 	"sp-api-proc-macro?/std",
 	"sp-api?/std",
 	"sp-application-crypto?/std",
@@ -226,24 +155,9 @@ std = [
 	"sp-version?/std",
 	"sp-wasm-interface?/std",
 	"sp-weights?/std",
-	"staging-parachain-info?/std",
-	"staging-xcm-builder?/std",
-	"staging-xcm-executor?/std",
-	"staging-xcm?/std",
 	"substrate-bip39?/std",
-	"testnet-parachains-constants?/std",
-	"xcm-runtime-apis?/std",
 ]
 runtime-benchmarks = [
-	"assets-common?/runtime-benchmarks",
-	"bridge-hub-common?/runtime-benchmarks",
-	"bridge-runtime-common?/runtime-benchmarks",
-	"cumulus-pallet-dmp-queue?/runtime-benchmarks",
-	"cumulus-pallet-parachain-system?/runtime-benchmarks",
-	"cumulus-pallet-session-benchmarking?/runtime-benchmarks",
-	"cumulus-pallet-xcmp-queue?/runtime-benchmarks",
-	"cumulus-primitives-core?/runtime-benchmarks",
-	"cumulus-primitives-utility?/runtime-benchmarks",
 	"frame-benchmarking-cli?/runtime-benchmarks",
 	"frame-benchmarking-pallet-pov?/runtime-benchmarks",
 	"frame-benchmarking/runtime-benchmarks",
@@ -264,17 +178,9 @@ runtime-benchmarks = [
 	"pallet-balances?/runtime-benchmarks",
 	"pallet-beefy-mmr?/runtime-benchmarks",
 	"pallet-bounties?/runtime-benchmarks",
-	"pallet-bridge-grandpa?/runtime-benchmarks",
-	"pallet-bridge-messages?/runtime-benchmarks",
-	"pallet-bridge-parachains?/runtime-benchmarks",
-	"pallet-bridge-relayers?/runtime-benchmarks",
 	"pallet-broker?/runtime-benchmarks",
 	"pallet-child-bounties?/runtime-benchmarks",
-	"pallet-collator-selection?/runtime-benchmarks",
-	"pallet-collective-content?/runtime-benchmarks",
 	"pallet-collective?/runtime-benchmarks",
-	"pallet-contracts-mock-network?/runtime-benchmarks",
-	"pallet-contracts?/runtime-benchmarks",
 	"pallet-conviction-voting?/runtime-benchmarks",
 	"pallet-core-fellowship?/runtime-benchmarks",
 	"pallet-delegated-staking?/runtime-benchmarks",
@@ -310,8 +216,6 @@ runtime-benchmarks = [
 	"pallet-recovery?/runtime-benchmarks",
 	"pallet-referenda?/runtime-benchmarks",
 	"pallet-remark?/runtime-benchmarks",
-	"pallet-revive-mock-network?/runtime-benchmarks",
-	"pallet-revive?/runtime-benchmarks",
 	"pallet-root-offences?/runtime-benchmarks",
 	"pallet-safe-mode?/runtime-benchmarks",
 	"pallet-salary?/runtime-benchmarks",
@@ -333,47 +237,13 @@ runtime-benchmarks = [
 	"pallet-verify-signature?/runtime-benchmarks",
 	"pallet-vesting?/runtime-benchmarks",
 	"pallet-whitelist?/runtime-benchmarks",
-	"pallet-xcm-benchmarks?/runtime-benchmarks",
-	"pallet-xcm-bridge-hub-router?/runtime-benchmarks",
-	"pallet-xcm-bridge-hub?/runtime-benchmarks",
-	"pallet-xcm?/runtime-benchmarks",
-	"parachains-common?/runtime-benchmarks",
-	"polkadot-cli?/runtime-benchmarks",
-	"polkadot-node-metrics?/runtime-benchmarks",
-	"polkadot-omni-node-lib?/runtime-benchmarks",
-	"polkadot-parachain-primitives?/runtime-benchmarks",
-	"polkadot-primitives?/runtime-benchmarks",
-	"polkadot-runtime-common?/runtime-benchmarks",
-	"polkadot-runtime-parachains?/runtime-benchmarks",
-	"polkadot-sdk-frame?/runtime-benchmarks",
-	"polkadot-service?/runtime-benchmarks",
 	"sc-client-db?/runtime-benchmarks",
 	"sc-service?/runtime-benchmarks",
-	"snowbridge-core?/runtime-benchmarks",
-	"snowbridge-pallet-ethereum-client-fixtures?/runtime-benchmarks",
-	"snowbridge-pallet-ethereum-client?/runtime-benchmarks",
-	"snowbridge-pallet-inbound-queue-fixtures?/runtime-benchmarks",
-	"snowbridge-pallet-inbound-queue?/runtime-benchmarks",
-	"snowbridge-pallet-outbound-queue?/runtime-benchmarks",
-	"snowbridge-pallet-system?/runtime-benchmarks",
-	"snowbridge-router-primitives?/runtime-benchmarks",
-	"snowbridge-runtime-common?/runtime-benchmarks",
-	"snowbridge-runtime-test-common?/runtime-benchmarks",
 	"sp-runtime?/runtime-benchmarks",
 	"sp-staking?/runtime-benchmarks",
 	"staging-node-inspect?/runtime-benchmarks",
-	"staging-xcm-builder?/runtime-benchmarks",
-	"staging-xcm-executor?/runtime-benchmarks",
-	"xcm-runtime-apis?/runtime-benchmarks",
 ]
 try-runtime = [
-	"cumulus-pallet-aura-ext?/try-runtime",
-	"cumulus-pallet-dmp-queue?/try-runtime",
-	"cumulus-pallet-parachain-system?/try-runtime",
-	"cumulus-pallet-solo-to-para?/try-runtime",
-	"cumulus-pallet-xcm?/try-runtime",
-	"cumulus-pallet-xcmp-queue?/try-runtime",
-	"cumulus-ping?/try-runtime",
 	"frame-benchmarking-pallet-pov?/try-runtime",
 	"frame-election-provider-support?/try-runtime",
 	"frame-executive?/try-runtime",
@@ -398,16 +268,9 @@ try-runtime = [
 	"pallet-beefy-mmr?/try-runtime",
 	"pallet-beefy?/try-runtime",
 	"pallet-bounties?/try-runtime",
-	"pallet-bridge-grandpa?/try-runtime",
-	"pallet-bridge-messages?/try-runtime",
-	"pallet-bridge-parachains?/try-runtime",
-	"pallet-bridge-relayers?/try-runtime",
 	"pallet-broker?/try-runtime",
 	"pallet-child-bounties?/try-runtime",
-	"pallet-collator-selection?/try-runtime",
-	"pallet-collective-content?/try-runtime",
 	"pallet-collective?/try-runtime",
-	"pallet-contracts?/try-runtime",
 	"pallet-conviction-voting?/try-runtime",
 	"pallet-core-fellowship?/try-runtime",
 	"pallet-delegated-staking?/try-runtime",
@@ -443,8 +306,6 @@ try-runtime = [
 	"pallet-recovery?/try-runtime",
 	"pallet-referenda?/try-runtime",
 	"pallet-remark?/try-runtime",
-	"pallet-revive-mock-network?/try-runtime",
-	"pallet-revive?/try-runtime",
 	"pallet-root-offences?/try-runtime",
 	"pallet-root-testing?/try-runtime",
 	"pallet-safe-mode?/try-runtime",
@@ -469,29 +330,14 @@ try-runtime = [
 	"pallet-verify-signature?/try-runtime",
 	"pallet-vesting?/try-runtime",
 	"pallet-whitelist?/try-runtime",
-	"pallet-xcm-bridge-hub-router?/try-runtime",
-	"pallet-xcm-bridge-hub?/try-runtime",
-	"pallet-xcm?/try-runtime",
-	"polkadot-cli?/try-runtime",
-	"polkadot-omni-node-lib?/try-runtime",
-	"polkadot-runtime-common?/try-runtime",
-	"polkadot-runtime-parachains?/try-runtime",
 	"polkadot-sdk-frame?/try-runtime",
-	"polkadot-service?/try-runtime",
-	"snowbridge-pallet-ethereum-client?/try-runtime",
-	"snowbridge-pallet-inbound-queue?/try-runtime",
-	"snowbridge-pallet-outbound-queue?/try-runtime",
-	"snowbridge-pallet-system?/try-runtime",
 	"sp-runtime?/try-runtime",
-	"staging-parachain-info?/try-runtime",
 ]
 serde = [
-	"bp-polkadot-core?/serde",
 	"frame-benchmarking?/serde",
 	"pallet-asset-tx-payment?/serde",
 	"pallet-beefy-mmr?/serde",
 	"pallet-beefy?/serde",
-	"pallet-contracts?/serde",
 	"pallet-conviction-voting?/serde",
 	"pallet-democracy?/serde",
 	"pallet-message-queue?/serde",
@@ -504,12 +350,6 @@ serde = [
 	"pallet-transaction-payment?/serde",
 	"pallet-transaction-storage?/serde",
 	"pallet-treasury?/serde",
-	"pallet-xcm?/serde",
-	"snowbridge-beacon-primitives?/serde",
-	"snowbridge-core?/serde",
-	"snowbridge-ethereum?/serde",
-	"snowbridge-pallet-ethereum-client?/serde",
-	"snowbridge-pallet-inbound-queue?/serde",
 	"sp-application-crypto?/serde",
 	"sp-arithmetic?/serde",
 	"sp-authority-discovery?/serde",
@@ -542,7 +382,7 @@ with-tracing = [
 	"sp-tracing?/with-tracing",
 	"sp-tracing?/with-tracing",
 ]
-runtime-full = ["assets-common", "binary-merkle-tree", "bp-header-chain", "bp-messages", "bp-parachains", "bp-polkadot", "bp-polkadot-core", "bp-relayers", "bp-runtime", "bp-test-utils", "bp-xcm-bridge-hub", "bp-xcm-bridge-hub-router", "bridge-hub-common", "bridge-runtime-common", "cumulus-pallet-aura-ext", "cumulus-pallet-dmp-queue", "cumulus-pallet-parachain-system", "cumulus-pallet-parachain-system-proc-macro", "cumulus-pallet-session-benchmarking", "cumulus-pallet-solo-to-para", "cumulus-pallet-xcm", "cumulus-pallet-xcmp-queue", "cumulus-ping", "cumulus-primitives-aura", "cumulus-primitives-core", "cumulus-primitives-parachain-inherent", "cumulus-primitives-proof-size-hostfunction", "cumulus-primitives-storage-weight-reclaim", "cumulus-primitives-timestamp", "cumulus-primitives-utility", "frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-alliance", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-atomic-swap", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-beefy", "pallet-beefy-mmr", "pallet-bounties", "pallet-bridge-grandpa", "pallet-bridge-messages", "pallet-bridge-parachains", "pallet-bridge-relayers", "pallet-broker", "pallet-child-bounties", "pallet-collator-selection", "pallet-collective", "pallet-collective-content", "pallet-contracts", "pallet-contracts-proc-macro", "pallet-contracts-uapi", "pallet-conviction-voting", "pallet-core-fellowship", "pallet-delegated-staking", "pallet-democracy", "pallet-dev-mode", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-elections-phragmen", "pallet-fast-unstake", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-lottery", "pallet-membership", "pallet-message-queue", "pallet-migrations", "pallet-mixnet", "pallet-mmr", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-node-authorization", "pallet-nomination-pools", "pallet-nomination-pools-benchmarking", "pallet-nomination-pools-runtime-api", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-parameters", "pallet-preimage", "pallet-proxy", "pallet-ranked-collective", "pallet-recovery", "pallet-referenda", "pallet-remark", "pallet-revive", "pallet-revive-fixtures", "pallet-revive-proc-macro", "pallet-revive-uapi", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-salary", "pallet-scheduler", "pallet-scored-pool", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-society", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-statement", "pallet-sudo", "pallet-timestamp", "pallet-tips", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-treasury", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-vesting", "pallet-whitelist", "pallet-xcm", "pallet-xcm-benchmarks", "pallet-xcm-bridge-hub", "pallet-xcm-bridge-hub-router", "parachains-common", "polkadot-core-primitives", "polkadot-parachain-primitives", "polkadot-primitives", "polkadot-runtime-common", "polkadot-runtime-metrics", "polkadot-runtime-parachains", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "slot-range-helper", "snowbridge-beacon-primitives", "snowbridge-core", "snowbridge-ethereum", "snowbridge-outbound-queue-merkle-tree", "snowbridge-outbound-queue-runtime-api", "snowbridge-pallet-ethereum-client", "snowbridge-pallet-ethereum-client-fixtures", "snowbridge-pallet-inbound-queue", "snowbridge-pallet-inbound-queue-fixtures", "snowbridge-pallet-outbound-queue", "snowbridge-pallet-system", "snowbridge-router-primitives", "snowbridge-runtime-common", "snowbridge-system-runtime-api", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-beefy", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-ec-utils", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-mixnet", "sp-mmr-primitives", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-statement-store", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "staging-parachain-info", "staging-xcm", "staging-xcm-builder", "staging-xcm-executor", "substrate-bip39", "testnet-parachains-constants", "tracing-gum-proc-macro", "xcm-procedural", "xcm-runtime-apis"]
+runtime-full = ["binary-merkle-tree", "frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-alliance", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-atomic-swap", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-beefy", "pallet-beefy-mmr", "pallet-bounties", "pallet-broker", "pallet-child-bounties", "pallet-collective", "pallet-conviction-voting", "pallet-core-fellowship", "pallet-delegated-staking", "pallet-democracy", "pallet-dev-mode", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-elections-phragmen", "pallet-fast-unstake", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-lottery", "pallet-membership", "pallet-message-queue", "pallet-migrations", "pallet-mixnet", "pallet-mmr", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-node-authorization", "pallet-nomination-pools", "pallet-nomination-pools-benchmarking", "pallet-nomination-pools-runtime-api", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-parameters", "pallet-preimage", "pallet-proxy", "pallet-ranked-collective", "pallet-recovery", "pallet-referenda", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-salary", "pallet-scheduler", "pallet-scored-pool", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-society", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-statement", "pallet-sudo", "pallet-timestamp", "pallet-tips", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-treasury", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-vesting", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-beefy", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-ec-utils", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-mixnet", "sp-mmr-primitives", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-statement-store", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
 runtime = [
 	"frame-benchmarking",
 	"frame-benchmarking-pallet-pov",
@@ -606,7 +446,7 @@ runtime = [
 	"sp-wasm-interface",
 	"sp-weights",
 ]
-node = ["asset-test-utils", "bridge-hub-test-utils", "cumulus-client-cli", "cumulus-client-collator", "cumulus-client-consensus-aura", "cumulus-client-consensus-common", "cumulus-client-consensus-proposer", "cumulus-client-consensus-relay-chain", "cumulus-client-network", "cumulus-client-parachain-inherent", "cumulus-client-pov-recovery", "cumulus-client-service", "cumulus-relay-chain-inprocess-interface", "cumulus-relay-chain-interface", "cumulus-relay-chain-minimal-node", "cumulus-relay-chain-rpc-interface", "cumulus-test-relay-sproof-builder", "emulated-integration-tests-common", "fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "mmr-gadget", "mmr-rpc", "pallet-contracts-mock-network", "pallet-revive-eth-rpc", "pallet-revive-mock-network", "pallet-transaction-payment-rpc", "parachains-runtimes-test-utils", "polkadot-approval-distribution", "polkadot-availability-bitfield-distribution", "polkadot-availability-distribution", "polkadot-availability-recovery", "polkadot-cli", "polkadot-collator-protocol", "polkadot-dispute-distribution", "polkadot-erasure-coding", "polkadot-gossip-support", "polkadot-network-bridge", "polkadot-node-collation-generation", "polkadot-node-core-approval-voting", "polkadot-node-core-approval-voting-parallel", "polkadot-node-core-av-store", "polkadot-node-core-backing", "polkadot-node-core-bitfield-signing", "polkadot-node-core-candidate-validation", "polkadot-node-core-chain-api", "polkadot-node-core-chain-selection", "polkadot-node-core-dispute-coordinator", "polkadot-node-core-parachains-inherent", "polkadot-node-core-prospective-parachains", "polkadot-node-core-provisioner", "polkadot-node-core-pvf", "polkadot-node-core-pvf-checker", "polkadot-node-core-pvf-common", "polkadot-node-core-pvf-execute-worker", "polkadot-node-core-pvf-prepare-worker", "polkadot-node-core-runtime-api", "polkadot-node-metrics", "polkadot-node-network-protocol", "polkadot-node-primitives", "polkadot-node-subsystem", "polkadot-node-subsystem-types", "polkadot-node-subsystem-util", "polkadot-omni-node-lib", "polkadot-overseer", "polkadot-rpc", "polkadot-service", "polkadot-statement-distribution", "polkadot-statement-table", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-beefy", "sc-consensus-beefy-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-mixnet", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-statement", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-statement-store", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "snowbridge-runtime-test-common", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "staging-tracking-allocator", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder", "tracing-gum", "xcm-emulator", "xcm-simulator"]
+node = ["fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "mmr-gadget", "mmr-rpc", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-beefy", "sc-consensus-beefy-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-mixnet", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-statement", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-statement-store", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
 tuples-96 = [
 	"frame-support-procedural?/tuples-96",
 	"frame-support?/tuples-96",
@@ -618,185 +458,11 @@ workspace = true
 [package.authors]
 workspace = true
 
-[dependencies.assets-common]
-path = "../cumulus/parachains/runtimes/assets/common"
-default-features = false
-optional = true
-version = "0.19.0"
-
 [dependencies.binary-merkle-tree]
 path = "../substrate/utils/binary-merkle-tree"
 default-features = false
 optional = true
 version = "16.0.0"
-
-[dependencies.bp-header-chain]
-path = "../bridges/primitives/header-chain"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-messages]
-path = "../bridges/primitives/messages"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-parachains]
-path = "../bridges/primitives/parachains"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-polkadot]
-path = "../bridges/chains/chain-polkadot"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.bp-polkadot-core]
-path = "../bridges/primitives/polkadot-core"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-relayers]
-path = "../bridges/primitives/relayers"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-runtime]
-path = "../bridges/primitives/runtime"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-test-utils]
-path = "../bridges/primitives/test-utils"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.bp-xcm-bridge-hub]
-path = "../bridges/primitives/xcm-bridge-hub"
-default-features = false
-optional = true
-version = "0.5.0"
-
-[dependencies.bp-xcm-bridge-hub-router]
-path = "../bridges/primitives/xcm-bridge-hub-router"
-default-features = false
-optional = true
-version = "0.15.0"
-
-[dependencies.bridge-hub-common]
-path = "../cumulus/parachains/runtimes/bridge-hubs/common"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.bridge-runtime-common]
-path = "../bridges/bin/runtime-common"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.cumulus-pallet-aura-ext]
-path = "../cumulus/pallets/aura-ext"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-pallet-dmp-queue]
-path = "../cumulus/pallets/dmp-queue"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-pallet-parachain-system]
-path = "../cumulus/pallets/parachain-system"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-pallet-parachain-system-proc-macro]
-path = "../cumulus/pallets/parachain-system/proc-macro"
-default-features = false
-optional = true
-version = "0.6.0"
-
-[dependencies.cumulus-pallet-session-benchmarking]
-path = "../cumulus/pallets/session-benchmarking"
-default-features = false
-optional = true
-version = "20.0.0"
-
-[dependencies.cumulus-pallet-solo-to-para]
-path = "../cumulus/pallets/solo-to-para"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-pallet-xcm]
-path = "../cumulus/pallets/xcm"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-pallet-xcmp-queue]
-path = "../cumulus/pallets/xcmp-queue"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-ping]
-path = "../cumulus/parachains/pallets/ping"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.cumulus-primitives-aura]
-path = "../cumulus/primitives/aura"
-default-features = false
-optional = true
-version = "0.16.0"
-
-[dependencies.cumulus-primitives-core]
-path = "../cumulus/primitives/core"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.cumulus-primitives-parachain-inherent]
-path = "../cumulus/primitives/parachain-inherent"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.cumulus-primitives-proof-size-hostfunction]
-path = "../cumulus/primitives/proof-size-hostfunction"
-default-features = false
-optional = true
-version = "0.11.0"
-
-[dependencies.cumulus-primitives-storage-weight-reclaim]
-path = "../cumulus/primitives/storage-weight-reclaim"
-default-features = false
-optional = true
-version = "9.0.0"
-
-[dependencies.cumulus-primitives-timestamp]
-path = "../cumulus/primitives/timestamp"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.cumulus-primitives-utility]
-path = "../cumulus/primitives/utility"
-default-features = false
-optional = true
-version = "0.18.0"
 
 [dependencies.frame-benchmarking]
 path = "../substrate/frame/benchmarking"
@@ -984,30 +650,6 @@ default-features = false
 optional = true
 version = "38.0.1"
 
-[dependencies.pallet-bridge-grandpa]
-path = "../bridges/modules/grandpa"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.pallet-bridge-messages]
-path = "../bridges/modules/messages"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.pallet-bridge-parachains]
-path = "../bridges/modules/parachains"
-default-features = false
-optional = true
-version = "0.19.0"
-
-[dependencies.pallet-bridge-relayers]
-path = "../bridges/modules/relayers"
-default-features = false
-optional = true
-version = "0.19.0"
-
 [dependencies.pallet-broker]
 path = "../substrate/frame/broker"
 default-features = false
@@ -1020,41 +662,11 @@ default-features = false
 optional = true
 version = "38.0.0"
 
-[dependencies.pallet-collator-selection]
-path = "../cumulus/pallets/collator-selection"
-default-features = false
-optional = true
-version = "20.0.0"
-
 [dependencies.pallet-collective]
 path = "../substrate/frame/collective"
 default-features = false
 optional = true
 version = "39.0.0"
-
-[dependencies.pallet-collective-content]
-path = "../cumulus/parachains/pallets/collective-content"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.pallet-contracts]
-path = "../substrate/frame/contracts"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-contracts-proc-macro]
-path = "../substrate/frame/contracts/proc-macro"
-default-features = false
-optional = true
-version = "23.0.2"
-
-[dependencies.pallet-contracts-uapi]
-path = "../substrate/frame/contracts/uapi"
-default-features = false
-optional = true
-version = "12.0.1"
 
 [dependencies.pallet-conviction-voting]
 path = "../substrate/frame/conviction-voting"
@@ -1296,30 +908,6 @@ default-features = false
 optional = true
 version = "39.0.0"
 
-[dependencies.pallet-revive]
-path = "../substrate/frame/revive"
-default-features = false
-optional = true
-version = "0.3.0"
-
-[dependencies.pallet-revive-fixtures]
-path = "../substrate/frame/revive/fixtures"
-default-features = false
-optional = true
-version = "0.3.0"
-
-[dependencies.pallet-revive-proc-macro]
-path = "../substrate/frame/revive/proc-macro"
-default-features = false
-optional = true
-version = "0.1.2"
-
-[dependencies.pallet-revive-uapi]
-path = "../substrate/frame/revive/uapi"
-default-features = false
-optional = true
-version = "0.2.0"
-
 [dependencies.pallet-root-offences]
 path = "../substrate/frame/root-offences"
 default-features = false
@@ -1494,72 +1082,6 @@ default-features = false
 optional = true
 version = "38.0.0"
 
-[dependencies.pallet-xcm]
-path = "../polkadot/xcm/pallet-xcm"
-default-features = false
-optional = true
-version = "18.0.0"
-
-[dependencies.pallet-xcm-benchmarks]
-path = "../polkadot/xcm/pallet-xcm-benchmarks"
-default-features = false
-optional = true
-version = "18.0.0"
-
-[dependencies.pallet-xcm-bridge-hub]
-path = "../bridges/modules/xcm-bridge-hub"
-default-features = false
-optional = true
-version = "0.14.0"
-
-[dependencies.pallet-xcm-bridge-hub-router]
-path = "../bridges/modules/xcm-bridge-hub-router"
-default-features = false
-optional = true
-version = "0.16.0"
-
-[dependencies.parachains-common]
-path = "../cumulus/parachains/common"
-default-features = false
-optional = true
-version = "19.0.0"
-
-[dependencies.polkadot-core-primitives]
-path = "../polkadot/core-primitives"
-default-features = false
-optional = true
-version = "16.0.0"
-
-[dependencies.polkadot-parachain-primitives]
-path = "../polkadot/parachain"
-default-features = false
-optional = true
-version = "15.0.0"
-
-[dependencies.polkadot-primitives]
-path = "../polkadot/primitives"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.polkadot-runtime-common]
-path = "../polkadot/runtime/common"
-default-features = false
-optional = true
-version = "18.0.0"
-
-[dependencies.polkadot-runtime-metrics]
-path = "../polkadot/runtime/metrics"
-default-features = false
-optional = true
-version = "18.0.0"
-
-[dependencies.polkadot-runtime-parachains]
-path = "../polkadot/runtime/parachains"
-default-features = false
-optional = true
-version = "18.0.1"
-
 [dependencies.polkadot-sdk-frame]
 path = "../substrate/frame"
 default-features = false
@@ -1577,96 +1099,6 @@ path = "../substrate/client/tracing/proc-macro"
 default-features = false
 optional = true
 version = "11.0.0"
-
-[dependencies.slot-range-helper]
-path = "../polkadot/runtime/common/slot_range_helper"
-default-features = false
-optional = true
-version = "16.0.0"
-
-[dependencies.snowbridge-beacon-primitives]
-path = "../bridges/snowbridge/primitives/beacon"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-core]
-path = "../bridges/snowbridge/primitives/core"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-ethereum]
-path = "../bridges/snowbridge/primitives/ethereum"
-default-features = false
-optional = true
-version = "0.11.0"
-
-[dependencies.snowbridge-outbound-queue-merkle-tree]
-path = "../bridges/snowbridge/pallets/outbound-queue/merkle-tree"
-default-features = false
-optional = true
-version = "0.10.0"
-
-[dependencies.snowbridge-outbound-queue-runtime-api]
-path = "../bridges/snowbridge/pallets/outbound-queue/runtime-api"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-pallet-ethereum-client]
-path = "../bridges/snowbridge/pallets/ethereum-client"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-pallet-ethereum-client-fixtures]
-path = "../bridges/snowbridge/pallets/ethereum-client/fixtures"
-default-features = false
-optional = true
-version = "0.20.0"
-
-[dependencies.snowbridge-pallet-inbound-queue]
-path = "../bridges/snowbridge/pallets/inbound-queue"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-pallet-inbound-queue-fixtures]
-path = "../bridges/snowbridge/pallets/inbound-queue/fixtures"
-default-features = false
-optional = true
-version = "0.20.1"
-
-[dependencies.snowbridge-pallet-outbound-queue]
-path = "../bridges/snowbridge/pallets/outbound-queue"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-pallet-system]
-path = "../bridges/snowbridge/pallets/system"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-router-primitives]
-path = "../bridges/snowbridge/primitives/router"
-default-features = false
-optional = true
-version = "0.18.1"
-
-[dependencies.snowbridge-runtime-common]
-path = "../bridges/snowbridge/runtime/runtime-common"
-default-features = false
-optional = true
-version = "0.12.0"
-
-[dependencies.snowbridge-system-runtime-api]
-path = "../bridges/snowbridge/pallets/system/runtime-api"
-default-features = false
-optional = true
-version = "0.12.0"
 
 [dependencies.sp-api]
 path = "../substrate/primitives/api"
@@ -1944,167 +1376,11 @@ default-features = false
 optional = true
 version = "31.0.0"
 
-[dependencies.staging-parachain-info]
-path = "../cumulus/parachains/pallets/parachain-info"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.staging-xcm]
-path = "../polkadot/xcm"
-default-features = false
-optional = true
-version = "15.0.1"
-
-[dependencies.staging-xcm-builder]
-path = "../polkadot/xcm/xcm-builder"
-default-features = false
-optional = true
-version = "18.0.0"
-
-[dependencies.staging-xcm-executor]
-path = "../polkadot/xcm/xcm-executor"
-default-features = false
-optional = true
-version = "18.0.0"
-
 [dependencies.substrate-bip39]
 path = "../substrate/utils/substrate-bip39"
 default-features = false
 optional = true
 version = "0.6.0"
-
-[dependencies.testnet-parachains-constants]
-path = "../cumulus/parachains/runtimes/constants"
-default-features = false
-optional = true
-version = "11.0.0"
-
-[dependencies.tracing-gum-proc-macro]
-path = "../polkadot/node/gum/proc-macro"
-default-features = false
-optional = true
-version = "5.0.0"
-
-[dependencies.xcm-procedural]
-path = "../polkadot/xcm/procedural"
-default-features = false
-optional = true
-version = "11.0.0"
-
-[dependencies.xcm-runtime-apis]
-path = "../polkadot/xcm/xcm-runtime-apis"
-default-features = false
-optional = true
-version = "0.5.0"
-
-[dependencies.asset-test-utils]
-path = "../cumulus/parachains/runtimes/assets/test-utils"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.bridge-hub-test-utils]
-path = "../cumulus/parachains/runtimes/bridge-hubs/test-utils"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-cli]
-path = "../cumulus/client/cli"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-collator]
-path = "../cumulus/client/collator"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-consensus-aura]
-path = "../cumulus/client/consensus/aura"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-consensus-common]
-path = "../cumulus/client/consensus/common"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-consensus-proposer]
-path = "../cumulus/client/consensus/proposer"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.cumulus-client-consensus-relay-chain]
-path = "../cumulus/client/consensus/relay-chain"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-network]
-path = "../cumulus/client/network"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-parachain-inherent]
-path = "../cumulus/client/parachain-inherent"
-default-features = false
-optional = true
-version = "0.15.0"
-
-[dependencies.cumulus-client-pov-recovery]
-path = "../cumulus/client/pov-recovery"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-client-service]
-path = "../cumulus/client/service"
-default-features = false
-optional = true
-version = "0.22.0"
-
-[dependencies.cumulus-relay-chain-inprocess-interface]
-path = "../cumulus/client/relay-chain-inprocess-interface"
-default-features = false
-optional = true
-version = "0.22.0"
-
-[dependencies.cumulus-relay-chain-interface]
-path = "../cumulus/client/relay-chain-interface"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-relay-chain-minimal-node]
-path = "../cumulus/client/relay-chain-minimal-node"
-default-features = false
-optional = true
-version = "0.22.0"
-
-[dependencies.cumulus-relay-chain-rpc-interface]
-path = "../cumulus/client/relay-chain-rpc-interface"
-default-features = false
-optional = true
-version = "0.21.0"
-
-[dependencies.cumulus-test-relay-sproof-builder]
-path = "../cumulus/test/relay-sproof-builder"
-default-features = false
-optional = true
-version = "0.17.0"
-
-[dependencies.emulated-integration-tests-common]
-path = "../cumulus/parachains/integration-tests/emulated/common"
-default-features = false
-optional = true
-version = "19.0.0"
 
 [dependencies.fork-tree]
 path = "../substrate/utils/fork-tree"
@@ -2148,281 +1424,11 @@ default-features = false
 optional = true
 version = "39.0.0"
 
-[dependencies.pallet-contracts-mock-network]
-path = "../substrate/frame/contracts/mock-network"
-default-features = false
-optional = true
-version = "15.0.0"
-
-[dependencies.pallet-revive-eth-rpc]
-path = "../substrate/frame/revive/rpc"
-default-features = false
-optional = true
-version = "0.2.0"
-
-[dependencies.pallet-revive-mock-network]
-path = "../substrate/frame/revive/mock-network"
-default-features = false
-optional = true
-version = "0.3.0"
-
 [dependencies.pallet-transaction-payment-rpc]
 path = "../substrate/frame/transaction-payment/rpc"
 default-features = false
 optional = true
 version = "42.0.0"
-
-[dependencies.parachains-runtimes-test-utils]
-path = "../cumulus/parachains/runtimes/test-utils"
-default-features = false
-optional = true
-version = "20.0.0"
-
-[dependencies.polkadot-approval-distribution]
-path = "../polkadot/node/network/approval-distribution"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-availability-bitfield-distribution]
-path = "../polkadot/node/network/bitfield-distribution"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-availability-distribution]
-path = "../polkadot/node/network/availability-distribution"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-availability-recovery]
-path = "../polkadot/node/network/availability-recovery"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-cli]
-path = "../polkadot/cli"
-default-features = false
-optional = true
-version = "22.0.0"
-
-[dependencies.polkadot-collator-protocol]
-path = "../polkadot/node/network/collator-protocol"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-dispute-distribution]
-path = "../polkadot/node/network/dispute-distribution"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-erasure-coding]
-path = "../polkadot/erasure-coding"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.polkadot-gossip-support]
-path = "../polkadot/node/network/gossip-support"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-network-bridge]
-path = "../polkadot/node/network/bridge"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-collation-generation]
-path = "../polkadot/node/collation-generation"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-approval-voting]
-path = "../polkadot/node/core/approval-voting"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-approval-voting-parallel]
-path = "../polkadot/node/core/approval-voting-parallel"
-default-features = false
-optional = true
-version = "0.4.0"
-
-[dependencies.polkadot-node-core-av-store]
-path = "../polkadot/node/core/av-store"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-backing]
-path = "../polkadot/node/core/backing"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-bitfield-signing]
-path = "../polkadot/node/core/bitfield-signing"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-candidate-validation]
-path = "../polkadot/node/core/candidate-validation"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-chain-api]
-path = "../polkadot/node/core/chain-api"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-chain-selection]
-path = "../polkadot/node/core/chain-selection"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-dispute-coordinator]
-path = "../polkadot/node/core/dispute-coordinator"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-parachains-inherent]
-path = "../polkadot/node/core/parachains-inherent"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-prospective-parachains]
-path = "../polkadot/node/core/prospective-parachains"
-default-features = false
-optional = true
-version = "20.0.0"
-
-[dependencies.polkadot-node-core-provisioner]
-path = "../polkadot/node/core/provisioner"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-pvf]
-path = "../polkadot/node/core/pvf"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-pvf-checker]
-path = "../polkadot/node/core/pvf-checker"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-core-pvf-common]
-path = "../polkadot/node/core/pvf/common"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.polkadot-node-core-pvf-execute-worker]
-path = "../polkadot/node/core/pvf/execute-worker"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.polkadot-node-core-pvf-prepare-worker]
-path = "../polkadot/node/core/pvf/prepare-worker"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.polkadot-node-core-runtime-api]
-path = "../polkadot/node/core/runtime-api"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-metrics]
-path = "../polkadot/node/metrics"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-network-protocol]
-path = "../polkadot/node/network/protocol"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-primitives]
-path = "../polkadot/node/primitives"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.polkadot-node-subsystem]
-path = "../polkadot/node/subsystem"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-subsystem-types]
-path = "../polkadot/node/subsystem-types"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-node-subsystem-util]
-path = "../polkadot/node/subsystem-util"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-omni-node-lib]
-path = "../cumulus/polkadot-omni-node/lib"
-default-features = false
-optional = true
-version = "0.4.0"
-
-[dependencies.polkadot-overseer]
-path = "../polkadot/node/overseer"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-rpc]
-path = "../polkadot/rpc"
-default-features = false
-optional = true
-version = "22.0.0"
-
-[dependencies.polkadot-service]
-path = "../polkadot/node/service"
-default-features = false
-optional = true
-version = "22.0.0"
-
-[dependencies.polkadot-statement-distribution]
-path = "../polkadot/node/network/statement-distribution"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.polkadot-statement-table]
-path = "../polkadot/statement-table"
-default-features = false
-optional = true
-version = "17.0.0"
 
 [dependencies.sc-allocator]
 path = "../substrate/client/allocator"
@@ -2736,12 +1742,6 @@ default-features = false
 optional = true
 version = "18.0.0"
 
-[dependencies.snowbridge-runtime-test-common]
-path = "../bridges/snowbridge/runtime/test-common"
-default-features = false
-optional = true
-version = "0.14.0"
-
 [dependencies.sp-blockchain]
 path = "../substrate/primitives/blockchain"
 default-features = false
@@ -2802,12 +1802,6 @@ default-features = false
 optional = true
 version = "0.26.0"
 
-[dependencies.staging-tracking-allocator]
-path = "../polkadot/node/tracking-allocator"
-default-features = false
-optional = true
-version = "2.0.0"
-
 [dependencies.subkey]
 path = "../substrate/bin/utils/subkey"
 default-features = false
@@ -2855,24 +1849,6 @@ path = "../substrate/utils/wasm-builder"
 default-features = false
 optional = true
 version = "25.0.0"
-
-[dependencies.tracing-gum]
-path = "../polkadot/node/gum"
-default-features = false
-optional = true
-version = "17.0.0"
-
-[dependencies.xcm-emulator]
-path = "../cumulus/xcm/xcm-emulator"
-default-features = false
-optional = true
-version = "0.17.1"
-
-[dependencies.xcm-simulator]
-path = "../polkadot/xcm/xcm-simulator"
-default-features = false
-optional = true
-version = "18.0.0"
 
 [package.metadata.docs.rs]
 features = ["node", "runtime-full"]
