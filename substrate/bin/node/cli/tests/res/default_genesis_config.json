@@ -16,7 +16,6 @@
   "balances": {
     "balances": []
   },
-  "broker": {},
   "transactionPayment": {
     "multiplier": "1000000000000000000"
   },
@@ -38,27 +37,12 @@
     "nonAuthorityKeys": []
 
   },
-  "democracy": {},
-  "council": {
-    "members": []
-  },
-  "technicalCommittee": {
-    "members": []
-  },
-  "elections": {
-    "members": []
-  },
   "technicalMembership": {
     "members": []
   },
   "grandpa": {
     "authorities": []
   },
-  "beefy": {
-    "authorities": [],
-    "genesisBlock": 1
-  },
-  "treasury": {},
   "sudo": {
     "key": null
   },
@@ -67,9 +51,6 @@
   },
   "authorityDiscovery": {
     "keys": []
-  },
-  "society": {
-    "pot": 0
   },
   "vesting": {
     "vesting": []
@@ -97,23 +78,8 @@
     "entryFee": 1000,
     "storagePeriod": 100800
   },
-  "allianceMotion": {
-    "members": []
-  },
-  "alliance": {
-    "fellows": [],
-    "allies": []
-  },
   "mixnet": {
     "mixnodes": []
-  },
-  "nominationPools": {
-    "minJoinBond": 0,
-    "minCreateBond": 0,
-    "maxPools": 16,
-    "maxMembersPerPool": 32,
-    "maxMembers": 512,
-    "globalMaxCommission": null
   },
   "txPause": {
     "paused": []

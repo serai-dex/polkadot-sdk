@@ -5012,8 +5012,6 @@ version = "3.0.0"
 dependencies = [
  "log",
  "node-primitives",
- "pallet-example-mbm",
- "pallet-example-tasks",
  "parity-scale-codec",
  "polkadot-sdk",
  "primitive-types 0.13.1",
@@ -5773,24 +5771,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lite-json"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd0e787ffe1153141a0f6f6d759fdf1cc34b1226e088444523812fd412a5cca2"
-dependencies = [
- "lite-parser",
-]
-
-[[package]]
-name = "lite-parser"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3d5f9dc37c52d889a21fd701983d02bb6a84f852c5140a6c80ef4557f7dc29e"
-dependencies = [
- "paste",
-]
-
-[[package]]
 name = "litep2p"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6175,44 +6155,6 @@ dependencies = [
  "subtle 2.5.0",
  "thiserror",
  "zeroize",
-]
-
-[[package]]
-name = "mmr-gadget"
-version = "43.0.0"
-dependencies = [
- "futures",
- "log",
- "parity-scale-codec",
- "parking_lot 0.12.3",
- "sc-block-builder",
- "sc-client-api",
- "sc-offchain",
- "sp-api",
- "sp-blockchain",
- "sp-consensus",
- "sp-consensus-beefy",
- "sp-core 35.0.0",
- "sp-mmr-primitives",
- "sp-runtime 40.1.0",
- "sp-tracing 17.0.1",
- "substrate-test-runtime-client",
- "tokio",
-]
-
-[[package]]
-name = "mmr-rpc"
-version = "39.0.0"
-dependencies = [
- "jsonrpsee 0.24.3",
- "parity-scale-codec",
- "serde",
- "serde_json",
- "sp-api",
- "sp-blockchain",
- "sp-core 35.0.0",
- "sp-mmr-primitives",
- "sp-runtime 40.1.0",
 ]
 
 [[package]]
@@ -6620,15 +6562,12 @@ name = "node-rpc"
 version = "3.0.0"
 dependencies = [
  "jsonrpsee 0.24.3",
- "mmr-rpc",
  "node-primitives",
  "pallet-transaction-payment-rpc",
  "sc-chain-spec",
  "sc-client-api",
  "sc-consensus-babe",
  "sc-consensus-babe-rpc",
- "sc-consensus-beefy",
- "sc-consensus-beefy-rpc",
  "sc-consensus-grandpa",
  "sc-consensus-grandpa-rpc",
  "sc-mixnet",
@@ -6636,12 +6575,10 @@ dependencies = [
  "sc-sync-state-rpc",
  "sc-transaction-pool-api",
  "sp-api",
- "sp-application-crypto 39.0.0",
  "sp-block-builder",
  "sp-blockchain",
  "sp-consensus",
  "sp-consensus-babe",
- "sp-consensus-beefy",
  "sp-keystore 0.41.0",
  "sp-runtime 40.1.0",
  "sp-statement-store",
@@ -7009,26 +6946,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
-name = "pallet-alliance"
-version = "38.0.0"
-dependencies = [
- "array-bytes",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-collective",
- "pallet-identity",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-crypto-hashing 0.1.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-asset-conversion"
 version = "21.0.0"
 dependencies = [
@@ -7149,20 +7066,6 @@ dependencies = [
  "frame-system",
  "log",
  "pallet-assets",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-atomic-swap"
-version = "39.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
  "pallet-balances",
  "parity-scale-codec",
  "scale-info",
@@ -7312,218 +7215,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-beefy"
-version = "40.0.0"
-dependencies = [
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-authorship",
- "pallet-balances",
- "pallet-offences",
- "pallet-session",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-consensus-beefy",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-session",
- "sp-staking",
- "sp-state-machine 0.44.0",
-]
-
-[[package]]
-name = "pallet-beefy-mmr"
-version = "40.0.0"
-dependencies = [
- "array-bytes",
- "binary-merkle-tree",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-beefy",
- "pallet-mmr",
- "pallet-session",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-api",
- "sp-consensus-beefy",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-state-machine 0.44.0",
-]
-
-[[package]]
-name = "pallet-bounties"
-version = "38.0.1"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-treasury",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-broker"
-version = "0.18.0"
-dependencies = [
- "bitvec",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "pretty_assertions",
- "scale-info",
- "sp-api",
- "sp-arithmetic 26.0.0",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-tracing 17.0.1",
-]
-
-[[package]]
-name = "pallet-child-bounties"
-version = "38.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-bounties",
- "pallet-treasury",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-collective"
-version = "39.0.0"
-dependencies = [
- "docify",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-conviction-voting"
-version = "39.0.0"
-dependencies = [
- "assert_matches",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-balances",
- "pallet-scheduler",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-default-config-example"
-version = "10.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-delegated-staking"
-version = "6.0.0"
-dependencies = [
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-nomination-pools",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-tracing 17.0.1",
- "substrate-test-utils",
-]
-
-[[package]]
-name = "pallet-democracy"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-preimage",
- "pallet-scheduler",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-dev-mode"
-version = "21.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-election-provider-e2e-test"
 version = "1.0.0"
 dependencies = [
@@ -7534,7 +7225,6 @@ dependencies = [
  "pallet-bags-list",
  "pallet-balances",
  "pallet-election-provider-multi-phase",
- "pallet-nomination-pools",
  "pallet-session",
  "pallet-staking",
  "pallet-timestamp",
@@ -7584,203 +7274,6 @@ dependencies = [
  "parity-scale-codec",
  "sp-npos-elections",
  "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-elections-phragmen"
-version = "40.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-npos-elections",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-tracing 17.0.1",
- "substrate-test-utils",
-]
-
-[[package]]
-name = "pallet-example-authorization-tx-extension"
-version = "1.0.0"
-dependencies = [
- "docify",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-verify-signature",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-keyring",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-example-basic"
-version = "34.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-example-frame-crate"
-version = "0.1.0"
-dependencies = [
- "parity-scale-codec",
- "polkadot-sdk-frame",
- "scale-info",
-]
-
-[[package]]
-name = "pallet-example-kitchensink"
-version = "4.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-example-mbm"
-version = "0.1.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-migrations",
- "parity-scale-codec",
- "scale-info",
- "sp-io 39.0.0",
-]
-
-[[package]]
-name = "pallet-example-offchain-worker"
-version = "28.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "lite-json",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-keystore 0.41.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-example-single-block-migrations"
-version = "0.1.0"
-dependencies = [
- "docify",
- "frame-executive",
- "frame-support",
- "frame-system",
- "frame-try-runtime",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-version",
-]
-
-[[package]]
-name = "pallet-example-split"
-version = "10.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
-]
-
-[[package]]
-name = "pallet-example-tasks"
-version = "1.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-examples"
-version = "7.0.0"
-dependencies = [
- "pallet-default-config-example",
- "pallet-dev-mode",
- "pallet-example-authorization-tx-extension",
- "pallet-example-basic",
- "pallet-example-frame-crate",
- "pallet-example-kitchensink",
- "pallet-example-offchain-worker",
- "pallet-example-single-block-migrations",
- "pallet-example-split",
- "pallet-example-tasks",
-]
-
-[[package]]
-name = "pallet-fast-unstake"
-version = "38.0.0"
-dependencies = [
- "docify",
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-tracing 17.0.1",
- "substrate-test-utils",
 ]
 
 [[package]]
@@ -7898,37 +7391,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-lottery"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-support-test",
- "frame-system",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-membership"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-message-queue"
 version = "42.0.0"
 dependencies = [
@@ -8000,25 +7462,6 @@ dependencies = [
  "sp-io 39.0.0",
  "sp-mixnet",
  "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-mmr"
-version = "39.0.0"
-dependencies = [
- "array-bytes",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "itertools 0.11.0",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-mmr-primitives",
- "sp-runtime 40.1.0",
- "sp-tracing 17.0.1",
 ]
 
 [[package]]
@@ -8095,134 +7538,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-node-authorization"
-version = "39.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-nomination-pools"
-version = "37.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-tracing 17.0.1",
-]
-
-[[package]]
-name = "pallet-nomination-pools-benchmarking"
-version = "37.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "pallet-bags-list",
- "pallet-balances",
- "pallet-delegated-staking",
- "pallet-nomination-pools",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-runtime-interface 29.0.0",
- "sp-staking",
-]
-
-[[package]]
-name = "pallet-nomination-pools-fuzzer"
-version = "2.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "honggfuzz",
- "log",
- "pallet-nomination-pools",
- "rand",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-tracing 17.0.1",
-]
-
-[[package]]
-name = "pallet-nomination-pools-runtime-api"
-version = "35.0.0"
-dependencies = [
- "pallet-nomination-pools",
- "parity-scale-codec",
- "sp-api",
-]
-
-[[package]]
-name = "pallet-nomination-pools-test-delegate-stake"
-version = "1.0.0"
-dependencies = [
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-bags-list",
- "pallet-balances",
- "pallet-delegated-staking",
- "pallet-nomination-pools",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-std 14.0.0",
- "sp-tracing 17.0.1",
-]
-
-[[package]]
-name = "pallet-nomination-pools-test-transfer-stake"
-version = "1.0.0"
-dependencies = [
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-bags-list",
- "pallet-balances",
- "pallet-nomination-pools",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-staking",
- "sp-std 14.0.0",
- "sp-tracing 17.0.1",
-]
-
-[[package]]
 name = "pallet-offences"
 version = "38.0.0"
 dependencies = [
@@ -8293,25 +7608,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-parameters"
-version = "0.10.0"
-dependencies = [
- "docify",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-balances",
- "pallet-example-basic",
- "parity-scale-codec",
- "paste",
- "scale-info",
- "serde",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-preimage"
 version = "39.0.0"
 dependencies = [
@@ -8336,59 +7632,6 @@ dependencies = [
  "parity-scale-codec",
  "polkadot-sdk-frame",
  "scale-info",
-]
-
-[[package]]
-name = "pallet-ranked-collective"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "impl-trait-for-tuples",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-arithmetic 26.0.0",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-recovery"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-referenda"
-version = "39.0.0"
-dependencies = [
- "assert_matches",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-preimage",
- "pallet-scheduler",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-arithmetic 26.0.0",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
 ]
 
 [[package]]
@@ -8460,23 +7703,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-salary"
-version = "24.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-ranked-collective",
- "parity-scale-codec",
- "scale-info",
- "sp-arithmetic 26.0.0",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-scheduler"
 version = "40.0.0"
 dependencies = [
@@ -8493,20 +7719,6 @@ dependencies = [
  "sp-runtime 40.1.0",
  "sp-weights 31.0.0",
  "substrate-test-utils",
-]
-
-[[package]]
-name = "pallet-scored-pool"
-version = "39.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
 ]
 
 [[package]]
@@ -8559,26 +7771,6 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "scale-info",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
-name = "pallet-society"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-support-test",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "rand_chacha",
- "scale-info",
- "sp-arithmetic 26.0.0",
- "sp-core 35.0.0",
- "sp-crypto-hashing 0.1.0",
- "sp-io 39.0.0",
  "sp-runtime 40.1.0",
 ]
 
@@ -8729,25 +7921,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-tips"
-version = "38.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-treasury",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
- "sp-storage 22.0.0",
-]
-
-[[package]]
 name = "pallet-transaction-payment"
 version = "39.0.0"
 dependencies = [
@@ -8811,26 +7984,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-treasury"
-version = "38.0.0"
-dependencies = [
- "docify",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "impl-trait-for-tuples",
- "log",
- "pallet-balances",
- "pallet-utility",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
-]
-
-[[package]]
 name = "pallet-tx-pause"
 version = "20.0.0"
 dependencies = [
@@ -8873,7 +8026,6 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-balances",
- "pallet-collective",
  "pallet-root-testing",
  "pallet-timestamp",
  "parity-scale-codec",
@@ -8891,7 +8043,6 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-balances",
- "pallet-collective",
  "pallet-root-testing",
  "pallet-timestamp",
  "parity-scale-codec",
@@ -8900,22 +8051,6 @@ dependencies = [
  "sp-io 39.0.0",
  "sp-runtime 40.1.0",
  "sp-weights 31.0.0",
-]
-
-[[package]]
-name = "pallet-vesting"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "sp-core 35.0.0",
- "sp-io 39.0.0",
- "sp-runtime 40.1.0",
 ]
 
 [[package]]
@@ -9256,16 +8391,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "polkadot-ckb-merkle-mountain-range"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4b44320e5f7ce2c18227537a3032ae5b2c476a7e8eddba45333e1011fc31b92"
-dependencies = [
- "cfg-if",
- "itertools 0.10.5",
-]
-
-[[package]]
 name = "polkadot-sdk"
 version = "0.10.1"
 dependencies = [
@@ -9288,9 +8413,6 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "generate-bags",
- "mmr-gadget",
- "mmr-rpc",
- "pallet-alliance",
  "pallet-asset-conversion",
  "pallet-asset-conversion-ops",
  "pallet-asset-conversion-tx-payment",
@@ -9298,68 +8420,41 @@ dependencies = [
  "pallet-asset-tx-payment",
  "pallet-assets",
  "pallet-assets-freezer",
- "pallet-atomic-swap",
  "pallet-aura",
  "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-babe",
  "pallet-bags-list",
  "pallet-balances",
- "pallet-beefy",
- "pallet-beefy-mmr",
- "pallet-bounties",
- "pallet-broker",
- "pallet-child-bounties",
- "pallet-collective",
- "pallet-conviction-voting",
- "pallet-delegated-staking",
- "pallet-democracy",
- "pallet-dev-mode",
  "pallet-election-provider-multi-phase",
  "pallet-election-provider-support-benchmarking",
- "pallet-elections-phragmen",
- "pallet-fast-unstake",
  "pallet-glutton",
  "pallet-grandpa",
  "pallet-identity",
  "pallet-im-online",
  "pallet-indices",
  "pallet-insecure-randomness-collective-flip",
- "pallet-lottery",
- "pallet-membership",
  "pallet-message-queue",
  "pallet-migrations",
  "pallet-mixnet",
- "pallet-mmr",
  "pallet-multisig",
  "pallet-nft-fractionalization",
  "pallet-nfts",
  "pallet-nfts-runtime-api",
  "pallet-nis",
- "pallet-node-authorization",
- "pallet-nomination-pools",
- "pallet-nomination-pools-benchmarking",
- "pallet-nomination-pools-runtime-api",
  "pallet-offences",
  "pallet-offences-benchmarking",
  "pallet-paged-list",
- "pallet-parameters",
  "pallet-preimage",
  "pallet-proxy",
- "pallet-ranked-collective",
- "pallet-recovery",
- "pallet-referenda",
  "pallet-remark",
  "pallet-root-offences",
  "pallet-root-testing",
  "pallet-safe-mode",
- "pallet-salary",
  "pallet-scheduler",
- "pallet-scored-pool",
  "pallet-session",
  "pallet-session-benchmarking",
  "pallet-skip-feeless-payment",
- "pallet-society",
  "pallet-staking",
  "pallet-staking-reward-curve",
  "pallet-staking-reward-fn",
@@ -9368,17 +8463,14 @@ dependencies = [
  "pallet-statement",
  "pallet-sudo",
  "pallet-timestamp",
- "pallet-tips",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc",
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-transaction-storage",
- "pallet-treasury",
  "pallet-tx-pause",
  "pallet-uniques",
  "pallet-utility",
  "pallet-verify-signature",
- "pallet-vesting",
  "pallet-whitelist",
  "polkadot-sdk-frame",
  "sc-allocator",
@@ -9394,8 +8486,6 @@ dependencies = [
  "sc-consensus-aura",
  "sc-consensus-babe",
  "sc-consensus-babe-rpc",
- "sc-consensus-beefy",
- "sc-consensus-beefy-rpc",
  "sc-consensus-epochs",
  "sc-consensus-grandpa",
  "sc-consensus-grandpa-rpc",
@@ -9445,7 +8535,6 @@ dependencies = [
  "sp-consensus",
  "sp-consensus-aura",
  "sp-consensus-babe",
- "sp-consensus-beefy",
  "sp-consensus-grandpa",
  "sp-consensus-pow",
  "sp-consensus-slots",
@@ -9466,7 +8555,6 @@ dependencies = [
  "sp-maybe-compressed-blob",
  "sp-metadata-ir",
  "sp-mixnet",
- "sp-mmr-primitives",
  "sp-npos-elections",
  "sp-offchain",
  "sp-panic-handler 13.0.1",
@@ -9515,7 +8603,6 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "log",
- "pallet-examples",
  "parity-scale-codec",
  "scale-info",
  "sp-api",
@@ -11249,72 +10336,6 @@ dependencies = [
  "sp-core 35.0.0",
  "sp-keyring",
  "sp-keystore 0.41.0",
- "sp-runtime 40.1.0",
- "substrate-test-runtime-client",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "sc-consensus-beefy"
-version = "27.0.0"
-dependencies = [
- "array-bytes",
- "async-channel 1.9.0",
- "async-trait",
- "fnv",
- "futures",
- "log",
- "parity-scale-codec",
- "parking_lot 0.12.3",
- "sc-block-builder",
- "sc-client-api",
- "sc-consensus",
- "sc-network",
- "sc-network-gossip",
- "sc-network-sync",
- "sc-network-test",
- "sc-network-types",
- "sc-utils",
- "serde",
- "sp-api",
- "sp-application-crypto 39.0.0",
- "sp-arithmetic 26.0.0",
- "sp-blockchain",
- "sp-consensus",
- "sp-consensus-beefy",
- "sp-consensus-grandpa",
- "sp-core 35.0.0",
- "sp-crypto-hashing 0.1.0",
- "sp-keyring",
- "sp-keystore 0.41.0",
- "sp-mmr-primitives",
- "sp-runtime 40.1.0",
- "sp-tracing 17.0.1",
- "substrate-prometheus-endpoint",
- "substrate-test-runtime-client",
- "tempfile",
- "thiserror",
- "tokio",
- "wasm-timer",
-]
-
-[[package]]
-name = "sc-consensus-beefy-rpc"
-version = "27.0.0"
-dependencies = [
- "futures",
- "jsonrpsee 0.24.3",
- "log",
- "parity-scale-codec",
- "parking_lot 0.12.3",
- "sc-consensus-beefy",
- "sc-rpc",
- "serde",
- "serde_json",
- "sp-application-crypto 39.0.0",
- "sp-consensus-beefy",
- "sp-core 35.0.0",
  "sp-runtime 40.1.0",
  "substrate-test-runtime-client",
  "thiserror",
@@ -13436,27 +12457,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sp-consensus-beefy"
-version = "23.0.0"
-dependencies = [
- "array-bytes",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-api",
- "sp-application-crypto 39.0.0",
- "sp-core 35.0.0",
- "sp-crypto-hashing 0.1.0",
- "sp-io 39.0.0",
- "sp-keystore 0.41.0",
- "sp-mmr-primitives",
- "sp-runtime 40.1.0",
- "sp-weights 31.0.0",
- "strum 0.26.3",
- "w3f-bls",
-]
-
-[[package]]
 name = "sp-consensus-grandpa"
 version = "22.0.0"
 dependencies = [
@@ -13849,23 +12849,6 @@ dependencies = [
  "scale-info",
  "sp-api",
  "sp-application-crypto 39.0.0",
-]
-
-[[package]]
-name = "sp-mmr-primitives"
-version = "35.0.0"
-dependencies = [
- "array-bytes",
- "log",
- "parity-scale-codec",
- "polkadot-ckb-merkle-mountain-range",
- "scale-info",
- "serde",
- "sp-api",
- "sp-core 35.0.0",
- "sp-debug-derive 14.0.0",
- "sp-runtime 40.1.0",
- "thiserror",
 ]
 
 [[package]]
@@ -14532,7 +13515,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "wait-timeout",
- "wat",
 ]
 
 [[package]]

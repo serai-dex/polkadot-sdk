@@ -21,7 +21,7 @@
 use crate::keyring::*;
 use kitchensink_runtime::{
 	constants::currency::*, AccountId, AssetsConfig, BalancesConfig, IndicesConfig,
-	RuntimeGenesisConfig, SessionConfig, SocietyConfig, StakerStatus, StakingConfig,
+	RuntimeGenesisConfig, SessionConfig, StakerStatus, StakingConfig,
 };
 use sp_keyring::Ed25519Keyring;
 use sp_runtime::Perbill;
@@ -68,7 +68,6 @@ pub fn config_endowed(extra_endowed: Vec<AccountId>) -> RuntimeGenesisConfig {
 			invulnerables: vec![alice(), bob(), charlie()],
 			..Default::default()
 		},
-		society: SocietyConfig { pot: 0 },
 		assets: AssetsConfig { assets: vec![(9, alice(), true, 1)], ..Default::default() },
 		..Default::default()
 	}

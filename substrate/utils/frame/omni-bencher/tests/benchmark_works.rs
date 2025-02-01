@@ -26,7 +26,8 @@ use std::{
 fn benchmark_overhead_runtime_works() -> std::result::Result<(), String> {
 	let tmp_dir = tempfile::tempdir().expect("Should be able to create tmp dir.");
 	let base_path = tmp_dir.path();
-	let wasm = substrate_test_runtime::WASM_BINARY.ok_or("WASM binary not available".to_string())?;
+	let wasm =
+		substrate_test_runtime::WASM_BINARY.ok_or("WASM binary not available".to_string())?;
 	let runtime_path = base_path.join("runtime.wasm");
 	let _ =
 		fs::write(&runtime_path, wasm).map_err(|e| format!("Unable to write runtime file: {}", e));
@@ -118,7 +119,8 @@ fn setup_chain_spec(tmp_dir: &Path, raw: bool) -> Result<(PathBuf, PathBuf), Str
 	let base_path = tmp_dir.to_path_buf();
 	let chain_spec_path = base_path.join("chain_spec.json");
 
-	let wasm = substrate_test_runtime::WASM_BINARY.ok_or("WASM binary not available".to_string())?;
+	let wasm =
+		substrate_test_runtime::WASM_BINARY.ok_or("WASM binary not available".to_string())?;
 
 	let mut properties = sc_chain_spec::Properties::new();
 	properties.insert("tokenSymbol".into(), "UNIT".into());

@@ -68,7 +68,6 @@ frame_support::construct_runtime!(
 		System: frame_system,
 		ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
 		Staking: pallet_staking,
-		Pools: pallet_nomination_pools,
 		Balances: pallet_balances,
 		BagsList: pallet_bags_list,
 		Session: pallet_session,
@@ -253,28 +252,6 @@ impl sp_runtime::traits::Convert<sp_core::U256, Balance> for U256ToBalance {
 }
 
 parameter_types! {
-	pub const PoolsPalletId: frame_support::PalletId = frame_support::PalletId(*b"py/nopls");
-	pub static MaxUnbonding: u32 = 8;
-}
-
-impl pallet_nomination_pools::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type WeightInfo = ();
-	type Currency = Balances;
-	type RuntimeFreezeReason = RuntimeFreezeReason;
-	type RewardCounter = sp_runtime::FixedU128;
-	type BalanceToU256 = BalanceToU256;
-	type U256ToBalance = U256ToBalance;
-	type StakeAdapter = pallet_nomination_pools::adapter::TransferStake<Self, Staking>;
-	type PostUnbondingPoolsWindow = ConstU32<2>;
-	type PalletId = PoolsPalletId;
-	type MaxMetadataLen = ConstU32<256>;
-	type MaxUnbonding = MaxUnbonding;
-	type MaxPointsToBalance = frame_support::traits::ConstU8<10>;
-	type AdminOrigin = frame_system::EnsureRoot<Self::AccountId>;
-}
-
-parameter_types! {
 	pub static MaxUnlockingChunks: u32 = 32;
 }
 
@@ -302,7 +279,7 @@ impl pallet_staking::Config for Runtime {
 	type NominationsQuota = pallet_staking::FixedNominationsQuota<MAX_QUOTA_NOMINATIONS>;
 	type TargetList = pallet_staking::UseValidatorsMap<Self>;
 	type MaxUnlockingChunks = MaxUnlockingChunks;
-	type EventListeners = Pools;
+	type EventListeners = ();
 	type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
 	type DisablingStrategy = pallet_staking::UpToLimitDisablingStrategy<SLASHING_DISABLING_FACTOR>;
 	type BenchmarkingConfig = pallet_staking::TestBenchmarkingConfig;
@@ -461,21 +438,6 @@ impl EpmExtBuilder {
 	}
 }
 
-pub struct PoolsExtBuilder {}
-
-impl Default for PoolsExtBuilder {
-	fn default() -> Self {
-		PoolsExtBuilder {}
-	}
-}
-
-impl PoolsExtBuilder {
-	pub fn max_unbonding(self, max: u32) -> Self {
-		<MaxUnbonding>::set(max);
-		self
-	}
-}
-
 pub struct BalancesExtBuilder {
 	balances: Vec<(AccountId, Balance)>,
 }
@@ -523,7 +485,6 @@ pub struct ExtBuilder {
 	staking_builder: StakingExtBuilder,
 	epm_builder: EpmExtBuilder,
 	balances_builder: BalancesExtBuilder,
-	pools_builder: PoolsExtBuilder,
 }
 
 impl Default for ExtBuilder {
@@ -532,7 +493,6 @@ impl Default for ExtBuilder {
 			staking_builder: StakingExtBuilder::default(),
 			epm_builder: EpmExtBuilder::default(),
 			balances_builder: BalancesExtBuilder::default(),
-			pools_builder: PoolsExtBuilder::default(),
 		}
 	}
 }
@@ -610,11 +570,6 @@ impl ExtBuilder {
 		self
 	}
 
-	pub fn pools(mut self, builder: PoolsExtBuilder) -> Self {
-		self.pools_builder = builder;
-		self
-	}
-
 	pub fn balances(mut self, builder: BalancesExtBuilder) -> Self {
 		self.balances_builder = builder;
 		self
@@ -645,7 +600,6 @@ pub(crate) fn execute_with(mut ext: sp_io::TestExternalities, test: impl FnOnce(
 
 		assert_ok!(<ElectionProviderMultiPhase as Hooks<BlockNumber>>::try_state(bn));
 		assert_ok!(<Staking as Hooks<BlockNumber>>::try_state(bn));
-		assert_ok!(<Pools as Hooks<BlockNumber>>::try_state(bn));
 		assert_ok!(<Session as Hooks<BlockNumber>>::try_state(bn));
 	});
 }
@@ -673,7 +627,6 @@ pub fn roll_to(n: BlockNumber, delay_solution: bool) {
 		if b != n {
 			Staking::on_finalize(System::block_number());
 		}
-		Pools::on_initialize(b);
 
 		log_current_time();
 	}

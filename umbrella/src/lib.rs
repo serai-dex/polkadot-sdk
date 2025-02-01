@@ -3,22 +3,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-//! Polkadot SDK umbrella crate re-exporting all other published crates.
-//!
-//! This helps to set a single version number for all your dependencies. Docs are in the
-//! `polkadot-sdk-docs` crate.
-
-// This file is auto-generated and checked by the CI.  You can edit it manually, but it must be
-// exactly the way that the CI expects it.
-
-/// Test utils for Asset Hub runtimes.
-#[cfg(feature = "asset-test-utils")]
-pub use asset_test_utils;
-
-/// Assets common utilities.
-#[cfg(feature = "assets-common")]
-pub use assets_common;
-
 /// A no-std/Substrate compatible library to construct binary merkle tree.
 #[cfg(feature = "binary-merkle-tree")]
 pub use binary_merkle_tree;
@@ -97,18 +81,6 @@ pub use frame_try_runtime;
 #[cfg(feature = "generate-bags")]
 pub use generate_bags;
 
-/// MMR Client gadget for substrate.
-#[cfg(feature = "mmr-gadget")]
-pub use mmr_gadget;
-
-/// Node-specific RPC methods for interaction with Merkle Mountain Range pallet.
-#[cfg(feature = "mmr-rpc")]
-pub use mmr_rpc;
-
-/// The Alliance pallet provides a collective for standard-setting industry collaboration.
-#[cfg(feature = "pallet-alliance")]
-pub use pallet_alliance;
-
 /// FRAME asset conversion pallet.
 #[cfg(feature = "pallet-asset-conversion")]
 pub use pallet_asset_conversion;
@@ -137,10 +109,6 @@ pub use pallet_assets;
 #[cfg(feature = "pallet-assets-freezer")]
 pub use pallet_assets_freezer;
 
-/// FRAME atomic swap pallet.
-#[cfg(feature = "pallet-atomic-swap")]
-pub use pallet_atomic_swap;
-
 /// FRAME AURA consensus pallet.
 #[cfg(feature = "pallet-aura")]
 pub use pallet_aura;
@@ -166,55 +134,6 @@ pub use pallet_bags_list;
 #[cfg(feature = "pallet-balances")]
 pub use pallet_balances;
 
-/// BEEFY FRAME pallet.
-#[cfg(feature = "pallet-beefy")]
-pub use pallet_beefy;
-
-/// BEEFY + MMR runtime utilities.
-#[cfg(feature = "pallet-beefy-mmr")]
-pub use pallet_beefy_mmr;
-
-/// FRAME pallet to manage bounties.
-#[cfg(feature = "pallet-bounties")]
-pub use pallet_bounties;
-
-/// Brokerage tool for managing Polkadot Core scheduling.
-#[cfg(feature = "pallet-broker")]
-pub use pallet_broker;
-
-/// FRAME pallet to manage child bounties.
-#[cfg(feature = "pallet-child-bounties")]
-pub use pallet_child_bounties;
-
-/// Simple pallet to select collators for a parachain.
-#[cfg(feature = "pallet-collator-selection")]
-pub use pallet_collator_selection;
-
-/// Collective system: Members of a set of account IDs can make their collective feelings known
-/// through dispatched calls from one of two specialized origins.
-#[cfg(feature = "pallet-collective")]
-pub use pallet_collective;
-
-/// Managed content.
-#[cfg(feature = "pallet-collective-content")]
-pub use pallet_collective_content;
-
-/// FRAME pallet for conviction voting in referenda.
-#[cfg(feature = "pallet-conviction-voting")]
-pub use pallet_conviction_voting;
-
-/// FRAME delegated staking pallet.
-#[cfg(feature = "pallet-delegated-staking")]
-pub use pallet_delegated_staking;
-
-/// FRAME pallet for democracy.
-#[cfg(feature = "pallet-democracy")]
-pub use pallet_democracy;
-
-/// FRAME example pallet.
-#[cfg(feature = "pallet-dev-mode")]
-pub use pallet_dev_mode;
-
 /// PALLET two phase election providers.
 #[cfg(feature = "pallet-election-provider-multi-phase")]
 pub use pallet_election_provider_multi_phase;
@@ -222,14 +141,6 @@ pub use pallet_election_provider_multi_phase;
 /// Benchmarking for election provider support onchain config trait.
 #[cfg(feature = "pallet-election-provider-support-benchmarking")]
 pub use pallet_election_provider_support_benchmarking;
-
-/// FRAME pallet based on seq-Phragmén election method.
-#[cfg(feature = "pallet-elections-phragmen")]
-pub use pallet_elections_phragmen;
-
-/// FRAME fast unstake pallet.
-#[cfg(feature = "pallet-fast-unstake")]
-pub use pallet_fast_unstake;
 
 /// FRAME pallet for pushing a chain to its weight limits.
 #[cfg(feature = "pallet-glutton")]
@@ -255,14 +166,6 @@ pub use pallet_indices;
 #[cfg(feature = "pallet-insecure-randomness-collective-flip")]
 pub use pallet_insecure_randomness_collective_flip;
 
-/// FRAME Participation Lottery Pallet.
-#[cfg(feature = "pallet-lottery")]
-pub use pallet_lottery;
-
-/// FRAME membership management pallet.
-#[cfg(feature = "pallet-membership")]
-pub use pallet_membership;
-
 /// FRAME pallet to queue and process messages.
 #[cfg(feature = "pallet-message-queue")]
 pub use pallet_message_queue;
@@ -274,10 +177,6 @@ pub use pallet_migrations;
 /// FRAME's mixnet pallet.
 #[cfg(feature = "pallet-mixnet")]
 pub use pallet_mixnet;
-
-/// FRAME Merkle Mountain Range pallet.
-#[cfg(feature = "pallet-mmr")]
-pub use pallet_mmr;
 
 /// FRAME multi-signature dispatch pallet.
 #[cfg(feature = "pallet-multisig")]
@@ -299,22 +198,6 @@ pub use pallet_nfts_runtime_api;
 #[cfg(feature = "pallet-nis")]
 pub use pallet_nis;
 
-/// FRAME pallet for node authorization.
-#[cfg(feature = "pallet-node-authorization")]
-pub use pallet_node_authorization;
-
-/// FRAME nomination pools pallet.
-#[cfg(feature = "pallet-nomination-pools")]
-pub use pallet_nomination_pools;
-
-/// FRAME nomination pools pallet benchmarking.
-#[cfg(feature = "pallet-nomination-pools-benchmarking")]
-pub use pallet_nomination_pools_benchmarking;
-
-/// Runtime API for nomination-pools FRAME pallet.
-#[cfg(feature = "pallet-nomination-pools-runtime-api")]
-pub use pallet_nomination_pools_runtime_api;
-
 /// FRAME offences pallet.
 #[cfg(feature = "pallet-offences")]
 pub use pallet_offences;
@@ -327,10 +210,6 @@ pub use pallet_offences_benchmarking;
 #[cfg(feature = "pallet-paged-list")]
 pub use pallet_paged_list;
 
-/// Pallet to store and configure parameters.
-#[cfg(feature = "pallet-parameters")]
-pub use pallet_parameters;
-
 /// FRAME pallet for storing preimages of hashes.
 #[cfg(feature = "pallet-preimage")]
 pub use pallet_preimage;
@@ -339,46 +218,9 @@ pub use pallet_preimage;
 #[cfg(feature = "pallet-proxy")]
 pub use pallet_proxy;
 
-/// Ranked collective system: Members of a set of account IDs can make their collective
-/// feelings known through dispatched calls from one of two specialized origins.
-#[cfg(feature = "pallet-ranked-collective")]
-pub use pallet_ranked_collective;
-
-/// FRAME account recovery pallet.
-#[cfg(feature = "pallet-recovery")]
-pub use pallet_recovery;
-
-/// FRAME pallet for inclusive on-chain decisions.
-#[cfg(feature = "pallet-referenda")]
-pub use pallet_referenda;
-
 /// Remark storage pallet.
 #[cfg(feature = "pallet-remark")]
 pub use pallet_remark;
-
-/// FRAME pallet for PolkaVM contracts.
-#[cfg(feature = "pallet-revive")]
-pub use pallet_revive;
-
-/// An Ethereum JSON-RPC server for pallet-revive.
-#[cfg(feature = "pallet-revive-eth-rpc")]
-pub use pallet_revive_eth_rpc;
-
-/// Fixtures for testing and benchmarking.
-#[cfg(feature = "pallet-revive-fixtures")]
-pub use pallet_revive_fixtures;
-
-/// A mock network for testing pallet-revive.
-#[cfg(feature = "pallet-revive-mock-network")]
-pub use pallet_revive_mock_network;
-
-/// Procedural macros used in pallet_revive.
-#[cfg(feature = "pallet-revive-proc-macro")]
-pub use pallet_revive_proc_macro;
-
-/// Exposes all the host functions that a contract can import.
-#[cfg(feature = "pallet-revive-uapi")]
-pub use pallet_revive_uapi;
 
 /// FRAME root offences pallet.
 #[cfg(feature = "pallet-root-offences")]
@@ -392,17 +234,9 @@ pub use pallet_root_testing;
 #[cfg(feature = "pallet-safe-mode")]
 pub use pallet_safe_mode;
 
-/// Paymaster.
-#[cfg(feature = "pallet-salary")]
-pub use pallet_salary;
-
 /// FRAME Scheduler pallet.
 #[cfg(feature = "pallet-scheduler")]
 pub use pallet_scheduler;
-
-/// FRAME pallet for scored pools.
-#[cfg(feature = "pallet-scored-pool")]
-pub use pallet_scored_pool;
 
 /// FRAME sessions pallet.
 #[cfg(feature = "pallet-session")]
@@ -416,10 +250,6 @@ pub use pallet_session_benchmarking;
 /// are satisfied.
 #[cfg(feature = "pallet-skip-feeless-payment")]
 pub use pallet_skip_feeless_payment;
-
-/// FRAME society pallet.
-#[cfg(feature = "pallet-society")]
-pub use pallet_society;
 
 /// FRAME pallet staking.
 #[cfg(feature = "pallet-staking")]
@@ -453,10 +283,6 @@ pub use pallet_sudo;
 #[cfg(feature = "pallet-timestamp")]
 pub use pallet_timestamp;
 
-/// FRAME pallet to manage tips.
-#[cfg(feature = "pallet-tips")]
-pub use pallet_tips;
-
 /// FRAME pallet to manage transaction payments.
 #[cfg(feature = "pallet-transaction-payment")]
 pub use pallet_transaction_payment;
@@ -472,10 +298,6 @@ pub use pallet_transaction_payment_rpc_runtime_api;
 /// Storage chain pallet.
 #[cfg(feature = "pallet-transaction-storage")]
 pub use pallet_transaction_storage;
-
-/// FRAME pallet to manage treasury.
-#[cfg(feature = "pallet-treasury")]
-pub use pallet_treasury;
 
 /// FRAME transaction pause pallet.
 #[cfg(feature = "pallet-tx-pause")]
@@ -493,29 +315,9 @@ pub use pallet_utility;
 #[cfg(feature = "pallet-verify-signature")]
 pub use pallet_verify_signature;
 
-/// FRAME pallet for manage vesting.
-#[cfg(feature = "pallet-vesting")]
-pub use pallet_vesting;
-
 /// FRAME pallet for whitelisting calls, and dispatching from a specific origin.
 #[cfg(feature = "pallet-whitelist")]
 pub use pallet_whitelist;
-
-/// A pallet for handling XCM programs.
-#[cfg(feature = "pallet-xcm")]
-pub use pallet_xcm;
-
-/// Benchmarks for the XCM pallet.
-#[cfg(feature = "pallet-xcm-benchmarks")]
-pub use pallet_xcm_benchmarks;
-
-/// Logic which is common to all parachain runtimes.
-#[cfg(feature = "parachains-common")]
-pub use parachains_common;
-
-/// Utils for Runtimes testing.
-#[cfg(feature = "parachains-runtimes-test-utils")]
-pub use parachains_runtimes_test_utils;
 
 /// Collection of allocator implementations.
 #[cfg(feature = "sc-allocator")]
@@ -568,14 +370,6 @@ pub use sc_consensus_babe;
 /// RPC extensions for the BABE consensus algorithm.
 #[cfg(feature = "sc-consensus-babe-rpc")]
 pub use sc_consensus_babe_rpc;
-
-/// BEEFY Client gadget for substrate.
-#[cfg(feature = "sc-consensus-beefy")]
-pub use sc_consensus_beefy;
-
-/// RPC for the BEEFY Client gadget for substrate.
-#[cfg(feature = "sc-consensus-beefy-rpc")]
-pub use sc_consensus_beefy_rpc;
 
 /// Generic epochs-based utilities for consensus.
 #[cfg(feature = "sc-consensus-epochs")]
@@ -774,10 +568,6 @@ pub use sp_consensus_aura;
 #[cfg(feature = "sp-consensus-babe")]
 pub use sp_consensus_babe;
 
-/// Primitives for BEEFY protocol.
-#[cfg(feature = "sp-consensus-beefy")]
-pub use sp_consensus_beefy;
-
 /// Primitives for GRANDPA integration, suitable for WASM compilation.
 #[cfg(feature = "sp-consensus-grandpa")]
 pub use sp_consensus_grandpa;
@@ -858,10 +648,6 @@ pub use sp_metadata_ir;
 /// Substrate mixnet types and runtime interface.
 #[cfg(feature = "sp-mixnet")]
 pub use sp_mixnet;
-
-/// Merkle Mountain Range primitives.
-#[cfg(feature = "sp-mmr-primitives")]
-pub use sp_mmr_primitives;
 
 /// NPoS election algorithm primitives.
 #[cfg(feature = "sp-npos-elections")]
@@ -964,26 +750,6 @@ pub use staging_chain_spec_builder;
 #[cfg(feature = "staging-node-inspect")]
 pub use staging_node_inspect;
 
-/// Pallet to store the parachain ID.
-#[cfg(feature = "staging-parachain-info")]
-pub use staging_parachain_info;
-
-/// Tracking allocator to control the amount of memory consumed by the process.
-#[cfg(feature = "staging-tracking-allocator")]
-pub use staging_tracking_allocator;
-
-/// The basic XCM datastructures.
-#[cfg(feature = "staging-xcm")]
-pub use staging_xcm;
-
-/// Tools & types for building with XCM and its executor.
-#[cfg(feature = "staging-xcm-builder")]
-pub use staging_xcm_builder;
-
-/// An abstract and configurable XCM message executor.
-#[cfg(feature = "staging-xcm-executor")]
-pub use staging_xcm_executor;
-
 /// Generate and restore keys for Substrate based chains such as Polkadot, Kusama and a growing
 /// number of parachains and Substrate based projects.
 #[cfg(feature = "subkey")]
@@ -1020,32 +786,3 @@ pub use substrate_state_trie_migration_rpc;
 /// Utility for building WASM binaries.
 #[cfg(feature = "substrate-wasm-builder")]
 pub use substrate_wasm_builder;
-
-/// Common constants for Testnet Parachains runtimes.
-#[cfg(feature = "testnet-parachains-constants")]
-pub use testnet_parachains_constants;
-
-/// Stick logs together with the TraceID as provided by tempo.
-#[cfg(feature = "tracing-gum")]
-pub use tracing_gum;
-
-/// Generate an overseer including builder pattern and message wrapper from a single annotated
-/// struct definition.
-#[cfg(feature = "tracing-gum-proc-macro")]
-pub use tracing_gum_proc_macro;
-
-/// Test kit to emulate XCM program execution.
-#[cfg(feature = "xcm-emulator")]
-pub use xcm_emulator;
-
-/// Procedural macros for XCM.
-#[cfg(feature = "xcm-procedural")]
-pub use xcm_procedural;
-
-/// XCM runtime APIs.
-#[cfg(feature = "xcm-runtime-apis")]
-pub use xcm_runtime_apis;
-
-/// Test kit to simulate cross-chain message passing and XCM execution.
-#[cfg(feature = "xcm-simulator")]
-pub use xcm_simulator;

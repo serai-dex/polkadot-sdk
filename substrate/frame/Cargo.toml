@@ -52,7 +52,6 @@ docify = { workspace = true }
 log = { workspace = true }
 
 [dev-dependencies]
-pallet-examples = { path = "examples" }
 
 [features]
 default = ["runtime", "std"]

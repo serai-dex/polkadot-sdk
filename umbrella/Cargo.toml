@@ -20,7 +20,6 @@ std = [
 	"frame-system-rpc-runtime-api?/std",
 	"frame-system?/std",
 	"frame-try-runtime?/std",
-	"pallet-alliance?/std",
 	"pallet-asset-conversion-ops?/std",
 	"pallet-asset-conversion-tx-payment?/std",
 	"pallet-asset-conversion?/std",
@@ -28,68 +27,41 @@ std = [
 	"pallet-asset-tx-payment?/std",
 	"pallet-assets-freezer?/std",
 	"pallet-assets?/std",
-	"pallet-atomic-swap?/std",
 	"pallet-aura?/std",
 	"pallet-authority-discovery?/std",
 	"pallet-authorship?/std",
 	"pallet-babe?/std",
 	"pallet-bags-list?/std",
 	"pallet-balances?/std",
-	"pallet-beefy-mmr?/std",
-	"pallet-beefy?/std",
-	"pallet-bounties?/std",
-	"pallet-broker?/std",
-	"pallet-child-bounties?/std",
-	"pallet-collective?/std",
-	"pallet-conviction-voting?/std",
-	"pallet-delegated-staking?/std",
-	"pallet-democracy?/std",
-	"pallet-dev-mode?/std",
 	"pallet-election-provider-multi-phase?/std",
 	"pallet-election-provider-support-benchmarking?/std",
-	"pallet-elections-phragmen?/std",
-	"pallet-fast-unstake?/std",
 	"pallet-glutton?/std",
 	"pallet-grandpa?/std",
 	"pallet-identity?/std",
 	"pallet-im-online?/std",
 	"pallet-indices?/std",
 	"pallet-insecure-randomness-collective-flip?/std",
-	"pallet-lottery?/std",
-	"pallet-membership?/std",
 	"pallet-message-queue?/std",
 	"pallet-migrations?/std",
 	"pallet-mixnet?/std",
-	"pallet-mmr?/std",
 	"pallet-multisig?/std",
 	"pallet-nft-fractionalization?/std",
 	"pallet-nfts-runtime-api?/std",
 	"pallet-nfts?/std",
 	"pallet-nis?/std",
-	"pallet-node-authorization?/std",
-	"pallet-nomination-pools-benchmarking?/std",
-	"pallet-nomination-pools-runtime-api?/std",
-	"pallet-nomination-pools?/std",
 	"pallet-offences-benchmarking?/std",
 	"pallet-offences?/std",
 	"pallet-paged-list?/std",
-	"pallet-parameters?/std",
 	"pallet-preimage?/std",
 	"pallet-proxy?/std",
-	"pallet-ranked-collective?/std",
-	"pallet-recovery?/std",
-	"pallet-referenda?/std",
 	"pallet-remark?/std",
 	"pallet-root-offences?/std",
 	"pallet-root-testing?/std",
 	"pallet-safe-mode?/std",
-	"pallet-salary?/std",
 	"pallet-scheduler?/std",
-	"pallet-scored-pool?/std",
 	"pallet-session-benchmarking?/std",
 	"pallet-session?/std",
 	"pallet-skip-feeless-payment?/std",
-	"pallet-society?/std",
 	"pallet-staking-reward-fn?/std",
 	"pallet-staking-runtime-api?/std",
 	"pallet-staking?/std",
@@ -97,16 +69,13 @@ std = [
 	"pallet-statement?/std",
 	"pallet-sudo?/std",
 	"pallet-timestamp?/std",
-	"pallet-tips?/std",
 	"pallet-transaction-payment-rpc-runtime-api?/std",
 	"pallet-transaction-payment?/std",
 	"pallet-transaction-storage?/std",
-	"pallet-treasury?/std",
 	"pallet-tx-pause?/std",
 	"pallet-uniques?/std",
 	"pallet-utility?/std",
 	"pallet-verify-signature?/std",
-	"pallet-vesting?/std",
 	"pallet-whitelist?/std",
 	"polkadot-sdk-frame?/std",
 	"sc-executor?/std",
@@ -118,7 +87,6 @@ std = [
 	"sp-block-builder?/std",
 	"sp-consensus-aura?/std",
 	"sp-consensus-babe?/std",
-	"sp-consensus-beefy?/std",
 	"sp-consensus-grandpa?/std",
 	"sp-consensus-pow?/std",
 	"sp-consensus-slots?/std",
@@ -135,7 +103,6 @@ std = [
 	"sp-keystore?/std",
 	"sp-metadata-ir?/std",
 	"sp-mixnet?/std",
-	"sp-mmr-primitives?/std",
 	"sp-npos-elections?/std",
 	"sp-offchain?/std",
 	"sp-runtime-interface?/std",
@@ -164,7 +131,6 @@ runtime-benchmarks = [
 	"frame-support?/runtime-benchmarks",
 	"frame-system-benchmarking?/runtime-benchmarks",
 	"frame-system?/runtime-benchmarks",
-	"pallet-alliance?/runtime-benchmarks",
 	"pallet-asset-conversion-ops?/runtime-benchmarks",
 	"pallet-asset-conversion-tx-payment?/runtime-benchmarks",
 	"pallet-asset-conversion?/runtime-benchmarks",
@@ -175,65 +141,41 @@ runtime-benchmarks = [
 	"pallet-babe?/runtime-benchmarks",
 	"pallet-bags-list?/runtime-benchmarks",
 	"pallet-balances?/runtime-benchmarks",
-	"pallet-beefy-mmr?/runtime-benchmarks",
-	"pallet-bounties?/runtime-benchmarks",
-	"pallet-broker?/runtime-benchmarks",
-	"pallet-child-bounties?/runtime-benchmarks",
-	"pallet-collective?/runtime-benchmarks",
-	"pallet-conviction-voting?/runtime-benchmarks",
-	"pallet-delegated-staking?/runtime-benchmarks",
-	"pallet-democracy?/runtime-benchmarks",
 	"pallet-election-provider-multi-phase?/runtime-benchmarks",
 	"pallet-election-provider-support-benchmarking?/runtime-benchmarks",
-	"pallet-elections-phragmen?/runtime-benchmarks",
-	"pallet-fast-unstake?/runtime-benchmarks",
 	"pallet-glutton?/runtime-benchmarks",
 	"pallet-grandpa?/runtime-benchmarks",
 	"pallet-identity?/runtime-benchmarks",
 	"pallet-im-online?/runtime-benchmarks",
 	"pallet-indices?/runtime-benchmarks",
-	"pallet-lottery?/runtime-benchmarks",
-	"pallet-membership?/runtime-benchmarks",
 	"pallet-message-queue?/runtime-benchmarks",
 	"pallet-migrations?/runtime-benchmarks",
 	"pallet-mixnet?/runtime-benchmarks",
-	"pallet-mmr?/runtime-benchmarks",
 	"pallet-multisig?/runtime-benchmarks",
 	"pallet-nft-fractionalization?/runtime-benchmarks",
 	"pallet-nfts?/runtime-benchmarks",
 	"pallet-nis?/runtime-benchmarks",
-	"pallet-nomination-pools-benchmarking?/runtime-benchmarks",
-	"pallet-nomination-pools?/runtime-benchmarks",
 	"pallet-offences-benchmarking?/runtime-benchmarks",
 	"pallet-offences?/runtime-benchmarks",
 	"pallet-paged-list?/runtime-benchmarks",
-	"pallet-parameters?/runtime-benchmarks",
 	"pallet-preimage?/runtime-benchmarks",
 	"pallet-proxy?/runtime-benchmarks",
-	"pallet-ranked-collective?/runtime-benchmarks",
-	"pallet-recovery?/runtime-benchmarks",
-	"pallet-referenda?/runtime-benchmarks",
 	"pallet-remark?/runtime-benchmarks",
 	"pallet-root-offences?/runtime-benchmarks",
 	"pallet-safe-mode?/runtime-benchmarks",
-	"pallet-salary?/runtime-benchmarks",
 	"pallet-scheduler?/runtime-benchmarks",
 	"pallet-session-benchmarking?/runtime-benchmarks",
 	"pallet-skip-feeless-payment?/runtime-benchmarks",
-	"pallet-society?/runtime-benchmarks",
 	"pallet-staking?/runtime-benchmarks",
 	"pallet-state-trie-migration?/runtime-benchmarks",
 	"pallet-sudo?/runtime-benchmarks",
 	"pallet-timestamp?/runtime-benchmarks",
-	"pallet-tips?/runtime-benchmarks",
 	"pallet-transaction-payment?/runtime-benchmarks",
 	"pallet-transaction-storage?/runtime-benchmarks",
-	"pallet-treasury?/runtime-benchmarks",
 	"pallet-tx-pause?/runtime-benchmarks",
 	"pallet-uniques?/runtime-benchmarks",
 	"pallet-utility?/runtime-benchmarks",
 	"pallet-verify-signature?/runtime-benchmarks",
-	"pallet-vesting?/runtime-benchmarks",
 	"pallet-whitelist?/runtime-benchmarks",
 	"sc-client-db?/runtime-benchmarks",
 	"sc-service?/runtime-benchmarks",
@@ -248,7 +190,6 @@ try-runtime = [
 	"frame-support?/try-runtime",
 	"frame-system?/try-runtime",
 	"frame-try-runtime/try-runtime",
-	"pallet-alliance?/try-runtime",
 	"pallet-asset-conversion-ops?/try-runtime",
 	"pallet-asset-conversion-tx-payment?/try-runtime",
 	"pallet-asset-conversion?/try-runtime",
@@ -256,76 +197,48 @@ try-runtime = [
 	"pallet-asset-tx-payment?/try-runtime",
 	"pallet-assets-freezer?/try-runtime",
 	"pallet-assets?/try-runtime",
-	"pallet-atomic-swap?/try-runtime",
 	"pallet-aura?/try-runtime",
 	"pallet-authority-discovery?/try-runtime",
 	"pallet-authorship?/try-runtime",
 	"pallet-babe?/try-runtime",
 	"pallet-bags-list?/try-runtime",
 	"pallet-balances?/try-runtime",
-	"pallet-beefy-mmr?/try-runtime",
-	"pallet-beefy?/try-runtime",
-	"pallet-bounties?/try-runtime",
-	"pallet-broker?/try-runtime",
-	"pallet-child-bounties?/try-runtime",
-	"pallet-collective?/try-runtime",
-	"pallet-conviction-voting?/try-runtime",
-	"pallet-delegated-staking?/try-runtime",
-	"pallet-democracy?/try-runtime",
-	"pallet-dev-mode?/try-runtime",
 	"pallet-election-provider-multi-phase?/try-runtime",
-	"pallet-elections-phragmen?/try-runtime",
-	"pallet-fast-unstake?/try-runtime",
 	"pallet-glutton?/try-runtime",
 	"pallet-grandpa?/try-runtime",
 	"pallet-identity?/try-runtime",
 	"pallet-im-online?/try-runtime",
 	"pallet-indices?/try-runtime",
 	"pallet-insecure-randomness-collective-flip?/try-runtime",
-	"pallet-lottery?/try-runtime",
-	"pallet-membership?/try-runtime",
 	"pallet-message-queue?/try-runtime",
 	"pallet-migrations?/try-runtime",
 	"pallet-mixnet?/try-runtime",
-	"pallet-mmr?/try-runtime",
 	"pallet-multisig?/try-runtime",
 	"pallet-nft-fractionalization?/try-runtime",
 	"pallet-nfts?/try-runtime",
 	"pallet-nis?/try-runtime",
-	"pallet-node-authorization?/try-runtime",
-	"pallet-nomination-pools?/try-runtime",
 	"pallet-offences?/try-runtime",
 	"pallet-paged-list?/try-runtime",
-	"pallet-parameters?/try-runtime",
 	"pallet-preimage?/try-runtime",
 	"pallet-proxy?/try-runtime",
-	"pallet-ranked-collective?/try-runtime",
-	"pallet-recovery?/try-runtime",
-	"pallet-referenda?/try-runtime",
 	"pallet-remark?/try-runtime",
 	"pallet-root-offences?/try-runtime",
 	"pallet-root-testing?/try-runtime",
 	"pallet-safe-mode?/try-runtime",
-	"pallet-salary?/try-runtime",
 	"pallet-scheduler?/try-runtime",
-	"pallet-scored-pool?/try-runtime",
 	"pallet-session?/try-runtime",
 	"pallet-skip-feeless-payment?/try-runtime",
-	"pallet-society?/try-runtime",
 	"pallet-staking?/try-runtime",
 	"pallet-state-trie-migration?/try-runtime",
 	"pallet-statement?/try-runtime",
 	"pallet-sudo?/try-runtime",
 	"pallet-timestamp?/try-runtime",
-	"pallet-tips?/try-runtime",
 	"pallet-transaction-payment?/try-runtime",
 	"pallet-transaction-storage?/try-runtime",
-	"pallet-treasury?/try-runtime",
 	"pallet-tx-pause?/try-runtime",
 	"pallet-uniques?/try-runtime",
 	"pallet-utility?/try-runtime",
 	"pallet-verify-signature?/try-runtime",
-	"pallet-vesting?/try-runtime",
 	"pallet-whitelist?/try-runtime",
 	"polkadot-sdk-frame?/try-runtime",
 	"sp-runtime?/try-runtime",
@@ -333,30 +246,20 @@ try-runtime = [
 serde = [
 	"frame-benchmarking?/serde",
 	"pallet-asset-tx-payment?/serde",
-	"pallet-beefy-mmr?/serde",
-	"pallet-beefy?/serde",
-	"pallet-conviction-voting?/serde",
-	"pallet-democracy?/serde",
 	"pallet-message-queue?/serde",
 	"pallet-offences?/serde",
-	"pallet-parameters?/serde",
-	"pallet-referenda?/serde",
 	"pallet-remark?/serde",
 	"pallet-state-trie-migration?/serde",
-	"pallet-tips?/serde",
 	"pallet-transaction-payment?/serde",
 	"pallet-transaction-storage?/serde",
-	"pallet-treasury?/serde",
 	"sp-application-crypto?/serde",
 	"sp-arithmetic?/serde",
 	"sp-authority-discovery?/serde",
 	"sp-consensus-aura?/serde",
 	"sp-consensus-babe?/serde",
-	"sp-consensus-beefy?/serde",
 	"sp-consensus-grandpa?/serde",
 	"sp-consensus-slots?/serde",
 	"sp-core?/serde",
-	"sp-mmr-primitives?/serde",
 	"sp-npos-elections?/serde",
 	"sp-runtime?/serde",
 	"sp-staking?/serde",
@@ -379,7 +282,7 @@ with-tracing = [
 	"sp-tracing?/with-tracing",
 	"sp-tracing?/with-tracing",
 ]
-runtime-full = ["binary-merkle-tree", "frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-alliance", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-atomic-swap", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-beefy", "pallet-beefy-mmr", "pallet-bounties", "pallet-broker", "pallet-child-bounties", "pallet-collective", "pallet-conviction-voting", "pallet-delegated-staking", "pallet-democracy", "pallet-dev-mode", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-elections-phragmen", "pallet-fast-unstake", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-lottery", "pallet-membership", "pallet-message-queue", "pallet-migrations", "pallet-mixnet", "pallet-mmr", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-node-authorization", "pallet-nomination-pools", "pallet-nomination-pools-benchmarking", "pallet-nomination-pools-runtime-api", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-parameters", "pallet-preimage", "pallet-proxy", "pallet-ranked-collective", "pallet-recovery", "pallet-referenda", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-salary", "pallet-scheduler", "pallet-scored-pool", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-society", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-statement", "pallet-sudo", "pallet-timestamp", "pallet-tips", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-treasury", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-vesting", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-beefy", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-ec-utils", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-mixnet", "sp-mmr-primitives", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-statement-store", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
+runtime-full = ["binary-merkle-tree", "frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-mixnet", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-statement", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-ec-utils", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-mixnet", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-statement-store", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
 runtime = [
 	"frame-benchmarking",
 	"frame-benchmarking-pallet-pov",
@@ -404,7 +307,6 @@ runtime = [
 	"sp-block-builder",
 	"sp-consensus-aura",
 	"sp-consensus-babe",
-	"sp-consensus-beefy",
 	"sp-consensus-grandpa",
 	"sp-consensus-pow",
 	"sp-consensus-slots",
@@ -421,7 +323,6 @@ runtime = [
 	"sp-keystore",
 	"sp-metadata-ir",
 	"sp-mixnet",
-	"sp-mmr-primitives",
 	"sp-npos-elections",
 	"sp-offchain",
 	"sp-runtime",
@@ -443,7 +344,7 @@ runtime = [
 	"sp-wasm-interface",
 	"sp-weights",
 ]
-node = ["fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "mmr-gadget", "mmr-rpc", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-beefy", "sc-consensus-beefy-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-mixnet", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-statement", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-statement-store", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
+node = ["fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-mixnet", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-statement", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-statement-store", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
 tuples-96 = [
 	"frame-support-procedural?/tuples-96",
 	"frame-support?/tuples-96",
@@ -539,12 +440,6 @@ default-features = false
 optional = true
 version = "0.45.0"
 
-[dependencies.pallet-alliance]
-path = "../substrate/frame/alliance"
-default-features = false
-optional = true
-version = "38.0.0"
-
 [dependencies.pallet-asset-conversion]
 path = "../substrate/frame/asset-conversion"
 default-features = false
@@ -587,12 +482,6 @@ default-features = false
 optional = true
 version = "0.6.0"
 
-[dependencies.pallet-atomic-swap]
-path = "../substrate/frame/atomic-swap"
-default-features = false
-optional = true
-version = "39.0.0"
-
 [dependencies.pallet-aura]
 path = "../substrate/frame/aura"
 default-features = false
@@ -629,66 +518,6 @@ default-features = false
 optional = true
 version = "40.0.0"
 
-[dependencies.pallet-beefy]
-path = "../substrate/frame/beefy"
-default-features = false
-optional = true
-version = "40.0.0"
-
-[dependencies.pallet-beefy-mmr]
-path = "../substrate/frame/beefy-mmr"
-default-features = false
-optional = true
-version = "40.0.0"
-
-[dependencies.pallet-bounties]
-path = "../substrate/frame/bounties"
-default-features = false
-optional = true
-version = "38.0.1"
-
-[dependencies.pallet-broker]
-path = "../substrate/frame/broker"
-default-features = false
-optional = true
-version = "0.18.0"
-
-[dependencies.pallet-child-bounties]
-path = "../substrate/frame/child-bounties"
-default-features = false
-optional = true
-version = "38.0.0"
-
-[dependencies.pallet-collective]
-path = "../substrate/frame/collective"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-conviction-voting]
-path = "../substrate/frame/conviction-voting"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-delegated-staking]
-path = "../substrate/frame/delegated-staking"
-default-features = false
-optional = true
-version = "6.0.0"
-
-[dependencies.pallet-democracy]
-path = "../substrate/frame/democracy"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-dev-mode]
-path = "../substrate/frame/examples/dev-mode"
-default-features = false
-optional = true
-version = "21.0.0"
-
 [dependencies.pallet-election-provider-multi-phase]
 path = "../substrate/frame/election-provider-multi-phase"
 default-features = false
@@ -697,18 +526,6 @@ version = "38.0.0"
 
 [dependencies.pallet-election-provider-support-benchmarking]
 path = "../substrate/frame/election-provider-support/benchmarking"
-default-features = false
-optional = true
-version = "38.0.0"
-
-[dependencies.pallet-elections-phragmen]
-path = "../substrate/frame/elections-phragmen"
-default-features = false
-optional = true
-version = "40.0.0"
-
-[dependencies.pallet-fast-unstake]
-path = "../substrate/frame/fast-unstake"
 default-features = false
 optional = true
 version = "38.0.0"
@@ -749,18 +566,6 @@ default-features = false
 optional = true
 version = "27.0.0"
 
-[dependencies.pallet-lottery]
-path = "../substrate/frame/lottery"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-membership]
-path = "../substrate/frame/membership"
-default-features = false
-optional = true
-version = "39.0.0"
-
 [dependencies.pallet-message-queue]
 path = "../substrate/frame/message-queue"
 default-features = false
@@ -778,12 +583,6 @@ path = "../substrate/frame/mixnet"
 default-features = false
 optional = true
 version = "0.15.0"
-
-[dependencies.pallet-mmr]
-path = "../substrate/frame/merkle-mountain-range"
-default-features = false
-optional = true
-version = "39.0.0"
 
 [dependencies.pallet-multisig]
 path = "../substrate/frame/multisig"
@@ -815,30 +614,6 @@ default-features = false
 optional = true
 version = "39.0.0"
 
-[dependencies.pallet-node-authorization]
-path = "../substrate/frame/node-authorization"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-nomination-pools]
-path = "../substrate/frame/nomination-pools"
-default-features = false
-optional = true
-version = "37.0.0"
-
-[dependencies.pallet-nomination-pools-benchmarking]
-path = "../substrate/frame/nomination-pools/benchmarking"
-default-features = false
-optional = true
-version = "37.0.0"
-
-[dependencies.pallet-nomination-pools-runtime-api]
-path = "../substrate/frame/nomination-pools/runtime-api"
-default-features = false
-optional = true
-version = "35.0.0"
-
 [dependencies.pallet-offences]
 path = "../substrate/frame/offences"
 default-features = false
@@ -857,12 +632,6 @@ default-features = false
 optional = true
 version = "0.17.0"
 
-[dependencies.pallet-parameters]
-path = "../substrate/frame/parameters"
-default-features = false
-optional = true
-version = "0.10.0"
-
 [dependencies.pallet-preimage]
 path = "../substrate/frame/preimage"
 default-features = false
@@ -871,24 +640,6 @@ version = "39.0.0"
 
 [dependencies.pallet-proxy]
 path = "../substrate/frame/proxy"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-ranked-collective]
-path = "../substrate/frame/ranked-collective"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-recovery]
-path = "../substrate/frame/recovery"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-referenda]
-path = "../substrate/frame/referenda"
 default-features = false
 optional = true
 version = "39.0.0"
@@ -917,23 +668,11 @@ default-features = false
 optional = true
 version = "20.0.0"
 
-[dependencies.pallet-salary]
-path = "../substrate/frame/salary"
-default-features = false
-optional = true
-version = "24.0.0"
-
 [dependencies.pallet-scheduler]
 path = "../substrate/frame/scheduler"
 default-features = false
 optional = true
 version = "40.0.0"
-
-[dependencies.pallet-scored-pool]
-path = "../substrate/frame/scored-pool"
-default-features = false
-optional = true
-version = "39.0.0"
 
 [dependencies.pallet-session]
 path = "../substrate/frame/session"
@@ -952,12 +691,6 @@ path = "../substrate/frame/transaction-payment/skip-feeless-payment"
 default-features = false
 optional = true
 version = "14.1.0"
-
-[dependencies.pallet-society]
-path = "../substrate/frame/society"
-default-features = false
-optional = true
-version = "39.0.0"
 
 [dependencies.pallet-staking]
 path = "../substrate/frame/staking"
@@ -1007,12 +740,6 @@ default-features = false
 optional = true
 version = "38.0.0"
 
-[dependencies.pallet-tips]
-path = "../substrate/frame/tips"
-default-features = false
-optional = true
-version = "38.0.0"
-
 [dependencies.pallet-transaction-payment]
 path = "../substrate/frame/transaction-payment"
 default-features = false
@@ -1027,12 +754,6 @@ version = "39.0.0"
 
 [dependencies.pallet-transaction-storage]
 path = "../substrate/frame/transaction-storage"
-default-features = false
-optional = true
-version = "38.0.0"
-
-[dependencies.pallet-treasury]
-path = "../substrate/frame/treasury"
 default-features = false
 optional = true
 version = "38.0.0"
@@ -1060,12 +781,6 @@ path = "../substrate/frame/verify-signature"
 default-features = false
 optional = true
 version = "0.2.0"
-
-[dependencies.pallet-vesting]
-path = "../substrate/frame/vesting"
-default-features = false
-optional = true
-version = "39.0.0"
 
 [dependencies.pallet-whitelist]
 path = "../substrate/frame/whitelist"
@@ -1138,12 +853,6 @@ path = "../substrate/primitives/consensus/babe"
 default-features = false
 optional = true
 version = "0.41.0"
-
-[dependencies.sp-consensus-beefy]
-path = "../substrate/primitives/consensus/beefy"
-default-features = false
-optional = true
-version = "23.0.0"
 
 [dependencies.sp-consensus-grandpa]
 path = "../substrate/primitives/consensus/grandpa"
@@ -1240,12 +949,6 @@ path = "../substrate/primitives/mixnet"
 default-features = false
 optional = true
 version = "0.13.0"
-
-[dependencies.sp-mmr-primitives]
-path = "../substrate/primitives/merkle-mountain-range"
-default-features = false
-optional = true
-version = "35.0.0"
 
 [dependencies.sp-npos-elections]
 path = "../substrate/primitives/npos-elections"
@@ -1403,18 +1106,6 @@ default-features = false
 optional = true
 version = "39.0.0"
 
-[dependencies.mmr-gadget]
-path = "../substrate/client/merkle-mountain-range"
-default-features = false
-optional = true
-version = "43.0.0"
-
-[dependencies.mmr-rpc]
-path = "../substrate/client/merkle-mountain-range/rpc"
-default-features = false
-optional = true
-version = "39.0.0"
-
 [dependencies.pallet-transaction-payment-rpc]
 path = "../substrate/frame/transaction-payment/rpc"
 default-features = false
@@ -1492,18 +1183,6 @@ path = "../substrate/client/consensus/babe/rpc"
 default-features = false
 optional = true
 version = "0.48.0"
-
-[dependencies.sc-consensus-beefy]
-path = "../substrate/client/consensus/beefy"
-default-features = false
-optional = true
-version = "27.0.0"
-
-[dependencies.sc-consensus-beefy-rpc]
-path = "../substrate/client/consensus/beefy/rpc"
-default-features = false
-optional = true
-version = "27.0.0"
 
 [dependencies.sc-consensus-epochs]
 path = "../substrate/client/consensus/epochs"

@@ -37,7 +37,6 @@ use crate::{
 	},
 };
 use clap::{error::ErrorKind, Args, CommandFactory, Parser};
-use codec::Encode;
 use fake_runtime_api::RuntimeApi as FakeRuntimeApi;
 use frame_support::Deserialize;
 use genesis_state::WARN_SPEC_GENESIS_CTOR;
@@ -170,9 +169,7 @@ pub(crate) enum BenchmarkType {
 }
 
 /// Hostfunctions that are typically used by parachains.
-pub type ParachainHostFunctions = (
-	sp_io::SubstrateHostFunctions,
-);
+pub type ParachainHostFunctions = (sp_io::SubstrateHostFunctions,);
 
 pub type BlockNumber = u32;
 
@@ -191,13 +188,7 @@ type OverheadClient<Block, HF> = TFullClient<Block, FakeRuntimeApi, WasmExecutor
 /// including the relay chain state and validation data. Not all of these
 /// inherents are required for every chain. The runtime will pick the ones
 /// it requires based on their identifier.
-fn create_inherent_data<Client: UsageProvider<Block> + HeaderBackend<Block>, Block: BlockT>(
-	client: &Arc<Client>,
-	chain_type: &ChainType,
-) -> InherentData {
-	let genesis = client.usage_info().chain.best_hash;
-	let header = client.header(genesis).unwrap().unwrap();
-
+fn create_inherent_data() -> InherentData {
 	let mut inherent_data = InherentData::new();
 
 	// Timestamp inherent that is very common in substrate chains.
@@ -394,7 +385,7 @@ impl OverheadCmd {
 			&chain_type,
 		)?;
 
-		let inherent_data = create_inherent_data(&client, &chain_type);
+		let inherent_data = create_inherent_data();
 
 		let (ext_builder, runtime_name) = {
 			let genesis = client.usage_info().chain.best_hash;
@@ -514,7 +505,7 @@ impl OverheadCmd {
 		C: ProvideRuntimeApi<Block>
 			+ CallApiAt<Block>
 			+ UsageProvider<Block>
-			+ sp_blockchain::HeaderBackend<Block>,
+			+ HeaderBackend<Block>,
 		C::Api: ApiExt<Block> + BlockBuilderApi<Block>,
 	{
 		if ext_builder.pallet() != "system" || ext_builder.extrinsic() != "remark" {

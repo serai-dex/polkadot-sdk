@@ -35,7 +35,6 @@ frame-election-provider-support = { default-features = true, path = "../../elect
 
 pallet-election-provider-multi-phase = { default-features = true, path = ".." }
 pallet-staking = { default-features = true, path = "../../staking" }
-pallet-nomination-pools = { default-features = true, path = "../../nomination-pools" }
 pallet-bags-list = { default-features = true, path = "../../bags-list" }
 pallet-balances = { default-features = true, path = "../../balances" }
 pallet-timestamp = { default-features = true, path = "../../timestamp" }

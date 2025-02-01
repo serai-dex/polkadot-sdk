@@ -29,7 +29,6 @@ sp-weights = { features = ["serde"], workspace = true }
 [dev-dependencies]
 pallet-balances = { default-features = true, path = "../balances" }
 pallet-root-testing = { default-features = true, path = "../root-testing" }
-pallet-collective = { default-features = true, path = "../collective" }
 pallet-timestamp = { default-features = true, path = "../timestamp" }
 sp-core = { default-features = true, path = "../../primitives/core" }
 
