@@ -178,13 +178,13 @@ dependencies = [
 
 [[package]]
 name = "aquamarine"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21cc1548309245035eb18aa7f0967da6bc65587005170c56e6ef2788a4cf3f4e"
+checksum = "0f50776554130342de4836ba542aa85a4ddb361690d7e8df13774d7284c3d5c2"
 dependencies = [
  "include_dir",
  "itertools 0.10.5",
- "proc-macro-error",
+ "proc-macro-error2",
  "proc-macro2",
  "quote",
  "syn 2.0.98",
@@ -955,9 +955,9 @@ dependencies = [
 
 [[package]]
 name = "cfg-expr"
-version = "0.15.8"
+version = "0.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d067ad48b8650848b989a59a86c6c36a995d02d2bf778d45c3c5d57bc2718f02"
+checksum = "8d4ba6e40bd1184518716a6e1a781bf9160e286d219ccdb8ab2612e74cfe4789"
 dependencies = [
  "smallvec",
 ]
@@ -2518,7 +2518,7 @@ dependencies = [
  "gethostname",
  "handlebars",
  "hex",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "linked-hash-map",
  "log",
  "parity-scale-codec",
@@ -2799,7 +2799,7 @@ dependencies = [
  "frame-support",
  "frame-support-procedural-tools",
  "frame-system",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "macro_magic",
  "parity-scale-codec",
  "pretty_assertions",
@@ -2976,12 +2976,12 @@ dependencies = [
 
 [[package]]
 name = "fs4"
-version = "0.7.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29f9df8a11882c4e3335eb2d18a0137c505d9ca927470b0cac9c6f0ae07d28f7"
+checksum = "c29c30684418547d476f0b48e84f4821639119c483b1eccd566c8cd0cd05f521"
 dependencies = [
  "rustix",
- "windows-sys 0.48.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3151,12 +3151,12 @@ dependencies = [
 
 [[package]]
 name = "gethostname"
-version = "0.2.3"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1ebd34e35c46e00bb73e81363248d627782724609fe1b6396f553f68fe3862e"
+checksum = "4fd4b8790c0792e3b11895efdf5f289ebe8b59107a6624f1cce68f24ff8c7035"
 dependencies = [
- "libc",
- "winapi",
+ "rustix",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -3627,7 +3627,7 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2 0.4.10",
+ "socket2 0.5.8",
  "tokio",
  "tower-service",
  "tracing",
@@ -4142,15 +4142,6 @@ name = "itertools"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
-dependencies = [
- "either",
-]
-
-[[package]]
-name = "itertools"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
 dependencies = [
  "either",
 ]
@@ -6029,10 +6020,10 @@ dependencies = [
  "flate2",
  "fs_extra",
  "glob",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "tar",
  "tempfile",
- "toml_edit 0.19.15",
+ "toml_edit",
 ]
 
 [[package]]
@@ -8253,7 +8244,7 @@ version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ecf48c7ca261d60b74ab1a7b20da18bede46776b2e55535cb958eb595c5fa7b"
 dependencies = [
- "toml_edit 0.22.23",
+ "toml_edit",
 ]
 
 [[package]]
@@ -8412,8 +8403,8 @@ version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0f3e5beed80eb580c68e2c600937ac2c4eedabdfd5ef1e5b7ea4f3fba84497b"
 dependencies = [
- "heck 0.4.1",
- "itertools 0.10.5",
+ "heck 0.5.0",
+ "itertools 0.13.0",
  "log",
  "multimap",
  "once_cell",
@@ -8446,7 +8437,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "157c5a9d7ea5c2ed2d9fb8f495b64759f7816c7eaea54ba3978f0d63000162e3"
 dependencies = [
  "anyhow",
- "itertools 0.10.5",
+ "itertools 0.13.0",
  "proc-macro2",
  "quote",
  "syn 2.0.98",
@@ -9280,7 +9271,7 @@ dependencies = [
  "log",
  "multihash 0.19.3",
  "parity-scale-codec",
- "prost 0.12.6",
+ "prost 0.13.4",
  "prost-build",
  "quickcheck",
  "rand",
@@ -9392,7 +9383,7 @@ dependencies = [
  "fdlimit",
  "futures",
  "futures-timer",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "libp2p-identity",
  "log",
  "names",
@@ -10007,7 +9998,7 @@ dependencies = [
  "futures",
  "log",
  "parity-scale-codec",
- "prost 0.12.6",
+ "prost 0.13.4",
  "prost-build",
  "sc-client-api",
  "sc-network",
@@ -10030,7 +10021,7 @@ dependencies = [
  "log",
  "mockall",
  "parity-scale-codec",
- "prost 0.12.6",
+ "prost 0.13.4",
  "prost-build",
  "quickcheck",
  "sc-block-builder",
@@ -10250,7 +10241,7 @@ dependencies = [
  "futures",
  "futures-util",
  "hex",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "jsonrpsee",
  "log",
  "parity-scale-codec",
@@ -10526,7 +10517,7 @@ dependencies = [
  "futures",
  "futures-timer",
  "indexmap",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "linked-hash-map",
  "log",
  "parity-scale-codec",
@@ -11671,7 +11662,7 @@ dependencies = [
  "hash-db",
  "hash256-std-hasher",
  "impl-serde",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "log",
  "merlin",
  "parity-bip39",
@@ -13369,7 +13360,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "toml_edit 0.22.23",
+ "toml_edit",
 ]
 
 [[package]]
@@ -13383,17 +13374,6 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.19.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
-dependencies = [
- "indexmap",
- "toml_datetime",
- "winnow 0.5.40",
-]
-
-[[package]]
-name = "toml_edit"
 version = "0.22.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "02a8b472d1a3d7c18e2d61a489aee3453fd9031c33e4f55bd533f4a7adca1bee"
@@ -13402,7 +13382,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "winnow 0.7.0",
+ "winnow",
 ]
 
 [[package]]
@@ -14710,15 +14690,6 @@ name = "windows_x86_64_msvc"
 version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
-
-[[package]]
-name = "winnow"
-version = "0.5.40"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f593a95398737aeed53e489c785df13f3618e41dbcd6718c6addbf1395aa6876"
-dependencies = [
- "memchr",
-]
 
 [[package]]
 name = "winnow"
