@@ -174,10 +174,6 @@ pub use pallet_message_queue;
 #[cfg(feature = "pallet-migrations")]
 pub use pallet_migrations;
 
-/// FRAME's mixnet pallet.
-#[cfg(feature = "pallet-mixnet")]
-pub use pallet_mixnet;
-
 /// FRAME multi-signature dispatch pallet.
 #[cfg(feature = "pallet-multisig")]
 pub use pallet_multisig;
@@ -415,10 +411,6 @@ pub use sc_informant;
 #[cfg(feature = "sc-keystore")]
 pub use sc_keystore;
 
-/// Substrate mixnet service.
-#[cfg(feature = "sc-mixnet")]
-pub use sc_mixnet;
-
 /// Substrate network protocol.
 #[cfg(feature = "sc-network")]
 pub use sc_network;
@@ -632,10 +624,6 @@ pub use sp_maybe_compressed_blob;
 /// Intermediate representation of the runtime metadata.
 #[cfg(feature = "sp-metadata-ir")]
 pub use sp_metadata_ir;
-
-/// Substrate mixnet types and runtime interface.
-#[cfg(feature = "sp-mixnet")]
-pub use sp_mixnet;
 
 /// NPoS election algorithm primitives.
 #[cfg(feature = "sp-npos-elections")]

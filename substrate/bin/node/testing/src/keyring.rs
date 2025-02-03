@@ -67,7 +67,6 @@ pub fn session_keys_from_seed(seed: &str) -> SessionKeys {
 		babe: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
 		im_online: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
 		authority_discovery: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
-		mixnet: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
 	}
 }
 

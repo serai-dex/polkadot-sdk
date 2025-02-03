@@ -31,7 +31,6 @@ pub use sc_rpc_api::DenyUnsafe;
 pub mod author;
 pub mod chain;
 pub mod dev;
-pub mod mixnet;
 pub mod offchain;
 pub mod state;
 pub mod system;

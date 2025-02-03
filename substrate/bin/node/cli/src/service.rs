@@ -154,7 +154,6 @@ pub fn create_extrinsic(
 /// Creates a new partial node.
 pub fn new_partial(
 	config: &Configuration,
-	mixnet_config: Option<&sc_mixnet::Config>,
 ) -> Result<
 	sc_service::PartialComponents<
 		FullClient,
@@ -173,7 +172,6 @@ pub fn new_partial(
 			),
 			grandpa::SharedVoterState,
 			Option<Telemetry>,
-			Option<sc_mixnet::ApiBackend>,
 		),
 	>,
 	ServiceError,
@@ -259,8 +257,6 @@ pub fn new_partial(
 
 	let import_setup = (block_import, grandpa_link, babe_link);
 
-	let (mixnet_api, mixnet_api_backend) = mixnet_config.map(sc_mixnet::Api::new).unzip();
-
 	let (rpc_extensions_builder, rpc_setup) = {
 		let (_, grandpa_link, _) = &import_setup;
 
@@ -300,7 +296,6 @@ pub fn new_partial(
 						finality_provider: finality_proof_provider.clone(),
 					},
 					backend: rpc_backend.clone(),
-					mixnet_api: mixnet_api.as_ref().cloned(),
 				};
 
 				node_rpc::create_full(deps).map_err(Into::into)
@@ -317,7 +312,7 @@ pub fn new_partial(
 		select_chain,
 		import_queue,
 		transaction_pool,
-		other: (rpc_extensions_builder, import_setup, rpc_setup, telemetry, mixnet_api_backend),
+		other: (rpc_extensions_builder, import_setup, rpc_setup, telemetry),
 	})
 }
 
@@ -340,7 +335,6 @@ pub struct NewFullBase {
 /// Creates a full service from the configuration.
 pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 	config: Configuration,
-	mixnet_config: Option<sc_mixnet::Config>,
 	disable_hardware_benchmarks: bool,
 	with_startup_data: impl FnOnce(
 		&sc_consensus_babe::BabeBlockImport<Block, FullClient, FullGrandpaBlockImport>,
@@ -373,8 +367,8 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 		keystore_container,
 		select_chain,
 		transaction_pool,
-		other: (rpc_builder, import_setup, rpc_setup, mut telemetry, mixnet_api_backend),
-	} = new_partial(&config, mixnet_config.as_ref())?;
+		other: (rpc_builder, import_setup, rpc_setup, mut telemetry),
+	} = new_partial(&config)?;
 
 	let metrics = N::register_notification_metrics(
 		config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
@@ -400,19 +394,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 		);
 	net_config.add_notification_protocol(grandpa_protocol_config);
 
-	let mixnet_protocol_name =
-		sc_mixnet::protocol_name(genesis_hash.as_ref(), config.chain_spec.fork_id());
-	let mixnet_notification_service = mixnet_config.as_ref().map(|mixnet_config| {
-		let (config, notification_service) = sc_mixnet::peers_set_config::<_, N>(
-			mixnet_protocol_name.clone(),
-			mixnet_config,
-			metrics.clone(),
-			Arc::clone(&peer_store_handle),
-		);
-		net_config.add_notification_protocol(config);
-		notification_service
-	});
-
 	let warp_sync = Arc::new(grandpa::warp_proof::NetworkProvider::new(
 		backend.clone(),
 		import_setup.1.shared_authority_set().clone(),
@@ -432,22 +413,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 			block_relay: None,
 			metrics,
 		})?;
-
-	if let Some(mixnet_config) = mixnet_config {
-		let mixnet = sc_mixnet::run(
-			mixnet_config,
-			mixnet_api_backend.expect("Mixnet API backend created if mixnet enabled"),
-			client.clone(),
-			sync_service.clone(),
-			network.clone(),
-			mixnet_protocol_name,
-			transaction_pool.clone(),
-			Some(keystore_container.keystore()),
-			mixnet_notification_service
-				.expect("`NotificationService` exists since mixnet was enabled; qed"),
-		);
-		task_manager.spawn_handle().spawn("mixnet", None, mixnet);
-	}
 
 	let rpc_handlers = sc_service::spawn_tasks(sc_service::SpawnTasksParams {
 		config,
@@ -656,14 +621,12 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 
 /// Builds a new service for a full client.
 pub fn new_full(config: Configuration, cli: Cli) -> Result<TaskManager, ServiceError> {
-	let mixnet_config = cli.mixnet_params.config(config.role.is_authority());
 	let database_path = config.database.path().map(Path::to_path_buf);
 
 	let task_manager = match config.network.network_backend {
 		sc_network::config::NetworkBackendType::Libp2p => {
 			let task_manager = new_full_base::<sc_network::NetworkWorker<_, _>>(
 				config,
-				mixnet_config,
 				cli.no_hardware_benchmarks,
 				|_, _| (),
 			)
@@ -673,7 +636,6 @@ pub fn new_full(config: Configuration, cli: Cli) -> Result<TaskManager, ServiceE
 		sc_network::config::NetworkBackendType::Litep2p => {
 			let task_manager = new_full_base::<sc_network::Litep2pNetworkBackend>(
 				config,
-				mixnet_config,
 				cli.no_hardware_benchmarks,
 				|_, _| (),
 			)
@@ -760,7 +722,6 @@ mod tests {
 				let NewFullBase { task_manager, client, network, sync, transaction_pool, .. } =
 					new_full_base::<sc_network::NetworkWorker<_, _>>(
 						config,
-						None,
 						false,
 						|block_import: &sc_consensus_babe::BabeBlockImport<Block, _, _>,
 						 babe_link: &sc_consensus_babe::BabeLink<Block>| {
@@ -958,7 +919,6 @@ mod tests {
 				let NewFullBase { task_manager, client, network, sync, transaction_pool, .. } =
 					new_full_base::<sc_network::NetworkWorker<_, _>>(
 						config,
-						None,
 						false,
 						|_, _| (),
 					)?;

@@ -234,11 +234,6 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 	config.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize);
 	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
 
-	// Since wasmtime 6.0.0 the default for this is `true`, but that heavily regresses
-	// the contracts pallet's performance, so disable it for now.
-	#[allow(deprecated)]
-	config.cranelift_use_egraphs(false);
-
 	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
 		Some(os_string) if os_string == "jitdump" => wasmtime::ProfilingStrategy::JitDump,
 		None => wasmtime::ProfilingStrategy::None,
@@ -270,13 +265,29 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 
 	// Be clear and specific about the extensions we support. If an update brings new features
 	// they should be introduced here as well.
-	config.wasm_reference_types(semantics.wasm_reference_types);
 	config.wasm_simd(semantics.wasm_simd);
 	config.wasm_bulk_memory(semantics.wasm_bulk_memory);
 	config.wasm_multi_value(semantics.wasm_multi_value);
 	config.wasm_multi_memory(false);
-	config.wasm_threads(false);
+	// Requires the `threads` feature
+	// config.wasm_threads(false);
 	config.wasm_memory64(false);
+
+	config.wasm_tail_call(false);
+	config.wasm_custom_page_sizes(false);
+	config.wasm_wide_arithmetic(false);
+	// Requires the `gc` feature
+	// config.wasm_gc(false);
+	// config.wasm_function_references(false);
+	// config.wasm_reference_types(semantics.wasm_reference_types);
+	config.wasm_relaxed_simd(false);
+	// Unnecessary since relaxed SIMD was disabled
+	// config.relaxed_simd_deterministic(true);
+	config.wasm_extended_const(false);
+	// Requires the `component-model` feature
+	// config.wasm_component_model(false);
+	// config.wasm_component_model_more_flags(false);
+	// config.wasm_component_model_multiple_returns(false);
 
 	let (use_pooling, use_cow) = match semantics.instantiation_strategy {
 		InstantiationStrategy::PoolingCopyOnWrite => (true, true),
@@ -313,15 +324,18 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 			//   size: 32384
 			//   table_elements: 1249
 			//   memory_pages: 2070
-			.instance_size(128 * 1024)
-			.instance_table_elements(8192)
-			.instance_memory_pages(memory_pages)
+			.max_core_instance_size(128 * 1024)
+			.table_elements(8192)
+			.max_memory_size(usize::try_from(memory_pages * WASM_PAGE_SIZE).unwrap())
 			// We can only have a single of those.
-			.instance_tables(1)
-			.instance_memories(1)
+			.total_memories(MAX_INSTANCE_COUNT * 1)
+			.max_memories_per_module(1)
+			.total_tables(MAX_INSTANCE_COUNT * 1)
+			.max_tables_per_module(1)
 			// This determines how many instances of the module can be
 			// instantiated in parallel from the same `Module`.
-			.instance_count(MAX_INSTANCE_COUNT);
+			// .total_stacks(MAX_INSTANCE_COUNT)
+			.total_core_instances(MAX_INSTANCE_COUNT);
 
 		config.allocation_strategy(wasmtime::InstanceAllocationStrategy::Pooling(pooling_config));
 	}
@@ -452,7 +466,7 @@ pub struct Semantics {
 	pub wasm_bulk_memory: bool,
 
 	/// Enables WASM Reference Types proposal
-	pub wasm_reference_types: bool,
+	// pub wasm_reference_types: bool,
 
 	/// Enables WASM Fixed-Width SIMD proposal
 	pub wasm_simd: bool,

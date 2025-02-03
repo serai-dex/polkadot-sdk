@@ -23,8 +23,6 @@ serde_json = { workspace = true, default-features = true }
 thiserror = { workspace = true }
 sc-chain-spec.workspace = true
 sc-chain-spec.default-features = true
-sc-mixnet.workspace = true
-sc-mixnet.default-features = true
 sc-transaction-pool-api.workspace = true
 sc-transaction-pool-api.default-features = true
 sp-core.workspace = true

@@ -113,7 +113,6 @@ fn new_node(tokio_handle: Handle) -> node_cli::service::NewFullBase {
 
 	node_cli::service::new_full_base::<sc_network::NetworkWorker<_, _>>(
 		config,
-		None,
 		false,
 		|_, _| (),
 	)

@@ -44,7 +44,7 @@ pub trait BenchmarkHelper<Signature, Signer> {
 
 #[benchmarks(where
 	T: Config + Send + Sync,
-	T::RuntimeCall: Dispatchable<Info = DispatchInfo> + GetDispatchInfo,
+	T::RuntimeCall: From<frame_system::Call<T>> + Dispatchable<Info = DispatchInfo> + GetDispatchInfo,
 	T::RuntimeOrigin: AsTransactionAuthorizedOrigin,
 )]
 mod benchmarks {

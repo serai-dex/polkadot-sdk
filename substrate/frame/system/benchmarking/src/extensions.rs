@@ -42,7 +42,7 @@ pub struct Pallet<T: Config>(System<T>);
 
 #[benchmarks(where
 	T: Send + Sync,
-    T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
+    T::RuntimeCall: From<frame_system::Call<T>> + Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
 	<T::RuntimeCall as Dispatchable>::RuntimeOrigin: AsSystemOriginSigner<T::AccountId> + AsTransactionAuthorizedOrigin + Clone)
 ]
 mod benchmarks {

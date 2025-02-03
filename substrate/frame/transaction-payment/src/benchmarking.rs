@@ -37,7 +37,7 @@ fn assert_last_event<T: Config>(generic_event: <T as Config>::RuntimeEvent) {
 #[benchmarks(where
 	T: Config,
 	T::RuntimeOrigin: AsTransactionAuthorizedOrigin,
-	T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
+	T::RuntimeCall: From<frame_system::Call<T>> + Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
 )]
 mod benchmarks {
 	use super::*;

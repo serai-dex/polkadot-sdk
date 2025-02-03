@@ -44,7 +44,6 @@ members = [
 	"substrate/client/executor/wasmtime",
 	"substrate/client/informant",
 	"substrate/client/keystore",
-	"substrate/client/mixnet",
 	"substrate/client/network",
 	"substrate/client/network-gossip",
 	"substrate/client/network/common",
@@ -105,7 +104,6 @@ members = [
 	"substrate/frame/message-queue",
 	"substrate/frame/metadata-hash-extension",
 	"substrate/frame/migrations",
-	"substrate/frame/mixnet",
 	"substrate/frame/multisig",
 	"substrate/frame/nft-fractionalization",
 	"substrate/frame/nfts",
@@ -186,7 +184,6 @@ members = [
 	"substrate/primitives/keystore",
 	"substrate/primitives/maybe-compressed-blob",
 	"substrate/primitives/metadata-ir",
-	"substrate/primitives/mixnet",
 	"substrate/primitives/npos-elections",
 	"substrate/primitives/npos-elections/fuzzer",
 	"substrate/primitives/offchain",
@@ -465,7 +462,6 @@ metered = { version = "0.6.1", default-features = false, package = "prioritized-
 milagro-bls = { version = "1.5.4", default-features = false, package = "snowbridge-milagro-bls" }
 minimal-template-node = { path = "templates/minimal/node" }
 minimal-template-runtime = { path = "templates/minimal/runtime", version = "0.1.0" }
-mixnet = { version = "0.7.0" }
 mockall = { version = "0.11.3" }
 multiaddr = { version = "0.18.1" }
 multihash = { version = "0.19.1", default-features = false }
@@ -513,7 +509,6 @@ pallet-membership = { path = "substrate/frame/membership", default-features = fa
 pallet-message-queue = { path = "substrate/frame/message-queue", default-features = false, version = "42.0.0" }
 pallet-migrations = { path = "substrate/frame/migrations", default-features = false, version = "9.0.0" }
 pallet-minimal-template = { path = "templates/minimal/pallets/template", default-features = false, version = "0.1.0" }
-pallet-mixnet = { default-features = false, path = "substrate/frame/mixnet" }
 pallet-multisig = { path = "substrate/frame/multisig", default-features = false, version = "39.0.0" }
 pallet-nft-fractionalization = { path = "substrate/frame/nft-fractionalization", default-features = false, version = "22.0.0" }
 pallet-nfts = { path = "substrate/frame/nfts", default-features = false, version = "33.0.0" }
@@ -600,7 +595,7 @@ rpassword = { version = "7.0.0" }
 rstest = { version = "0.18.2" }
 rustc-hash = { version = "1.1.0" }
 rustc-hex = { version = "2.1.0", default-features = false }
-rustix = { version = "0.36.7", default-features = false }
+rustix = { version = "0.38.31", default-features = false }
 rustls = { version = "0.23.14", default-features = false, features = ["logging", "ring", "std", "tls12"] }
 rustversion = { version = "1.0.17" }
 rusty-fork = { version = "0.3.0", default-features = false }
@@ -630,7 +625,6 @@ sc-executor-polkavm = { path = "substrate/client/executor/polkavm", default-feat
 sc-executor-wasmtime = { path = "substrate/client/executor/wasmtime", default-features = false, version = "0.36.0" }
 sc-informant = { path = "substrate/client/informant", default-features = false, version = "0.47.0" }
 sc-keystore = { path = "substrate/client/keystore", default-features = false, version = "34.0.0" }
-sc-mixnet = { path = "substrate/client/mixnet", default-features = false, version = "0.18.0" }
 sc-network = { path = "substrate/client/network", default-features = false, version = "0.48.0" }
 sc-network-common = { path = "substrate/client/network/common", default-features = false, version = "0.47.0" }
 sc-network-gossip = { path = "substrate/client/network-gossip", default-features = false, version = "0.48.0" }
@@ -710,7 +704,6 @@ sp-keyring = { path = "substrate/primitives/keyring", default-features = false, 
 sp-keystore = { path = "substrate/primitives/keystore", default-features = false, version = "0.41.0" }
 sp-maybe-compressed-blob = { path = "substrate/primitives/maybe-compressed-blob", default-features = false, version = "11.0.0" }
 sp-metadata-ir = { path = "substrate/primitives/metadata-ir", default-features = false, version = "0.8.0" }
-sp-mixnet = { path = "substrate/primitives/mixnet", default-features = false, version = "0.13.0" }
 sp-npos-elections = { path = "substrate/primitives/npos-elections", default-features = false, version = "35.0.0" }
 sp-offchain = { path = "substrate/primitives/offchain", default-features = false, version = "35.0.0" }
 sp-panic-handler = { path = "substrate/primitives/panic-handler", default-features = false, version = "13.0.1" }
@@ -806,7 +799,7 @@ wasm-instrument = { version = "0.4", default-features = false }
 wasm-opt = { version = "0.116" }
 wasm-timer = { version = "0.2.5" }
 wasmi = { version = "0.32.3", default-features = false }
-wasmtime = { version = "8.0.1", default-features = false }
+wasmtime = { version = "29.0.1", default-features = false }
 wat = { version = "1.0.0" }
 x25519-dalek = { version = "2.0" }
 zeroize = { version = "1.7.0", default-features = false }
@@ -848,7 +841,6 @@ blake2 = { opt-level = 3 }
 blake2b_simd = { opt-level = 3 }
 chacha20poly1305 = { opt-level = 3 }
 cranelift-codegen = { opt-level = 3 }
-cranelift-wasm = { opt-level = 3 }
 crc32fast = { opt-level = 3 }
 crossbeam-deque = { opt-level = 3 }
 crypto-mac = { opt-level = 3 }

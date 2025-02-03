@@ -596,7 +596,6 @@ impl_opaque_keys! {
 		pub babe: Babe,
 		pub im_online: ImOnline,
 		pub authority_discovery: AuthorityDiscovery,
-		pub mixnet: Mixnet,
 	}
 }
 
@@ -1429,29 +1428,6 @@ impl OnUnbalanced<Credit<AccountId, Balances>> for IntoAuthor {
 	}
 }
 
-parameter_types! {
-	pub const MixnetNumCoverToCurrentBlocks: BlockNumber = 3;
-	pub const MixnetNumRequestsToCurrentBlocks: BlockNumber = 3;
-	pub const MixnetNumCoverToPrevBlocks: BlockNumber = 3;
-	pub const MixnetNumRegisterStartSlackBlocks: BlockNumber = 3;
-	pub const MixnetNumRegisterEndSlackBlocks: BlockNumber = 3;
-	pub const MixnetRegistrationPriority: TransactionPriority = ImOnlineUnsignedPriority::get() - 1;
-}
-
-impl pallet_mixnet::Config for Runtime {
-	type MaxAuthorities = MaxAuthorities;
-	type MaxExternalAddressSize = ConstU32<128>;
-	type MaxExternalAddressesPerMixnode = ConstU32<16>;
-	type NextSessionRotation = Babe;
-	type NumCoverToCurrentBlocks = MixnetNumCoverToCurrentBlocks;
-	type NumRequestsToCurrentBlocks = MixnetNumRequestsToCurrentBlocks;
-	type NumCoverToPrevBlocks = MixnetNumCoverToPrevBlocks;
-	type NumRegisterStartSlackBlocks = MixnetNumRegisterStartSlackBlocks;
-	type NumRegisterEndSlackBlocks = MixnetNumRegisterEndSlackBlocks;
-	type RegistrationPriority = MixnetRegistrationPriority;
-	type MinMixnodes = ConstU32<7>; // Low to allow small testing networks
-}
-
 #[frame_support::runtime]
 mod runtime {
 	use super::*;
@@ -1603,9 +1579,6 @@ mod runtime {
 
 	#[runtime::pallet_index(72)]
 	pub type MultiBlockMigrations = pallet_migrations::Pallet<Runtime>;
-
-	#[runtime::pallet_index(75)]
-	pub type Mixnet = pallet_mixnet::Pallet<Runtime>;
 
 	#[runtime::pallet_index(77)]
 	pub type SkipFeelessPayment = pallet_skip_feeless_payment::Pallet<Runtime>;
@@ -2062,24 +2035,6 @@ impl_runtime_apis! {
 
 		fn collection_attribute(collection: u32, key: Vec<u8>) -> Option<Vec<u8>> {
 			<Nfts as Inspect<AccountId>>::collection_attribute(&collection, &key)
-		}
-	}
-
-	impl sp_mixnet::runtime_api::MixnetApi<Block> for Runtime {
-		fn session_status() -> sp_mixnet::types::SessionStatus {
-			Mixnet::session_status()
-		}
-
-		fn prev_mixnodes() -> Result<Vec<sp_mixnet::types::Mixnode>, sp_mixnet::types::MixnodesErr> {
-			Mixnet::prev_mixnodes()
-		}
-
-		fn current_mixnodes() -> Result<Vec<sp_mixnet::types::Mixnode>, sp_mixnet::types::MixnodesErr> {
-			Mixnet::current_mixnodes()
-		}
-
-		fn maybe_register(session_index: sp_mixnet::types::SessionIndex, mixnode: sp_mixnet::types::Mixnode) -> bool {
-			Mixnet::maybe_register(session_index, mixnode)
 		}
 	}
 

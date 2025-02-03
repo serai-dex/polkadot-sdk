@@ -33,7 +33,7 @@ use sp_runtime::traits::{
 
 #[benchmarks(where
 	T::RuntimeOrigin: AsTransactionAuthorizedOrigin,
-	T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
+	T::RuntimeCall: From<frame_system::Call<T>> + Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
 	AssetBalanceOf<T>: Send + Sync,
 	BalanceOf<T>: Send + Sync + From<u64> + IsType<ChargeAssetBalanceOf<T>>,
 	ChargeAssetIdOf<T>: Send + Sync,

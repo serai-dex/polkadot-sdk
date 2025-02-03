@@ -37,9 +37,6 @@
     "nonAuthorityKeys": []
 
   },
-  "technicalMembership": {
-    "members": []
-  },
   "grandpa": {
     "authorities": []
   },
@@ -51,9 +48,6 @@
   },
   "authorityDiscovery": {
     "keys": []
-  },
-  "vesting": {
-    "vesting": []
   },
   "glutton": {
     "compute": "0",
@@ -77,9 +71,6 @@
     "byteFee": 10,
     "entryFee": 1000,
     "storagePeriod": 100800
-  },
-  "mixnet": {
-    "mixnodes": []
   },
   "txPause": {
     "paused": []

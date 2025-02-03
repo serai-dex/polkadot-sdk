@@ -2,10 +2,14 @@
 ./cumulus
 ./docs
 ./polkadot
+./substrate/client/cli/src/params/mixnet_params.rs
 ./substrate/client/consensus/beefy
 ./substrate/client/merkle-mountain-range
+./substrate/client/mixnet
 ./substrate/client/network/statement
+./substrate/client/rpc/src/mixnet
 ./substrate/client/rpc/src/statement
+./substrate/client/rpc-api/src/mixnet
 ./substrate/client/rpc-api/src/statement
 ./substrate/client/statement-store
 ./substrate/frame/alliance
@@ -27,6 +31,7 @@
 ./substrate/frame/lottery
 ./substrate/frame/membership
 ./substrate/frame/merkle-mountain-range
+./substrate/frame/mixnet
 ./substrate/frame/node-authorization
 ./substrate/frame/nomination-pools
 ./substrate/frame/parameters
@@ -60,5 +65,6 @@
 ./substrate/primitives/keyring/src/bandersnatch.rs
 ./substrate/primitives/keyring/src/ed25519.rs
 ./substrate/primitives/merkle-mountain-range
+./substrate/primitives/mixnet
 ./substrate/primitives/statement-store
 ./templates/parachain

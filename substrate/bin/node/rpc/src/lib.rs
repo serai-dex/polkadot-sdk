@@ -87,22 +87,16 @@ pub struct FullDeps<C, P, SC, B> {
 	pub grandpa: GrandpaDeps<B>,
 	/// The backend used by the node.
 	pub backend: Arc<B>,
-	/// Mixnet API.
-	pub mixnet_api: Option<sc_mixnet::Api>,
 }
 
 /// Instantiate all Full RPC extensions.
 pub fn create_full<C, P, SC, B>(
-	FullDeps {
-		client,
-		pool,
-		select_chain,
-		chain_spec,
-		babe,
-		grandpa,
-		backend,
-		mixnet_api,
-	}: FullDeps<C, P, SC, B>,
+	FullDeps { client, pool, select_chain, chain_spec, babe, grandpa, backend }: FullDeps<
+		C,
+		P,
+		SC,
+		B,
+	>,
 ) -> Result<RpcModule<()>, Box<dyn std::error::Error + Send + Sync>>
 where
 	C: ProvideRuntimeApi<Block>
@@ -125,10 +119,7 @@ where
 	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
 	use sc_consensus_babe_rpc::{Babe, BabeApiServer};
 	use sc_consensus_grandpa_rpc::{Grandpa, GrandpaApiServer};
-	use sc_rpc::{
-		dev::{Dev, DevApiServer},
-		mixnet::MixnetApiServer,
-	};
+	use sc_rpc::dev::{Dev, DevApiServer};
 	use sc_sync_state_rpc::{SyncState, SyncStateApiServer};
 	use substrate_frame_rpc_system::{System, SystemApiServer};
 	use substrate_state_trie_migration_rpc::{StateMigration, StateMigrationApiServer};
@@ -167,11 +158,6 @@ where
 
 	io.merge(StateMigration::new(client.clone(), backend).into_rpc())?;
 	io.merge(Dev::new(client).into_rpc())?;
-
-	if let Some(mixnet_api) = mixnet_api {
-		let mixnet = sc_rpc::mixnet::Mixnet::new(mixnet_api).into_rpc();
-		io.merge(mixnet)?;
-	}
 
 	Ok(io)
 }
