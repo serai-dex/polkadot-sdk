@@ -317,7 +317,6 @@ impl frame_system::Config for Runtime {
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
 	type SystemWeightInfo = ();
-	type SS58Prefix = ();
 	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;
 }
@@ -769,12 +768,6 @@ fn metadata() {
 			PalletConstantMetadata {
 				name: "Version",
 				ty: scale_info::meta_type::<sp_version::RuntimeVersion>(),
-				value: vec![],
-				docs: vec![],
-			},
-			PalletConstantMetadata {
-				name: "SS58Prefix",
-				ty: scale_info::meta_type::<u16>(),
 				value: vec![],
 				docs: vec![],
 			},

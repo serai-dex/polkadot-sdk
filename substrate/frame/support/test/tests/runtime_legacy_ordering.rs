@@ -763,18 +763,6 @@ fn test_metadata() {
 					value: RuntimeVersion::default().encode(),
 					docs: maybe_docs(vec![ " Get the chain's in-code version."]),
 				},
-				PalletConstantMetadata {
-					name: "SS58Prefix",
-					ty: meta_type::<u16>(),
-					value: 0u16.encode(),
-					docs: maybe_docs(vec![
-						" The designated SS58 prefix of this chain.",
-						"",
-						" This replaces the \"ss58Format\" property declared in the chain spec. Reason is",
-						" that the runtime should know about the prefix in order to make use of it as",
-						" an identifier of the chain.",
-					]),
-				},
 			],
 			error: Some(meta_type::<frame_system::Error<Runtime>>().into()),
 			index: 30,

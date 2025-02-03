@@ -77,7 +77,6 @@ impl frame_system::Config for Runtime {
 	type OnSetCode = ();
 	type MaxConsumers = ConstU32<16>;
 	type SystemWeightInfo = ();
-	type SS58Prefix = ConstU16<0>;
 }
 
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;

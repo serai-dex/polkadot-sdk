@@ -49,8 +49,6 @@ pub async fn execute<Runtime, Block>(
 		.unwrap();
 
 	ext.execute_with(|| {
-		sp_core::crypto::set_default_ss58_version(Runtime::SS58Prefix::get().try_into().unwrap());
-
 		pallet_bags_list::Pallet::<Runtime, pallet_bags_list::Instance1>::do_try_state().unwrap();
 
 		log::info!(target: crate::LOG_TARGET, "executed bags-list sanity check with no errors.");

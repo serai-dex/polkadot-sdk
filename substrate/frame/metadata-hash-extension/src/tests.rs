@@ -62,12 +62,10 @@ fn rejects_unknown_mode() {
 /// Generate the metadata hash for the `test-runtime`.
 fn generate_metadata_hash(metadata: RuntimeMetadataPrefixed) -> [u8; 32] {
 	let runtime_version = runtime::VERSION;
-	let base58_prefix = 0;
 
 	let extra_info = ExtraInfo {
 		spec_version: runtime_version.spec_version,
 		spec_name: runtime_version.spec_name.into(),
-		base58_prefix,
 		decimals: 10,
 		token_symbol: "TOKEN".into(),
 	};

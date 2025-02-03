@@ -1125,10 +1125,6 @@ mod mock {
 		}
 	);
 
-	parameter_types! {
-		pub const SS58Prefix: u8 = 42;
-	}
-
 	#[derive_impl(frame_system::config_preludes::TestDefaultConfig)]
 	impl frame_system::Config for Test {
 		type Block = Block;
