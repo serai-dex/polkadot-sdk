@@ -1,3 +1,7 @@
+./.gitlab/pipeline/zombienet/bridges.yml
+./.gitlab/pipeline/zombienet/cumulus.yml
+./.gitlab/pipeline/zombienet/parachain-template.yml
+./.gitlab/pipeline/zombienet/polkadot.yml
 ./bridges
 ./cumulus
 ./docs

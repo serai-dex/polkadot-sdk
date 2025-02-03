@@ -14,11 +14,3 @@
 include:
   # substrate tests
   - .gitlab/pipeline/zombienet/substrate.yml
-  # cumulus tests
-  - .gitlab/pipeline/zombienet/cumulus.yml
-  # polkadot tests
-  - .gitlab/pipeline/zombienet/polkadot.yml
-  # bridges tests
-  - .gitlab/pipeline/zombienet/bridges.yml
-  # parachain-template-node tests
-  - .gitlab/pipeline/zombienet/parachain-template.yml
