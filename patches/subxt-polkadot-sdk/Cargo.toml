@@ -1,0 +1,15 @@
+[package]
+name = "polkadot-sdk"
+version = "0.7.0"
+description = "polkadot-sdk shim to so the external subxt uses in-tree crates"
+license = "Apache-2.0"
+edition = "2021"
+
+[dependencies]
+sp-crypto-hashing = { package = "sp-crypto-hashing", path = "../../substrate/primitives/crypto/hashing", default-features = false, optional = true }
+sp-core = { package = "sp-core", path = "../../substrate/primitives/core", default-features = false, optional = true }
+sp-keyring = { package = "sp-keyring", path = "../../substrate/primitives/keyring", default-features = false, optional = true }
+sp-runtime = { package = "sp-runtime", path = "../../substrate/primitives/runtime", default-features = false, optional = true }
+
+[features]
+std = ["sp-crypto-hashing?/std", "sp-core?/std", "sp-keyring?/std", "sp-runtime?/std"]

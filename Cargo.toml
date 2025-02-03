@@ -462,7 +462,7 @@ metered = { version = "0.6.1", default-features = false, package = "prioritized-
 milagro-bls = { version = "1.5.4", default-features = false, package = "snowbridge-milagro-bls" }
 minimal-template-node = { path = "templates/minimal/node" }
 minimal-template-runtime = { path = "templates/minimal/runtime", version = "0.1.0" }
-mockall = { version = "0.11.3" }
+mockall = { version = "0.13.1" }
 multiaddr = { version = "0.18.1" }
 multihash = { version = "0.19.1", default-features = false }
 multihash-codetable = { version = "0.1.1" }
@@ -750,8 +750,8 @@ substrate-test-runtime-client = { path = "substrate/test-utils/runtime/client", 
 substrate-test-runtime-transaction-pool = { path = "substrate/test-utils/runtime/transaction-pool" }
 substrate-test-utils = { path = "substrate/test-utils" }
 substrate-wasm-builder = { path = "substrate/utils/wasm-builder", default-features = false, version = "25.0.0" }
-subxt = { version = "0.37", default-features = false }
-subxt-signer = { version = "0.37" }
+subxt = { version = "0.38", default-features = false }
+subxt-signer = { version = "0.38" }
 syn = { version = "2.0.87" }
 sysinfo = { version = "0.30" }
 tar = { version = "0.4" }
@@ -879,3 +879,10 @@ wasmi = { opt-level = 3 }
 x25519-dalek = { opt-level = 3 }
 yamux = { opt-level = 3 }
 zeroize = { opt-level = 3 }
+
+[patch.crates-io]
+# https://github.com/rust-lang-nursery/lazy-static.rs/issues/201
+lazy_static = { git = "https://github.com/rust-lang-nursery/lazy-static.rs", rev = "5735630d46572f1e5377c8f2ba0f79d18f53b10c" }
+
+sp-crypto-hashing = { path = "./substrate/primitives/crypto/hashing" }
+polkadot-sdk = { path = "./patches/subxt-polkadot-sdk" }

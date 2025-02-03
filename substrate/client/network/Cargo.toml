@@ -69,7 +69,6 @@ sp-runtime.workspace = true
 sp-runtime.default-features = true
 wasm-timer = { workspace = true }
 litep2p = { workspace = true }
-once_cell = { workspace = true }
 void = { workspace = true }
 schnellru = { workspace = true }
 
