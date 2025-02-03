@@ -50,6 +50,8 @@
 ./substrate/frame/society
 ./substrate/frame/statement
 ./substrate/frame/support/src/crypto/ecdsa.rs
+./substrate/frame/support/src/traits/proving.rs
+./substrate/frame/support/src/traits/voting.rs
 ./substrate/frame/tips
 ./substrate/frame/treasury
 ./substrate/frame/vesting

@@ -389,8 +389,6 @@ pub mod pallet {
 
 	#[pallet::error]
 	pub enum Error<T, I = ()> {
-		/// Vesting balance too high to send value.
-		VestingBalance,
 		/// Account liquidity restrictions prevent withdrawal.
 		LiquidityRestrictions,
 		/// Balance too low to send value.
@@ -399,8 +397,6 @@ pub mod pallet {
 		ExistentialDeposit,
 		/// Transfer/payment would kill account.
 		Expendability,
-		/// A vesting schedule already exists for this account.
-		ExistingVestingSchedule,
 		/// Beneficiary account must pre-exist.
 		DeadAccount,
 		/// Number of named reserves exceed `MaxReserves`.

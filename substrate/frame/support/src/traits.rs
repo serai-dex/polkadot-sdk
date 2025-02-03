@@ -23,8 +23,7 @@ pub mod tokens;
 pub use tokens::{
 	currency::{
 		ActiveIssuanceOf, Currency, InspectLockableCurrency, LockIdentifier, LockableCurrency,
-		NamedReservableCurrency, ReservableCurrency, TotalIssuanceOf, VestedTransfer,
-		VestingSchedule,
+		NamedReservableCurrency, ReservableCurrency, TotalIssuanceOf,
 	},
 	fungible, fungibles,
 	imbalance::{Imbalance, OnUnbalanced, SignedImbalance},
@@ -109,9 +108,6 @@ pub use dispatch::{
 	OriginTrait, TryMapSuccess, TryWithMorphedArg, UnfilteredDispatchable,
 };
 
-mod voting;
-pub use voting::{ClassCountOf, NoOpPoll, PollStatus, Polling, VoteTally};
-
 mod preimages;
 pub use preimages::{Bounded, BoundedInline, FetchResult, QueryPreimage, StorePreimage};
 
@@ -132,9 +128,6 @@ pub mod dynamic_params;
 
 pub mod tasks;
 pub use tasks::Task;
-
-mod proving;
-pub use proving::*;
 
 #[cfg(feature = "try-runtime")]
 mod try_runtime;
