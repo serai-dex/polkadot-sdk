@@ -21,7 +21,7 @@
 use codec::Encode;
 use kitchensink_runtime::{CheckedExtrinsic, SessionKeys, TxExtension, UncheckedExtrinsic};
 use node_primitives::{AccountId, Balance, Nonce};
-use sp_core::{crypto::get_public_from_string_or_panic, ed25519, sr25519};
+use sp_core::{crypto::get_public_from_string_or_panic, sr25519};
 use sp_crypto_hashing::blake2_256;
 use sp_keyring::Sr25519Keyring;
 use sp_runtime::generic::{self, Era, ExtrinsicFormat, EXTRINSIC_FORMAT_VERSION};
@@ -63,7 +63,7 @@ pub fn ferdie() -> AccountId {
 /// Function will panic when invalid string is provided.
 pub fn session_keys_from_seed(seed: &str) -> SessionKeys {
 	SessionKeys {
-		grandpa: get_public_from_string_or_panic::<ed25519::Public>(seed).into(),
+		grandpa: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
 		babe: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
 		im_online: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
 		authority_discovery: get_public_from_string_or_panic::<sr25519::Public>(seed).into(),

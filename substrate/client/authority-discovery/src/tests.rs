@@ -25,7 +25,6 @@ use crate::{
 };
 
 use futures::{channel::mpsc::channel, executor::LocalPool, task::LocalSpawn};
-use libp2p::identity::ed25519;
 use std::{collections::HashSet, sync::Arc};
 
 use sc_network::{multiaddr::Protocol, Multiaddr, PeerId};
@@ -78,28 +77,4 @@ fn get_addresses_and_authority_id() {
 			service.get_authority_ids_by_peer_id(remote_peer_id.into()).await,
 		);
 	});
-}
-
-#[test]
-fn cryptos_are_compatible() {
-	use sp_core::crypto::Pair;
-
-	let libp2p_keypair = ed25519::Keypair::generate();
-	let libp2p_public = libp2p_keypair.public();
-
-	let sp_core_secret =
-		{ sp_core::ed25519::Pair::from_seed_slice(&libp2p_keypair.secret().as_ref()).unwrap() };
-	let sp_core_public = sp_core_secret.public();
-
-	let message = b"we are more powerful than not to be better";
-
-	let libp2p_signature = libp2p_keypair.sign(message);
-	let sp_core_signature = sp_core_secret.sign(message); // no error expected...
-
-	assert!(sp_core::ed25519::Pair::verify(
-		&sp_core::ed25519::Signature::try_from(libp2p_signature.as_slice()).unwrap(),
-		message,
-		&sp_core_public
-	));
-	assert!(libp2p_public.verify(message, sp_core_signature.as_ref()));
 }

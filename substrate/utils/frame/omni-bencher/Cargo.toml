@@ -18,8 +18,6 @@ sc-cli.workspace = true
 sc-cli.default-features = true
 sp-runtime.workspace = true
 sp-runtime.default-features = true
-sp-statement-store.workspace = true
-sp-statement-store.default-features = true
 tracing-subscriber = { workspace = true }
 log = { workspace = true }
 

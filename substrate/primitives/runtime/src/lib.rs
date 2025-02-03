@@ -73,8 +73,7 @@ pub use sp_core::storage::StateVersion;
 pub use sp_core::storage::{Storage, StorageChild};
 
 use sp_core::{
-	crypto::{self, ByteArray, FromEntropy},
-	ecdsa, ed25519,
+	crypto::{self, FromEntropy},
 	hash::{H256, H512},
 	sr25519,
 };
@@ -274,29 +273,8 @@ pub type ConsensusEngineId = [u8; 4];
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Clone, Encode, Decode, MaxEncodedLen, RuntimeDebug, TypeInfo)]
 pub enum MultiSignature {
-	/// An Ed25519 signature.
-	Ed25519(ed25519::Signature),
 	/// An Sr25519 signature.
 	Sr25519(sr25519::Signature),
-	/// An ECDSA/SECP256k1 signature.
-	Ecdsa(ecdsa::Signature),
-}
-
-impl From<ed25519::Signature> for MultiSignature {
-	fn from(x: ed25519::Signature) -> Self {
-		Self::Ed25519(x)
-	}
-}
-
-impl TryFrom<MultiSignature> for ed25519::Signature {
-	type Error = ();
-	fn try_from(m: MultiSignature) -> Result<Self, Self::Error> {
-		if let MultiSignature::Ed25519(x) = m {
-			Ok(x)
-		} else {
-			Err(())
-		}
-	}
 }
 
 impl From<sr25519::Signature> for MultiSignature {
@@ -308,24 +286,8 @@ impl From<sr25519::Signature> for MultiSignature {
 impl TryFrom<MultiSignature> for sr25519::Signature {
 	type Error = ();
 	fn try_from(m: MultiSignature) -> Result<Self, Self::Error> {
+		#[allow(irrefutable_let_patterns)]
 		if let MultiSignature::Sr25519(x) = m {
-			Ok(x)
-		} else {
-			Err(())
-		}
-	}
-}
-
-impl From<ecdsa::Signature> for MultiSignature {
-	fn from(x: ecdsa::Signature) -> Self {
-		Self::Ecdsa(x)
-	}
-}
-
-impl TryFrom<MultiSignature> for ecdsa::Signature {
-	type Error = ();
-	fn try_from(m: MultiSignature) -> Result<Self, Self::Error> {
-		if let MultiSignature::Ecdsa(x) = m {
 			Ok(x)
 		} else {
 			Err(())
@@ -337,20 +299,14 @@ impl TryFrom<MultiSignature> for ecdsa::Signature {
 #[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum MultiSigner {
-	/// An Ed25519 identity.
-	Ed25519(ed25519::Public),
 	/// An Sr25519 identity.
 	Sr25519(sr25519::Public),
-	/// An SECP256k1/ECDSA identity (actually, the Blake2 hash of the compressed pub key).
-	Ecdsa(ecdsa::Public),
 }
 
 impl FromEntropy for MultiSigner {
 	fn from_entropy(input: &mut impl codec::Input) -> Result<Self, codec::Error> {
-		Ok(match input.read_byte()? % 3 {
-			0 => Self::Ed25519(FromEntropy::from_entropy(input)?),
-			1 => Self::Sr25519(FromEntropy::from_entropy(input)?),
-			2.. => Self::Ecdsa(FromEntropy::from_entropy(input)?),
+		Ok(match input.read_byte()? {
+			_ => Self::Sr25519(FromEntropy::from_entropy(input)?),
 		})
 	}
 }
@@ -359,16 +315,14 @@ impl FromEntropy for MultiSigner {
 /// we convert the hash into some AccountId, it's fine to use any scheme.
 impl<T: Into<H256>> crypto::UncheckedFrom<T> for MultiSigner {
 	fn unchecked_from(x: T) -> Self {
-		ed25519::Public::unchecked_from(x.into()).into()
+		sr25519::Public::unchecked_from(x.into()).into()
 	}
 }
 
 impl AsRef<[u8]> for MultiSigner {
 	fn as_ref(&self) -> &[u8] {
 		match *self {
-			Self::Ed25519(ref who) => who.as_ref(),
 			Self::Sr25519(ref who) => who.as_ref(),
-			Self::Ecdsa(ref who) => who.as_ref(),
 		}
 	}
 }
@@ -377,26 +331,7 @@ impl traits::IdentifyAccount for MultiSigner {
 	type AccountId = AccountId32;
 	fn into_account(self) -> AccountId32 {
 		match self {
-			Self::Ed25519(who) => <[u8; 32]>::from(who).into(),
 			Self::Sr25519(who) => <[u8; 32]>::from(who).into(),
-			Self::Ecdsa(who) => sp_io::hashing::blake2_256(who.as_ref()).into(),
-		}
-	}
-}
-
-impl From<ed25519::Public> for MultiSigner {
-	fn from(x: ed25519::Public) -> Self {
-		Self::Ed25519(x)
-	}
-}
-
-impl TryFrom<MultiSigner> for ed25519::Public {
-	type Error = ();
-	fn try_from(m: MultiSigner) -> Result<Self, Self::Error> {
-		if let MultiSigner::Ed25519(x) = m {
-			Ok(x)
-		} else {
-			Err(())
 		}
 	}
 }
@@ -410,24 +345,8 @@ impl From<sr25519::Public> for MultiSigner {
 impl TryFrom<MultiSigner> for sr25519::Public {
 	type Error = ();
 	fn try_from(m: MultiSigner) -> Result<Self, Self::Error> {
+		#[allow(irrefutable_let_patterns)]
 		if let MultiSigner::Sr25519(x) = m {
-			Ok(x)
-		} else {
-			Err(())
-		}
-	}
-}
-
-impl From<ecdsa::Public> for MultiSigner {
-	fn from(x: ecdsa::Public) -> Self {
-		Self::Ecdsa(x)
-	}
-}
-
-impl TryFrom<MultiSigner> for ecdsa::Public {
-	type Error = ();
-	fn try_from(m: MultiSigner) -> Result<Self, Self::Error> {
-		if let MultiSigner::Ecdsa(x) = m {
 			Ok(x)
 		} else {
 			Err(())
@@ -439,25 +358,17 @@ impl TryFrom<MultiSigner> for ecdsa::Public {
 impl std::fmt::Display for MultiSigner {
 	fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
 		match self {
-			Self::Ed25519(who) => write!(fmt, "ed25519: {}", who),
 			Self::Sr25519(who) => write!(fmt, "sr25519: {}", who),
-			Self::Ecdsa(who) => write!(fmt, "ecdsa: {}", who),
 		}
 	}
 }
 
 impl Verify for MultiSignature {
 	type Signer = MultiSigner;
-	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &AccountId32) -> bool {
+	fn verify<L: Lazy<[u8]>>(&self, msg: L, signer: &AccountId32) -> bool {
 		let who: [u8; 32] = *signer.as_ref();
 		match self {
-			Self::Ed25519(sig) => sig.verify(msg, &who.into()),
 			Self::Sr25519(sig) => sig.verify(msg, &who.into()),
-			Self::Ecdsa(sig) => {
-				let m = sp_io::hashing::blake2_256(msg.get());
-				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m)
-					.map_or(false, |pubkey| sp_io::hashing::blake2_256(&pubkey) == who)
-			},
 		}
 	}
 }
@@ -473,24 +384,12 @@ impl Verify for AnySignature {
 		let msg = msg.get();
 		sr25519::Signature::try_from(self.0.as_fixed_bytes().as_ref())
 			.map(|s| s.verify(msg, signer))
-			.unwrap_or(false) ||
-			ed25519::Signature::try_from(self.0.as_fixed_bytes().as_ref())
-				.map(|s| match ed25519::Public::from_slice(signer.as_ref()) {
-					Err(()) => false,
-					Ok(signer) => s.verify(msg, &signer),
-				})
-				.unwrap_or(false)
+			.unwrap_or(false)
 	}
 }
 
 impl From<sr25519::Signature> for AnySignature {
 	fn from(s: sr25519::Signature) -> Self {
-		Self(s.into())
-	}
-}
-
-impl From<ed25519::Signature> for AnySignature {
-	fn from(s: ed25519::Signature) -> Self {
 		Self(s.into())
 	}
 }
@@ -1122,22 +1021,6 @@ mod tests {
 			Module(ModuleError { index: 1, error: [1, 0, 0, 0], message: Some("foo") }),
 			Module(ModuleError { index: 1, error: [1, 0, 0, 0], message: None }),
 		);
-	}
-
-	#[test]
-	fn multi_signature_ecdsa_verify_works() {
-		let msg = &b"test-message"[..];
-		let (pair, _) = ecdsa::Pair::generate();
-
-		let signature = pair.sign(&msg);
-		assert!(ecdsa::Pair::verify(&signature, msg, &pair.public()));
-
-		let multi_sig = MultiSignature::from(signature);
-		let multi_signer = MultiSigner::from(pair.public());
-		assert!(multi_sig.verify(msg, &multi_signer.into_account()));
-
-		let multi_signer = MultiSigner::from(pair.public());
-		assert!(multi_sig.verify(msg, &multi_signer.into_account()));
 	}
 
 	#[test]

@@ -23,7 +23,7 @@ use kitchensink_runtime::{
 	constants::currency::*, AccountId, AssetsConfig, BalancesConfig, IndicesConfig,
 	RuntimeGenesisConfig, SessionConfig, StakerStatus, StakingConfig,
 };
-use sp_keyring::Ed25519Keyring;
+use sp_keyring::Sr25519Keyring;
 use sp_runtime::Perbill;
 
 /// Create genesis runtime configuration for tests.
@@ -50,9 +50,9 @@ pub fn config_endowed(extra_endowed: Vec<AccountId>) -> RuntimeGenesisConfig {
 		balances: BalancesConfig { balances: endowed },
 		session: SessionConfig {
 			keys: vec![
-				(alice(), dave(), session_keys_from_seed(Ed25519Keyring::Alice.into())),
-				(bob(), eve(), session_keys_from_seed(Ed25519Keyring::Bob.into())),
-				(charlie(), ferdie(), session_keys_from_seed(Ed25519Keyring::Charlie.into())),
+				(alice(), dave(), session_keys_from_seed(Sr25519Keyring::Alice.into())),
+				(bob(), eve(), session_keys_from_seed(Sr25519Keyring::Bob.into())),
+				(charlie(), ferdie(), session_keys_from_seed(Sr25519Keyring::Charlie.into())),
 			],
 			..Default::default()
 		},

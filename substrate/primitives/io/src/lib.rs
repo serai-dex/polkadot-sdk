@@ -96,7 +96,6 @@ use sp_keystore::KeystoreExt;
 
 use sp_core::{
 	crypto::KeyTypeId,
-	ecdsa, ed25519,
 	offchain::{
 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
 	},
@@ -104,9 +103,6 @@ use sp_core::{
 	storage::StateVersion,
 	LogLevel, LogLevelFilter, OpaquePeerId, H256,
 };
-
-#[cfg(feature = "bls-experimental")]
-use sp_core::{bls381, ecdsa_bls381};
 
 #[cfg(feature = "std")]
 use sp_trie::{LayoutV0, LayoutV1, TrieConfiguration};
@@ -117,12 +113,6 @@ use sp_runtime_interface::{
 };
 
 use codec::{Decode, Encode};
-
-#[cfg(feature = "std")]
-use secp256k1::{
-	ecdsa::{RecoverableSignature, RecoveryId},
-	Message, SECP256K1,
-};
 
 #[cfg(feature = "std")]
 use sp_externalities::{Externalities, ExternalitiesExt};
@@ -141,17 +131,6 @@ mod global_alloc_riscv;
 
 #[cfg(feature = "std")]
 const LOG_TARGET: &str = "runtime::io";
-
-/// Error verifying ECDSA signature
-#[derive(Encode, Decode)]
-pub enum EcdsaVerifyError {
-	/// Incorrect value of R or S
-	BadRS,
-	/// Incorrect value of V
-	BadV,
-	/// Invalid signature
-	BadSignature,
-}
 
 /// The outcome of calling `storage_kill`. Returned value is the number of storage items
 /// removed from the backend from making the `storage_kill` call.
@@ -326,11 +305,6 @@ pub trait Storage {
 	#[version(2)]
 	fn root(&mut self, version: StateVersion) -> Vec<u8> {
 		self.storage_root(version)
-	}
-
-	/// Always returns `None`. This function exists for compatibility reasons.
-	fn changes_root(&mut self, _parent_hash: &[u8]) -> Option<Vec<u8>> {
-		None
 	}
 
 	/// Get the next key in storage after the given one in lexicographic order.
@@ -754,199 +728,15 @@ pub trait Misc {
 	}
 }
 
-#[cfg(feature = "std")]
-sp_externalities::decl_extension! {
-	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
-	///
-	/// The switch from `ed25519-dalek` to `ed25519-zebra` was a breaking change.
-	/// `ed25519-zebra` is more permissive when it comes to the verification of signatures.
-	/// This means that some chains may fail to sync from genesis when using `ed25519-zebra`.
-	/// So, this extension can be registered to the runtime execution environment to signal
-	/// that `ed25519-dalek` should be used for verification. The extension can be registered
-	/// in the following way:
-	///
-	/// ```nocompile
-	/// client.execution_extensions().set_extensions_factory(
-	/// 	// Let the `UseDalekExt` extension being registered for each runtime invocation
-	/// 	// until the execution happens in the context of block `1000`.
-	/// 	sc_client_api::execution_extensions::ExtensionBeforeBlock::<Block, UseDalekExt>::new(1000)
-	/// );
-	/// ```
-	pub struct UseDalekExt;
-}
-
-#[cfg(feature = "std")]
-impl Default for UseDalekExt {
-	fn default() -> Self {
-		Self
-	}
-}
-
 /// Interfaces for working with crypto related types from within the runtime.
 #[runtime_interface]
 pub trait Crypto {
-	/// Returns all `ed25519` public keys for the given key id from the keystore.
-	fn ed25519_public_keys(&mut self, id: KeyTypeId) -> Vec<ed25519::Public> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ed25519_public_keys(id)
-	}
-
-	/// Generate an `ed22519` key for the given key type using an optional `seed` and
-	/// store it in the keystore.
-	///
-	/// The `seed` needs to be a valid utf8.
-	///
-	/// Returns the public key.
-	fn ed25519_generate(&mut self, id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
-		let seed = seed.as_ref().map(|s| std::str::from_utf8(s).expect("Seed is valid utf8!"));
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ed25519_generate_new(id, seed)
-			.expect("`ed25519_generate` failed")
-	}
-
-	/// Sign the given `msg` with the `ed25519` key that corresponds to the given public key and
-	/// key type in the keystore.
-	///
-	/// Returns the signature.
-	fn ed25519_sign(
-		&mut self,
-		id: KeyTypeId,
-		pub_key: &ed25519::Public,
-		msg: &[u8],
-	) -> Option<ed25519::Signature> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ed25519_sign(id, pub_key, msg)
-			.ok()
-			.flatten()
-	}
-
-	/// Verify `ed25519` signature.
-	///
-	/// Returns `true` when the verification was successful.
-	fn ed25519_verify(sig: &ed25519::Signature, msg: &[u8], pub_key: &ed25519::Public) -> bool {
-		// We don't want to force everyone needing to call the function in an externalities context.
-		// So, we assume that we should not use dalek when we are not in externalities context.
-		// Otherwise, we check if the extension is present.
-		if sp_externalities::with_externalities(|mut e| e.extension::<UseDalekExt>().is_some())
-			.unwrap_or_default()
-		{
-			use ed25519_dalek::Verifier;
-
-			let Ok(public_key) = ed25519_dalek::VerifyingKey::from_bytes(&pub_key.0) else {
-				return false
-			};
-
-			let sig = ed25519_dalek::Signature::from_bytes(&sig.0);
-
-			public_key.verify(msg, &sig).is_ok()
-		} else {
-			ed25519::Pair::verify(sig, msg, pub_key)
-		}
-	}
-
-	/// Register a `ed25519` signature for batch verification.
-	///
-	/// Batch verification must be enabled by calling [`start_batch_verify`].
-	/// If batch verification is not enabled, the signature will be verified immediately.
-	/// To get the result of the batch verification, [`finish_batch_verify`]
-	/// needs to be called.
-	///
-	/// Returns `true` when the verification is either successful or batched.
-	///
-	/// NOTE: Is tagged with `register_only` to keep the functions around for backwards
-	/// compatibility with old runtimes, but it should not be used anymore by new runtimes.
-	/// The implementation emulates the old behavior, but isn't doing any batch verification
-	/// anymore.
-	#[version(1, register_only)]
-	fn ed25519_batch_verify(
-		&mut self,
-		sig: &ed25519::Signature,
-		msg: &[u8],
-		pub_key: &ed25519::Public,
-	) -> bool {
-		let res = ed25519_verify(sig, msg, pub_key);
-
-		if let Some(ext) = self.extension::<VerificationExtDeprecated>() {
-			ext.0 &= res;
-		}
-
-		res
-	}
-
 	/// Verify `sr25519` signature.
 	///
 	/// Returns `true` when the verification was successful.
 	#[version(2)]
 	fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pub_key: &sr25519::Public) -> bool {
 		sr25519::Pair::verify(sig, msg, pub_key)
-	}
-
-	/// Register a `sr25519` signature for batch verification.
-	///
-	/// Batch verification must be enabled by calling [`start_batch_verify`].
-	/// If batch verification is not enabled, the signature will be verified immediately.
-	/// To get the result of the batch verification, [`finish_batch_verify`]
-	/// needs to be called.
-	///
-	/// Returns `true` when the verification is either successful or batched.
-	///
-	/// NOTE: Is tagged with `register_only` to keep the functions around for backwards
-	/// compatibility with old runtimes, but it should not be used anymore by new runtimes.
-	/// The implementation emulates the old behavior, but isn't doing any batch verification
-	/// anymore.
-	#[version(1, register_only)]
-	fn sr25519_batch_verify(
-		&mut self,
-		sig: &sr25519::Signature,
-		msg: &[u8],
-		pub_key: &sr25519::Public,
-	) -> bool {
-		let res = sr25519_verify(sig, msg, pub_key);
-
-		if let Some(ext) = self.extension::<VerificationExtDeprecated>() {
-			ext.0 &= res;
-		}
-
-		res
-	}
-
-	/// Start verification extension.
-	///
-	/// NOTE: Is tagged with `register_only` to keep the functions around for backwards
-	/// compatibility with old runtimes, but it should not be used anymore by new runtimes.
-	/// The implementation emulates the old behavior, but isn't doing any batch verification
-	/// anymore.
-	#[version(1, register_only)]
-	fn start_batch_verify(&mut self) {
-		self.register_extension(VerificationExtDeprecated(true))
-			.expect("Failed to register required extension: `VerificationExt`");
-	}
-
-	/// Finish batch-verification of signatures.
-	///
-	/// Verify or wait for verification to finish for all signatures which were previously
-	/// deferred by `sr25519_verify`/`ed25519_verify`.
-	///
-	/// Will panic if no `VerificationExt` is registered (`start_batch_verify` was not called).
-	///
-	/// NOTE: Is tagged with `register_only` to keep the functions around for backwards
-	/// compatibility with old runtimes, but it should not be used anymore by new runtimes.
-	/// The implementation emulates the old behavior, but isn't doing any batch verification
-	/// anymore.
-	#[version(1, register_only)]
-	fn finish_batch_verify(&mut self) -> bool {
-		let result = self
-			.extension::<VerificationExtDeprecated>()
-			.expect("`finish_batch_verify` should only be called after `start_batch_verify`")
-			.0;
-
-		self.deregister_extension::<VerificationExtDeprecated>()
-			.expect("No verification extension in current context!");
-
-		result
 	}
 
 	/// Returns all `sr25519` public keys for the given key id from the keystore.
@@ -993,247 +783,6 @@ pub trait Crypto {
 	/// signature version.
 	fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
 		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
-	}
-
-	/// Returns all `ecdsa` public keys for the given key id from the keystore.
-	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_public_keys(id)
-	}
-
-	/// Generate an `ecdsa` key for the given key type using an optional `seed` and
-	/// store it in the keystore.
-	///
-	/// The `seed` needs to be a valid utf8.
-	///
-	/// Returns the public key.
-	fn ecdsa_generate(&mut self, id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
-		let seed = seed.as_ref().map(|s| std::str::from_utf8(s).expect("Seed is valid utf8!"));
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_generate_new(id, seed)
-			.expect("`ecdsa_generate` failed")
-	}
-
-	/// Sign the given `msg` with the `ecdsa` key that corresponds to the given public key and
-	/// key type in the keystore.
-	///
-	/// Returns the signature.
-	fn ecdsa_sign(
-		&mut self,
-		id: KeyTypeId,
-		pub_key: &ecdsa::Public,
-		msg: &[u8],
-	) -> Option<ecdsa::Signature> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_sign(id, pub_key, msg)
-			.ok()
-			.flatten()
-	}
-
-	/// Sign the given a pre-hashed `msg` with the `ecdsa` key that corresponds to the given public
-	/// key and key type in the keystore.
-	///
-	/// Returns the signature.
-	fn ecdsa_sign_prehashed(
-		&mut self,
-		id: KeyTypeId,
-		pub_key: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> Option<ecdsa::Signature> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_sign_prehashed(id, pub_key, msg)
-			.ok()
-			.flatten()
-	}
-
-	/// Verify `ecdsa` signature.
-	///
-	/// Returns `true` when the verification was successful.
-	/// This version is able to handle, non-standard, overflowing signatures.
-	fn ecdsa_verify(sig: &ecdsa::Signature, msg: &[u8], pub_key: &ecdsa::Public) -> bool {
-		#[allow(deprecated)]
-		ecdsa::Pair::verify_deprecated(sig, msg, pub_key)
-	}
-
-	/// Verify `ecdsa` signature.
-	///
-	/// Returns `true` when the verification was successful.
-	#[version(2)]
-	fn ecdsa_verify(sig: &ecdsa::Signature, msg: &[u8], pub_key: &ecdsa::Public) -> bool {
-		ecdsa::Pair::verify(sig, msg, pub_key)
-	}
-
-	/// Verify `ecdsa` signature with pre-hashed `msg`.
-	///
-	/// Returns `true` when the verification was successful.
-	fn ecdsa_verify_prehashed(
-		sig: &ecdsa::Signature,
-		msg: &[u8; 32],
-		pub_key: &ecdsa::Public,
-	) -> bool {
-		ecdsa::Pair::verify_prehashed(sig, msg, pub_key)
-	}
-
-	/// Register a `ecdsa` signature for batch verification.
-	///
-	/// Batch verification must be enabled by calling [`start_batch_verify`].
-	/// If batch verification is not enabled, the signature will be verified immediately.
-	/// To get the result of the batch verification, [`finish_batch_verify`]
-	/// needs to be called.
-	///
-	/// Returns `true` when the verification is either successful or batched.
-	///
-	/// NOTE: Is tagged with `register_only` to keep the functions around for backwards
-	/// compatibility with old runtimes, but it should not be used anymore by new runtimes.
-	/// The implementation emulates the old behavior, but isn't doing any batch verification
-	/// anymore.
-	#[version(1, register_only)]
-	fn ecdsa_batch_verify(
-		&mut self,
-		sig: &ecdsa::Signature,
-		msg: &[u8],
-		pub_key: &ecdsa::Public,
-	) -> bool {
-		let res = ecdsa_verify(sig, msg, pub_key);
-
-		if let Some(ext) = self.extension::<VerificationExtDeprecated>() {
-			ext.0 &= res;
-		}
-
-		res
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 64-byte pubkey
-	/// (doesn't include the 0x04 prefix).
-	/// This version is able to handle, non-standard, overflowing signatures.
-	fn secp256k1_ecdsa_recover(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 64], EcdsaVerifyError> {
-		let rid = libsecp256k1::RecoveryId::parse(
-			if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as u8,
-		)
-		.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = libsecp256k1::Signature::parse_overflowing_slice(&sig[..64])
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = libsecp256k1::Message::parse(msg);
-		let pubkey =
-			libsecp256k1::recover(&msg, &sig, &rid).map_err(|_| EcdsaVerifyError::BadSignature)?;
-		let mut res = [0u8; 64];
-		res.copy_from_slice(&pubkey.serialize()[1..65]);
-		Ok(res)
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 64-byte pubkey
-	/// (doesn't include the 0x04 prefix).
-	#[version(2)]
-	fn secp256k1_ecdsa_recover(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 64], EcdsaVerifyError> {
-		let rid = RecoveryId::from_i32(if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as i32)
-			.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = RecoverableSignature::from_compact(&sig[..64], rid)
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = Message::from_digest_slice(msg).expect("Message is 32 bytes; qed");
-		let pubkey = SECP256K1
-			.recover_ecdsa(&msg, &sig)
-			.map_err(|_| EcdsaVerifyError::BadSignature)?;
-		let mut res = [0u8; 64];
-		res.copy_from_slice(&pubkey.serialize_uncompressed()[1..]);
-		Ok(res)
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 33-byte compressed pubkey.
-	fn secp256k1_ecdsa_recover_compressed(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 33], EcdsaVerifyError> {
-		let rid = libsecp256k1::RecoveryId::parse(
-			if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as u8,
-		)
-		.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = libsecp256k1::Signature::parse_overflowing_slice(&sig[0..64])
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = libsecp256k1::Message::parse(msg);
-		let pubkey =
-			libsecp256k1::recover(&msg, &sig, &rid).map_err(|_| EcdsaVerifyError::BadSignature)?;
-		Ok(pubkey.serialize_compressed())
-	}
-
-	/// Verify and recover a SECP256k1 ECDSA signature.
-	///
-	/// - `sig` is passed in RSV format. V should be either `0/1` or `27/28`.
-	/// - `msg` is the blake2-256 hash of the message.
-	///
-	/// Returns `Err` if the signature is bad, otherwise the 33-byte compressed pubkey.
-	#[version(2)]
-	fn secp256k1_ecdsa_recover_compressed(
-		sig: &[u8; 65],
-		msg: &[u8; 32],
-	) -> Result<[u8; 33], EcdsaVerifyError> {
-		let rid = RecoveryId::from_i32(if sig[64] > 26 { sig[64] - 27 } else { sig[64] } as i32)
-			.map_err(|_| EcdsaVerifyError::BadV)?;
-		let sig = RecoverableSignature::from_compact(&sig[..64], rid)
-			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = Message::from_digest_slice(msg).expect("Message is 32 bytes; qed");
-		let pubkey = SECP256K1
-			.recover_ecdsa(&msg, &sig)
-			.map_err(|_| EcdsaVerifyError::BadSignature)?;
-		Ok(pubkey.serialize())
-	}
-
-	/// Generate an `bls12-381` key for the given key type using an optional `seed` and
-	/// store it in the keystore.
-	///
-	/// The `seed` needs to be a valid utf8.
-	///
-	/// Returns the public key.
-	#[cfg(feature = "bls-experimental")]
-	fn bls381_generate(&mut self, id: KeyTypeId, seed: Option<Vec<u8>>) -> bls381::Public {
-		let seed = seed.as_ref().map(|s| std::str::from_utf8(s).expect("Seed is valid utf8!"));
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.bls381_generate_new(id, seed)
-			.expect("`bls381_generate` failed")
-	}
-
-	/// Generate an `(ecdsa,bls12-381)` key for the given key type using an optional `seed` and
-	/// store it in the keystore.
-	///
-	/// The `seed` needs to be a valid utf8.
-	///
-	/// Returns the public key.
-	#[cfg(feature = "bls-experimental")]
-	fn ecdsa_bls381_generate(
-		&mut self,
-		id: KeyTypeId,
-		seed: Option<Vec<u8>>,
-	) -> ecdsa_bls381::Public {
-		let seed = seed.as_ref().map(|s| std::str::from_utf8(s).expect("Seed is valid utf8!"));
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.ecdsa_bls381_generate_new(id, seed)
-			.expect("`ecdsa_bls381_generate` failed")
 	}
 }
 
@@ -1896,48 +1445,6 @@ mod tests {
 			assert!(matches!(
 				storage::clear_prefix(b":abc", None),
 				KillStorageResult::AllRemoved(0),
-			));
-		});
-	}
-
-	fn zero_ed_pub() -> ed25519::Public {
-		[0u8; 32].unchecked_into()
-	}
-
-	fn zero_ed_sig() -> ed25519::Signature {
-		ed25519::Signature::from_raw([0u8; 64])
-	}
-
-	#[test]
-	fn use_dalek_ext_works() {
-		let mut ext = BasicExternalities::default();
-		ext.register_extension(UseDalekExt::default());
-
-		// With dalek the zero signature should fail to verify.
-		ext.execute_with(|| {
-			assert!(!crypto::ed25519_verify(&zero_ed_sig(), &Vec::new(), &zero_ed_pub()));
-		});
-
-		// But with zebra it should work.
-		BasicExternalities::default().execute_with(|| {
-			assert!(crypto::ed25519_verify(&zero_ed_sig(), &Vec::new(), &zero_ed_pub()));
-		})
-	}
-
-	#[test]
-	fn dalek_should_not_panic_on_invalid_signature() {
-		let mut ext = BasicExternalities::default();
-		ext.register_extension(UseDalekExt::default());
-
-		ext.execute_with(|| {
-			let mut bytes = [0u8; 64];
-			// Make it invalid
-			bytes[63] = 0b1110_0000;
-
-			assert!(!crypto::ed25519_verify(
-				&ed25519::Signature::from_raw(bytes),
-				&Vec::new(),
-				&zero_ed_pub()
 			));
 		});
 	}

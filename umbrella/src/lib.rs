@@ -271,10 +271,6 @@ pub use pallet_staking_runtime_api;
 #[cfg(feature = "pallet-state-trie-migration")]
 pub use pallet_state_trie_migration;
 
-/// FRAME pallet for statement store.
-#[cfg(feature = "pallet-statement")]
-pub use pallet_statement;
-
 /// FRAME pallet for sudo.
 #[cfg(feature = "pallet-sudo")]
 pub use pallet_sudo;
@@ -439,10 +435,6 @@ pub use sc_network_gossip;
 #[cfg(feature = "sc-network-light")]
 pub use sc_network_light;
 
-/// Substrate statement protocol.
-#[cfg(feature = "sc-network-statement")]
-pub use sc_network_statement;
-
 /// Substrate sync network protocol.
 #[cfg(feature = "sc-network-sync")]
 pub use sc_network_sync;
@@ -487,10 +479,6 @@ pub use sc_service;
 /// State database maintenance. Handles canonicalization and pruning in the database.
 #[cfg(feature = "sc-state-db")]
 pub use sc_state_db;
-
-/// Substrate statement store.
-#[cfg(feature = "sc-statement-store")]
-pub use sc_statement_store;
 
 /// Storage monitor service for substrate.
 #[cfg(feature = "sc-storage-monitor")]
@@ -690,10 +678,6 @@ pub use sp_staking;
 /// Substrate State Machine.
 #[cfg(feature = "sp-state-machine")]
 pub use sp_state_machine;
-
-/// A crate which contains primitives related to the statement store.
-#[cfg(feature = "sp-statement-store")]
-pub use sp_statement_store;
 
 /// Lowest-abstraction level for the Substrate runtime: just exports useful primitives from std
 /// or client/alloc to be used with any code that depends on the runtime.

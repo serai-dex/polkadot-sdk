@@ -117,7 +117,7 @@ pub struct V1BenchmarkCommand {
 	sub: BenchmarkCmd,
 }
 
-type HostFunctions = (sp_statement_store::runtime_api::HostFunctions,);
+type HostFunctions = ();
 
 impl Command {
 	pub fn run(self) -> Result<()> {

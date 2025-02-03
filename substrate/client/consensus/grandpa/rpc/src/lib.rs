@@ -142,7 +142,7 @@ mod tests {
 	use sc_rpc::testing::test_executor;
 	use sp_blockchain::HeaderBackend;
 	use sp_core::crypto::ByteArray;
-	use sp_keyring::Ed25519Keyring;
+	use sp_keyring::Sr25519Keyring;
 	use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 	use substrate_test_runtime_client::{
 		runtime::{Block, Header, H256},
@@ -327,7 +327,7 @@ mod tests {
 	}
 
 	fn create_justification() -> GrandpaJustification<Block> {
-		let peers = &[Ed25519Keyring::Alice];
+		let peers = &[Sr25519Keyring::Alice];
 
 		let builder = TestClientBuilder::new();
 		let client = builder.build();

@@ -24,7 +24,7 @@ use frame_support::{
 	derive_impl, parameter_types,
 	traits::{ConstU32, ConstU64, DisabledValidators},
 };
-use sp_consensus_aura::{ed25519::AuthorityId, AuthorityIndex};
+use sp_consensus_aura::{sr25519::AuthorityId, AuthorityIndex};
 use sp_runtime::{testing::UintAuthorityId, BuildStorage};
 
 type Block = frame_system::mocking::MockBlock<Test>;

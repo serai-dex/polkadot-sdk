@@ -85,8 +85,6 @@ pub struct FullDeps<C, P, SC, B> {
 	pub babe: BabeDeps,
 	/// GRANDPA specific dependencies.
 	pub grandpa: GrandpaDeps<B>,
-	/// Shared statement store reference.
-	pub statement_store: Arc<dyn sp_statement_store::StatementStore>,
 	/// The backend used by the node.
 	pub backend: Arc<B>,
 	/// Mixnet API.
@@ -102,7 +100,6 @@ pub fn create_full<C, P, SC, B>(
 		chain_spec,
 		babe,
 		grandpa,
-		statement_store,
 		backend,
 		mixnet_api,
 	}: FullDeps<C, P, SC, B>,
@@ -131,7 +128,6 @@ where
 	use sc_rpc::{
 		dev::{Dev, DevApiServer},
 		mixnet::MixnetApiServer,
-		statement::StatementApiServer,
 	};
 	use sc_sync_state_rpc::{SyncState, SyncStateApiServer};
 	use substrate_frame_rpc_system::{System, SystemApiServer};
@@ -171,8 +167,6 @@ where
 
 	io.merge(StateMigration::new(client.clone(), backend).into_rpc())?;
 	io.merge(Dev::new(client).into_rpc())?;
-	let statement_store = sc_rpc::statement::StatementStore::new(statement_store).into_rpc();
-	io.merge(statement_store)?;
 
 	if let Some(mixnet_api) = mixnet_api {
 		let mixnet = sc_rpc::mixnet::Mixnet::new(mixnet_api).into_rpc();

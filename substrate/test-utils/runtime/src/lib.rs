@@ -49,7 +49,7 @@ use scale_info::TypeInfo;
 use sp_application_crypto::Ss58Codec;
 use sp_keyring::AccountKeyring;
 
-use sp_application_crypto::{ecdsa, ed25519, sr25519, RuntimeAppPublic};
+use sp_application_crypto::{sr25519, RuntimeAppPublic};
 use sp_core::{OpaqueMetadata, RuntimeDebug};
 use sp_trie::{
 	trie_types::{TrieDBBuilder, TrieDBMutBuilderV1},
@@ -209,18 +209,10 @@ decl_runtime_apis! {
 		/// Returns the initialized block number.
 		fn get_block_number() -> u64;
 
-		/// Test that `ed25519` crypto works in the runtime.
-		///
-		/// Returns the signature generated for the message `ed25519` and the public key.
-		fn test_ed25519_crypto() -> (ed25519::AppSignature, ed25519::AppPublic);
 		/// Test that `sr25519` crypto works in the runtime.
 		///
 		/// Returns the signature generated for the message `sr25519`.
 		fn test_sr25519_crypto() -> (sr25519::AppSignature, sr25519::AppPublic);
-		/// Test that `ecdsa` crypto works in the runtime.
-		///
-		/// Returns the signature generated for the message `ecdsa`.
-		fn test_ecdsa_crypto() -> (ecdsa::AppSignature, ecdsa::AppPublic);
 		/// Run various tests against storage.
 		fn test_storage();
 		/// Check a witness.
@@ -230,8 +222,6 @@ decl_runtime_apis! {
 		fn test_multiple_arguments(data: Vec<u8>, other: Vec<u8>, num: u32);
 		/// Traces log "Hey I'm runtime."
 		fn do_trace_log();
-		/// Verify the given signature, public & message bundle.
-		fn verify_ed25519(sig: ed25519::Signature, public: ed25519::Public, message: Vec<u8>) -> bool;
 		/// Write the given `value` under the given `key` into the storage and then optional panic.
 		fn write_key_value(key: Vec<u8>, value: Vec<u8>, panic: bool);
 	}
@@ -454,9 +444,7 @@ fn code_using_trie() -> u64 {
 
 impl_opaque_keys! {
 	pub struct SessionKeys {
-		pub ed25519: ed25519::AppPublic,
 		pub sr25519: sr25519::AppPublic,
-		pub ecdsa: ecdsa::AppPublic,
 	}
 }
 
@@ -571,16 +559,8 @@ impl_runtime_apis! {
 			System::block_number()
 		}
 
-		fn test_ed25519_crypto() -> (ed25519::AppSignature, ed25519::AppPublic) {
-			test_ed25519_crypto()
-		}
-
 		fn test_sr25519_crypto() -> (sr25519::AppSignature, sr25519::AppPublic) {
 			test_sr25519_crypto()
-		}
-
-		fn test_ecdsa_crypto() -> (ecdsa::AppSignature, ecdsa::AppPublic) {
-			test_ecdsa_crypto()
 		}
 
 		fn test_storage() {
@@ -603,10 +583,6 @@ impl_runtime_apis! {
 			let data = "THIS IS TRACING";
 
 			tracing::trace!(target: "test", %data, "Hey, I'm tracing");
-		}
-
-		fn verify_ed25519(sig: ed25519::Signature, public: ed25519::Public, message: Vec<u8>) -> bool {
-			sp_io::crypto::ed25519_verify(&sig, &message, &public)
 		}
 
 		fn write_key_value(key: Vec<u8>, value: Vec<u8>, panic: bool) {
@@ -762,21 +738,6 @@ impl_runtime_apis! {
 	}
 }
 
-fn test_ed25519_crypto() -> (ed25519::AppSignature, ed25519::AppPublic) {
-	let public0 = ed25519::AppPublic::generate_pair(None);
-	let public1 = ed25519::AppPublic::generate_pair(None);
-	let public2 = ed25519::AppPublic::generate_pair(None);
-
-	let all = ed25519::AppPublic::all();
-	assert!(all.contains(&public0));
-	assert!(all.contains(&public1));
-	assert!(all.contains(&public2));
-
-	let signature = public0.sign(&"ed25519").expect("Generates a valid `ed25519` signature.");
-	assert!(public0.verify(&"ed25519", &signature));
-	(signature, public0)
-}
-
 fn test_sr25519_crypto() -> (sr25519::AppSignature, sr25519::AppPublic) {
 	let public0 = sr25519::AppPublic::generate_pair(None);
 	let public1 = sr25519::AppPublic::generate_pair(None);
@@ -789,22 +750,6 @@ fn test_sr25519_crypto() -> (sr25519::AppSignature, sr25519::AppPublic) {
 
 	let signature = public0.sign(&"sr25519").expect("Generates a valid `sr25519` signature.");
 	assert!(public0.verify(&"sr25519", &signature));
-	(signature, public0)
-}
-
-fn test_ecdsa_crypto() -> (ecdsa::AppSignature, ecdsa::AppPublic) {
-	let public0 = ecdsa::AppPublic::generate_pair(None);
-	let public1 = ecdsa::AppPublic::generate_pair(None);
-	let public2 = ecdsa::AppPublic::generate_pair(None);
-
-	let all = ecdsa::AppPublic::all();
-	assert!(all.contains(&public0));
-	assert!(all.contains(&public1));
-	assert!(all.contains(&public2));
-
-	let signature = public0.sign(&"ecdsa").expect("Generates a valid `ecdsa` signature.");
-
-	assert!(public0.verify(&"ecdsa", &signature));
 	(signature, public0)
 }
 

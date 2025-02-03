@@ -130,24 +130,6 @@ pub mod sr25519 {
 	pub type AuthorityId = app_sr25519::Public;
 }
 
-pub mod ed25519 {
-	mod app_ed25519 {
-		use sp_application_crypto::{app_crypto, ed25519, key_types::IM_ONLINE};
-		app_crypto!(ed25519, IM_ONLINE);
-	}
-
-	sp_application_crypto::with_pair! {
-		/// An i'm online keypair using ed25519 as its crypto.
-		pub type AuthorityPair = app_ed25519::Pair;
-	}
-
-	/// An i'm online signature using ed25519 as its crypto.
-	pub type AuthoritySignature = app_ed25519::Signature;
-
-	/// An i'm online identifier using ed25519 as its crypto.
-	pub type AuthorityId = app_ed25519::Public;
-}
-
 const DB_PREFIX: &[u8] = b"parity/im-online-heartbeat/";
 /// How many blocks do we wait for heartbeat transaction to be included
 /// before sending another one.

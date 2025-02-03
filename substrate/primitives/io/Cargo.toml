@@ -39,9 +39,6 @@ secp256k1 = { features = [
 tracing = { workspace = true }
 tracing-core = { workspace = true }
 
-# Required for backwards compatibility reason, but only used for verifying when `UseDalekExt` is set.
-ed25519-dalek = { optional = true, workspace = true }
-
 docify = { workspace = true }
 
 [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies]
@@ -55,8 +52,6 @@ default = ["std"]
 std = [
 	"bytes/std",
 	"codec/std",
-	"ed25519-dalek",
-	"ed25519-dalek?/std",
 	"libsecp256k1",
 	"log/std",
 	"secp256k1",

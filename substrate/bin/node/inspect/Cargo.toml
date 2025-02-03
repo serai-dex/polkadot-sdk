@@ -30,8 +30,6 @@ sp-io.workspace = true
 sp-io.default-features = true
 sp-runtime.workspace = true
 sp-runtime.default-features = true
-sp-statement-store.workspace = true
-sp-statement-store.default-features = true
 
 [features]
 runtime-benchmarks = [

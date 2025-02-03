@@ -25,19 +25,15 @@ use alloc::fmt;
 /// Test account crypto for sr25519.
 pub mod sr25519;
 
-/// Test account crypto for ed25519.
-pub mod ed25519;
-
 /// Convenience export: Sr25519's Keyring is exposed as `AccountKeyring`, since it tends to be
 /// used for accounts (although it may also be used by authorities).
 pub use sr25519::Keyring as AccountKeyring;
 
-pub use ed25519::Keyring as Ed25519Keyring;
 pub use sr25519::Keyring as Sr25519Keyring;
 
 pub mod test {
 	/// The keyring for use with accounts when using the test runtime.
-	pub use super::ed25519::Keyring as AccountKeyring;
+	pub use super::sr25519::Keyring as AccountKeyring;
 }
 
 #[derive(Debug)]

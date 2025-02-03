@@ -21,7 +21,7 @@ use parking_lot::RwLock;
 use sp_application_crypto::{AppCrypto, AppPair, IsWrappedBy};
 use sp_core::{
 	crypto::{ByteArray, ExposeSecret, KeyTypeId, Pair as CorePair, SecretString, VrfSecret},
-	ecdsa, ed25519, sr25519,
+	sr25519,
 };
 use sp_keystore::{Error as TraitError, Keystore, KeystorePtr};
 use std::{
@@ -31,10 +31,6 @@ use std::{
 	path::PathBuf,
 	sync::Arc,
 };
-
-sp_keystore::bls_experimental_enabled! {
-use sp_core::{bls381, ecdsa_bls381, KeccakHasher};
-}
 
 use crate::{Error, Result};
 
@@ -169,7 +165,7 @@ impl Keystore for LocalKeystore {
 		self.public_keys::<sr25519::Pair>(key_type)
 	}
 
-	/// Generate a new pair compatible with the 'ed25519' signature scheme.
+	/// Generate a new pair compatible with the 'sr25519' signature scheme.
 	///
 	/// If `[seed]` is `Some` then the key will be ephemeral and stored in memory.
 	fn sr25519_generate_new(
@@ -205,131 +201,6 @@ impl Keystore for LocalKeystore {
 		input: &sr25519::vrf::VrfInput,
 	) -> std::result::Result<Option<sr25519::vrf::VrfPreOutput>, TraitError> {
 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
-	}
-
-	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
-		self.public_keys::<ed25519::Pair>(key_type)
-	}
-
-	/// Generate a new pair compatible with the 'sr25519' signature scheme.
-	///
-	/// If `[seed]` is `Some` then the key will be ephemeral and stored in memory.
-	fn ed25519_generate_new(
-		&self,
-		key_type: KeyTypeId,
-		seed: Option<&str>,
-	) -> std::result::Result<ed25519::Public, TraitError> {
-		self.generate_new::<ed25519::Pair>(key_type, seed)
-	}
-
-	fn ed25519_sign(
-		&self,
-		key_type: KeyTypeId,
-		public: &ed25519::Public,
-		msg: &[u8],
-	) -> std::result::Result<Option<ed25519::Signature>, TraitError> {
-		self.sign::<ed25519::Pair>(key_type, public, msg)
-	}
-
-	fn ecdsa_public_keys(&self, key_type: KeyTypeId) -> Vec<ecdsa::Public> {
-		self.public_keys::<ecdsa::Pair>(key_type)
-	}
-
-	/// Generate a new pair compatible with the 'ecdsa' signature scheme.
-	///
-	/// If `[seed]` is `Some` then the key will be ephemeral and stored in memory.
-	fn ecdsa_generate_new(
-		&self,
-		key_type: KeyTypeId,
-		seed: Option<&str>,
-	) -> std::result::Result<ecdsa::Public, TraitError> {
-		self.generate_new::<ecdsa::Pair>(key_type, seed)
-	}
-
-	fn ecdsa_sign(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8],
-	) -> std::result::Result<Option<ecdsa::Signature>, TraitError> {
-		self.sign::<ecdsa::Pair>(key_type, public, msg)
-	}
-
-	fn ecdsa_sign_prehashed(
-		&self,
-		key_type: KeyTypeId,
-		public: &ecdsa::Public,
-		msg: &[u8; 32],
-	) -> std::result::Result<Option<ecdsa::Signature>, TraitError> {
-		let sig = self
-			.0
-			.read()
-			.key_pair_by_type::<ecdsa::Pair>(public, key_type)?
-			.map(|pair| pair.sign_prehashed(msg));
-		Ok(sig)
-	}
-
-	sp_keystore::bls_experimental_enabled! {
-		fn bls381_public_keys(&self, key_type: KeyTypeId) -> Vec<bls381::Public> {
-			self.public_keys::<bls381::Pair>(key_type)
-		}
-
-		/// Generate a new pair compatible with the 'bls381' signature scheme.
-		///
-		/// If `[seed]` is `Some` then the key will be ephemeral and stored in memory.
-		fn bls381_generate_new(
-			&self,
-			key_type: KeyTypeId,
-			seed: Option<&str>,
-		) -> std::result::Result<bls381::Public, TraitError> {
-			self.generate_new::<bls381::Pair>(key_type, seed)
-		}
-
-		fn bls381_sign(
-			&self,
-			key_type: KeyTypeId,
-			public: &bls381::Public,
-			msg: &[u8],
-		) -> std::result::Result<Option<bls381::Signature>, TraitError> {
-			self.sign::<bls381::Pair>(key_type, public, msg)
-		}
-
-		fn ecdsa_bls381_public_keys(&self, key_type: KeyTypeId) -> Vec<ecdsa_bls381::Public> {
-			self.public_keys::<ecdsa_bls381::Pair>(key_type)
-		}
-
-		/// Generate a new pair of paired-keys compatible with the '(ecdsa,bls381)' signature scheme.
-		///
-		/// If `[seed]` is `Some` then the key will be ephemeral and stored in memory.
-		fn ecdsa_bls381_generate_new(
-			&self,
-			key_type: KeyTypeId,
-			seed: Option<&str>,
-		) -> std::result::Result<ecdsa_bls381::Public, TraitError> {
-			self.generate_new::<ecdsa_bls381::Pair>(key_type, seed)
-		}
-
-		fn ecdsa_bls381_sign(
-			&self,
-			key_type: KeyTypeId,
-			public: &ecdsa_bls381::Public,
-			msg: &[u8],
-		) -> std::result::Result<Option<ecdsa_bls381::Signature>, TraitError> {
-			self.sign::<ecdsa_bls381::Pair>(key_type, public, msg)
-		}
-
-		fn ecdsa_bls381_sign_with_keccak256(
-			&self,
-			key_type: KeyTypeId,
-			public: &ecdsa_bls381::Public,
-			msg: &[u8],
-		) -> std::result::Result<Option<ecdsa_bls381::Signature>, TraitError> {
-			 let sig = self.0
-			.read()
-			.key_pair_by_type::<ecdsa_bls381::Pair>(public, key_type)?
-			.map(|pair| pair.sign_with_hasher::<KeccakHasher>(msg));
-			Ok(sig)
-		}
 	}
 }
 
@@ -547,7 +418,7 @@ impl KeystoreInner {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use sp_application_crypto::{ed25519, sr25519, AppPublic};
+	use sp_application_crypto::{sr25519, AppPublic};
 	use sp_core::{crypto::Ss58Codec, testing::SR25519, Pair};
 	use std::{fs, str::FromStr};
 	use tempfile::TempDir;
@@ -576,14 +447,14 @@ mod tests {
 		let temp_dir = TempDir::new().unwrap();
 		let mut store = KeystoreInner::open(temp_dir.path(), None).unwrap();
 
-		assert!(store.public_keys::<ed25519::AppPublic>().unwrap().is_empty());
+		assert!(store.public_keys::<sr25519::AppPublic>().unwrap().is_empty());
 
-		let key: ed25519::AppPair = store.generate().unwrap();
-		let key2: ed25519::AppPair = store.key_pair(&key.public()).unwrap().unwrap();
+		let key: sr25519::AppPair = store.generate().unwrap();
+		let key2: sr25519::AppPair = store.key_pair(&key.public()).unwrap().unwrap();
 
 		assert_eq!(key.public(), key2.public());
 
-		assert_eq!(store.public_keys::<ed25519::AppPublic>().unwrap()[0], key.public());
+		assert_eq!(store.public_keys::<sr25519::AppPublic>().unwrap()[0], key.public());
 	}
 
 	#[test]
@@ -591,17 +462,17 @@ mod tests {
 		let temp_dir = TempDir::new().unwrap();
 		let store = LocalKeystore::open(temp_dir.path(), None).unwrap();
 
-		let key: ed25519::AppPair = store.0.write().generate().unwrap();
-		let key2 = ed25519::Pair::generate().0;
+		let key: sr25519::AppPair = store.0.write().generate().unwrap();
+		let key2 = sr25519::Pair::generate().0;
 
-		assert!(!store.has_keys(&[(key2.public().to_vec(), ed25519::AppPublic::ID)]));
+		assert!(!store.has_keys(&[(key2.public().to_vec(), sr25519::AppPublic::ID)]));
 
 		assert!(!store.has_keys(&[
-			(key2.public().to_vec(), ed25519::AppPublic::ID),
-			(key.public().to_raw_vec(), ed25519::AppPublic::ID),
+			(key2.public().to_vec(), sr25519::AppPublic::ID),
+			(key.public().to_raw_vec(), sr25519::AppPublic::ID),
 		],));
 
-		assert!(store.has_keys(&[(key.public().to_raw_vec(), ed25519::AppPublic::ID)]));
+		assert!(store.has_keys(&[(key.public().to_raw_vec(), sr25519::AppPublic::ID)]));
 	}
 
 	#[test]
@@ -609,7 +480,7 @@ mod tests {
 		let temp_dir = TempDir::new().unwrap();
 		let mut store = KeystoreInner::open(temp_dir.path(), None).unwrap();
 
-		let pair: ed25519::AppPair = store
+		let pair: sr25519::AppPair = store
 			.insert_ephemeral_from_seed(
 				"0x3d97c819d68f9bafa7d6e79cb991eebcd77d966c5334c0b94d9e1fa7ad0869dc",
 			)
@@ -622,7 +493,7 @@ mod tests {
 		drop(store);
 		let store = KeystoreInner::open(temp_dir.path(), None).unwrap();
 		// Keys generated from seed should not be persisted!
-		assert!(store.key_pair::<ed25519::AppPair>(&pair.public()).unwrap().is_none());
+		assert!(store.key_pair::<sr25519::AppPair>(&pair.public()).unwrap().is_none());
 	}
 
 	#[test]
@@ -635,15 +506,15 @@ mod tests {
 		)
 		.unwrap();
 
-		let pair: ed25519::AppPair = store.generate().unwrap();
+		let pair: sr25519::AppPair = store.generate().unwrap();
 		assert_eq!(
 			pair.public(),
-			store.key_pair::<ed25519::AppPair>(&pair.public()).unwrap().unwrap().public(),
+			store.key_pair::<sr25519::AppPair>(&pair.public()).unwrap().unwrap().public(),
 		);
 
 		// Without the password the key should not be retrievable
 		let store = KeystoreInner::open(temp_dir.path(), None).unwrap();
-		assert!(store.key_pair::<ed25519::AppPair>(&pair.public()).is_err());
+		assert!(store.key_pair::<sr25519::AppPair>(&pair.public()).is_err());
 
 		let store = KeystoreInner::open(
 			temp_dir.path(),
@@ -652,7 +523,7 @@ mod tests {
 		.unwrap();
 		assert_eq!(
 			pair.public(),
-			store.key_pair::<ed25519::AppPair>(&pair.public()).unwrap().unwrap().public(),
+			store.key_pair::<sr25519::AppPair>(&pair.public()).unwrap().unwrap().public(),
 		);
 	}
 
@@ -663,10 +534,10 @@ mod tests {
 
 		let mut keys = Vec::new();
 		for i in 0..10 {
-			keys.push(store.generate::<ed25519::AppPair>().unwrap().public());
+			keys.push(store.generate::<sr25519::AppPair>().unwrap().public());
 			keys.push(
 				store
-					.insert_ephemeral_from_seed::<ed25519::AppPair>(&format!(
+					.insert_ephemeral_from_seed::<sr25519::AppPair>(&format!(
 						"0x3d97c819d68f9bafa7d6e79cb991eebcd7{}d966c5334c0b94d9e1fa7ad0869dc",
 						i
 					))
@@ -679,7 +550,7 @@ mod tests {
 		store.generate::<sr25519::AppPair>().unwrap();
 
 		keys.sort();
-		let mut store_pubs = store.public_keys::<ed25519::AppPublic>().unwrap();
+		let mut store_pubs = store.public_keys::<sr25519::AppPublic>().unwrap();
 		store_pubs.sort();
 
 		assert_eq!(keys, store_pubs);

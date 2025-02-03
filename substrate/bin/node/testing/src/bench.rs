@@ -47,9 +47,7 @@ use sc_executor::{WasmExecutionMethod, WasmtimeInstantiationStrategy};
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
 use sp_consensus::BlockOrigin;
-use sp_core::{
-	crypto::get_public_from_string_or_panic, ed25519, sr25519, traits::SpawnNamed, Pair,
-};
+use sp_core::{crypto::get_public_from_string_or_panic, sr25519, traits::SpawnNamed, Pair};
 use sp_crypto_hashing::blake2_256;
 use sp_inherents::InherentData;
 use sp_runtime::{
@@ -73,14 +71,12 @@ pub struct BenchKeyring {
 #[derive(Clone)]
 enum BenchPair {
 	Sr25519(sr25519::Pair),
-	Ed25519(ed25519::Pair),
 }
 
 impl BenchPair {
 	fn sign(&self, payload: &[u8]) -> Signature {
 		match self {
 			Self::Sr25519(pair) => pair.sign(payload).into(),
-			Self::Ed25519(pair) => pair.sign(payload).into(),
 		}
 	}
 }
@@ -516,8 +512,6 @@ impl BenchDb {
 pub enum KeyTypes {
 	/// sr25519 signing keys
 	Sr25519,
-	/// ed25519 signing keys
-	Ed25519,
 }
 
 impl BenchKeyring {
@@ -535,11 +529,6 @@ impl BenchKeyring {
 						sr25519::Pair::from_string(&seed, None).expect("failed to generate pair");
 					let account_id = AccountPublic::from(pair.public()).into_account();
 					(account_id, BenchPair::Sr25519(pair))
-				},
-				KeyTypes::Ed25519 => {
-					let pair = ed25519::Pair::from_seed(&blake2_256(seed.as_bytes()));
-					let account_id = AccountPublic::from(pair.public()).into_account();
-					(account_id, BenchPair::Ed25519(pair))
 				},
 			};
 			accounts.insert(account_id, pair);

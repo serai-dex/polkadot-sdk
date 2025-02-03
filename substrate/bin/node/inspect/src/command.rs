@@ -26,8 +26,7 @@ use sc_cli::{CliConfiguration, ImportParams, Result, SharedParams};
 use sc_service::Configuration;
 use sp_runtime::traits::Block;
 
-type HostFunctions =
-	(sp_io::SubstrateHostFunctions, sp_statement_store::runtime_api::HostFunctions);
+type HostFunctions = (sp_io::SubstrateHostFunctions,);
 
 impl InspectCmd {
 	/// Run the inspect command, passing the inspector.

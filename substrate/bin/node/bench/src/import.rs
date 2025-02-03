@@ -61,7 +61,6 @@ impl core::BenchmarkDescription for ImportBenchmarkDescription {
 
 		match self.key_types {
 			KeyTypes::Sr25519 => path.push("sr25519"),
-			KeyTypes::Ed25519 => path.push("ed25519"),
 		}
 
 		match self.block_type {

@@ -28,8 +28,8 @@ use sc_transaction_pool_api::TransactionStatus;
 use sp_core::{
 	bytes::to_hex,
 	crypto::{ByteArray, Pair},
-	ed25519,
-	testing::{ED25519, SR25519},
+	sr25519,
+	testing::SR25519,
 	H256,
 };
 use sp_crypto_hashing::blake2_256;
@@ -223,14 +223,14 @@ async fn author_should_insert_key() {
 	let setup = TestSetup::default();
 	let api = setup.to_rpc();
 	let suri = "//Alice";
-	let keypair = ed25519::Pair::from_string(suri, None).expect("generates keypair");
+	let keypair = sr25519::Pair::from_string(suri, None).expect("generates keypair");
 	let params: (String, String, Bytes) = (
-		String::from_utf8(ED25519.0.to_vec()).expect("Keytype is a valid string"),
+		String::from_utf8(SR25519.0.to_vec()).expect("Keytype is a valid string"),
 		suri.to_string(),
 		keypair.public().0.to_vec().into(),
 	);
 	api.call::<_, ()>("author_insertKey", params).await.unwrap();
-	let pubkeys = setup.keystore.keys(ED25519).unwrap();
+	let pubkeys = setup.keystore.keys(SR25519).unwrap();
 
 	assert!(pubkeys.contains(&keypair.public().to_raw_vec()));
 }
@@ -243,9 +243,7 @@ async fn author_should_rotate_keys() {
 	let new_pubkeys: Bytes = api.call("author_rotateKeys", EmptyParams::new()).await.unwrap();
 	let session_keys =
 		SessionKeys::decode(&mut &new_pubkeys[..]).expect("SessionKeys decode successfully");
-	let ed25519_pubkeys = setup.keystore.keys(ED25519).unwrap();
 	let sr25519_pubkeys = setup.keystore.keys(SR25519).unwrap();
-	assert!(ed25519_pubkeys.contains(&session_keys.ed25519.to_raw_vec()));
 	assert!(sr25519_pubkeys.contains(&session_keys.sr25519.to_raw_vec()));
 }
 
@@ -287,22 +285,22 @@ async fn author_has_session_keys() {
 async fn author_has_key() {
 	let api = TestSetup::into_rpc();
 	let suri = "//Alice";
-	let alice_keypair = ed25519::Pair::from_string(suri, None).expect("Generates keypair");
+	let alice_keypair = sr25519::Pair::from_string(suri, None).expect("Generates keypair");
 	let params = (
-		String::from_utf8(ED25519.0.to_vec()).expect("Keytype is a valid string"),
+		String::from_utf8(SR25519.0.to_vec()).expect("Keytype is a valid string"),
 		suri.to_string(),
 		Bytes::from(alice_keypair.public().0.to_vec()),
 	);
 
 	api.call::<_, ()>("author_insertKey", params).await.expect("insertKey works");
 
-	let bob_keypair = ed25519::Pair::from_string("//Bob", None).expect("Generates keypair");
+	let bob_keypair = sr25519::Pair::from_string("//Bob", None).expect("Generates keypair");
 
-	// Alice's ED25519 key is there
+	// Alice's SR25519 key is there
 	let has_alice_ed: bool = {
 		let params = (
 			Bytes::from(alice_keypair.public().to_raw_vec()),
-			String::from_utf8(ED25519.0.to_vec()).expect("Keytype is a valid string"),
+			String::from_utf8(SR25519.0.to_vec()).expect("Keytype is a valid string"),
 		);
 		api.call("author_hasKey", params).await.unwrap()
 	};
@@ -318,11 +316,11 @@ async fn author_has_key() {
 	};
 	assert!(!has_alice_sr);
 
-	// Bob's ED25519 key is not there
+	// Bob's SR25519 key is not there
 	let has_bob_ed: bool = {
 		let params = (
 			Bytes::from(bob_keypair.public().to_raw_vec()),
-			String::from_utf8(ED25519.0.to_vec()).expect("Keytype is a valid string"),
+			String::from_utf8(SR25519.0.to_vec()).expect("Keytype is a valid string"),
 		);
 		api.call("author_hasKey", params).await.unwrap()
 	};

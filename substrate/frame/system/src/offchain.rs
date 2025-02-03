@@ -357,7 +357,7 @@ where
 ///
 /// Implementations of this trait should specify the app-specific public/signature types.
 /// This is merely a wrapper around an existing `RuntimeAppPublic` type, but with
-/// extra non-application-specific crypto type that is being wrapped (e.g. `sr25519`, `ed25519`).
+/// extra non-application-specific crypto type that is being wrapped (e.g. `sr25519`).
 /// This is needed to later on convert into runtime-specific `Public` key, which might support
 /// multiple different crypto.
 /// The point of this trait is to be able to easily convert between `RuntimeAppPublic`, the wrapped

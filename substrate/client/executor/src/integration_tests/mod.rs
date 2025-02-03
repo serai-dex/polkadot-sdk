@@ -25,7 +25,7 @@ use sc_executor_common::{
 };
 use sc_runtime_test::wasm_binary_unwrap;
 use sp_core::{
-	ed25519, map,
+	map,
 	offchain::{testing, OffchainDbExt, OffchainWorkerExt},
 	sr25519,
 	traits::Externalities,
@@ -291,32 +291,6 @@ fn twox_128_should_work(wasm_method: WasmExecutionMethod) {
 		call_in_wasm("test_twox_128", &b"Hello world!".to_vec().encode(), wasm_method, &mut ext,)
 			.unwrap(),
 		twox_128(b"Hello world!").to_vec().encode()
-	);
-}
-
-test_wasm_execution!(ed25519_verify_should_work);
-fn ed25519_verify_should_work(wasm_method: WasmExecutionMethod) {
-	let mut ext = TestExternalities::default();
-	let mut ext = ext.ext();
-	let key = ed25519::Pair::from_seed(&blake2_256(b"test"));
-	let sig = key.sign(b"all ok!");
-	let mut calldata = vec![];
-	calldata.extend_from_slice(key.public().as_ref());
-	calldata.extend_from_slice(sig.as_ref());
-
-	assert_eq!(
-		call_in_wasm("test_ed25519_verify", &calldata.encode(), wasm_method, &mut ext,).unwrap(),
-		true.encode(),
-	);
-
-	let other_sig = key.sign(b"all is not ok!");
-	let mut calldata = vec![];
-	calldata.extend_from_slice(key.public().as_ref());
-	calldata.extend_from_slice(other_sig.as_ref());
-
-	assert_eq!(
-		call_in_wasm("test_ed25519_verify", &calldata.encode(), wasm_method, &mut ext,).unwrap(),
-		false.encode(),
 	);
 }
 

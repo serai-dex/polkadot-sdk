@@ -2221,45 +2221,6 @@ fn reorg_triggers_a_notification_even_for_sources_that_should_not_trigger_notifi
 }
 
 #[test]
-fn use_dalek_ext_works() {
-	fn zero_ed_pub() -> sp_core::ed25519::Public {
-		sp_core::ed25519::Public::default()
-	}
-
-	fn zero_ed_sig() -> sp_core::ed25519::Signature {
-		sp_core::ed25519::Signature::default()
-	}
-
-	let client = TestClientBuilder::new().build();
-
-	client.execution_extensions().set_extensions_factory(
-		sc_client_api::execution_extensions::ExtensionBeforeBlock::<Block, sp_io::UseDalekExt>::new(
-			1,
-		),
-	);
-
-	let a1 = BlockBuilderBuilder::new(&client)
-		.on_parent_block(client.chain_info().genesis_hash)
-		.with_parent_block_number(0)
-		.build()
-		.unwrap()
-		.build()
-		.unwrap()
-		.block;
-	block_on(client.import(BlockOrigin::NetworkInitialSync, a1.clone())).unwrap();
-
-	// On block zero it will use dalek and then on block 1 it will use zebra
-	assert!(!client
-		.runtime_api()
-		.verify_ed25519(client.chain_info().genesis_hash, zero_ed_sig(), zero_ed_pub(), vec![])
-		.unwrap());
-	assert!(client
-		.runtime_api()
-		.verify_ed25519(a1.hash(), zero_ed_sig(), zero_ed_pub(), vec![])
-		.unwrap());
-}
-
-#[test]
 fn finalize_after_best_block_updates_best() {
 	let client = substrate_test_runtime_client::new();
 

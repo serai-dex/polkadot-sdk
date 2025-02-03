@@ -81,21 +81,7 @@ pub trait IdentifyAccount {
 	fn into_account(self) -> Self::AccountId;
 }
 
-impl IdentifyAccount for sp_core::ed25519::Public {
-	type AccountId = Self;
-	fn into_account(self) -> Self {
-		self
-	}
-}
-
 impl IdentifyAccount for sp_core::sr25519::Public {
-	type AccountId = Self;
-	fn into_account(self) -> Self {
-		self
-	}
-}
-
-impl IdentifyAccount for sp_core::ecdsa::Public {
 	type AccountId = Self;
 	fn into_account(self) -> Self {
 		self
@@ -116,32 +102,11 @@ pub trait Verify {
 	) -> bool;
 }
 
-impl Verify for sp_core::ed25519::Signature {
-	type Signer = sp_core::ed25519::Public;
-
-	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ed25519::Public) -> bool {
-		sp_io::crypto::ed25519_verify(self, msg.get(), signer)
-	}
-}
-
 impl Verify for sp_core::sr25519::Signature {
 	type Signer = sp_core::sr25519::Public;
 
 	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::sr25519::Public) -> bool {
 		sp_io::crypto::sr25519_verify(self, msg.get(), signer)
-	}
-}
-
-impl Verify for sp_core::ecdsa::Signature {
-	type Signer = sp_core::ecdsa::Public;
-	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa::Public) -> bool {
-		match sp_io::crypto::secp256k1_ecdsa_recover_compressed(
-			self.as_ref(),
-			&sp_io::hashing::blake2_256(msg.get()),
-		) {
-			Ok(pubkey) => signer.0 == pubkey,
-			_ => false,
-		}
 	}
 }
 
@@ -2165,19 +2130,15 @@ macro_rules! impl_opaque_keys_inner {
 ///
 /// ```rust
 /// use sp_runtime::{
-/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::{sr25519, ed25519}
+/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::sr25519
 /// };
 ///
 /// pub struct KeyModule;
-/// impl BoundToRuntimeAppPublic for KeyModule { type Public = ed25519::AppPublic; }
-///
-/// pub struct KeyModule2;
 /// impl BoundToRuntimeAppPublic for KeyModule2 { type Public = sr25519::AppPublic; }
 ///
 /// impl_opaque_keys! {
 /// 	pub struct Keys {
 /// 		pub key_module: KeyModule,
-/// 		pub key_module2: KeyModule2,
 /// 	}
 /// }
 /// ```
@@ -2390,7 +2351,7 @@ mod tests {
 	use crate::codec::{Decode, Encode, Input};
 	use sp_core::{
 		crypto::{Pair, UncheckedFrom},
-		ecdsa, ed25519, sr25519,
+		sr25519,
 	};
 
 	macro_rules! signature_verify_test {
@@ -2517,17 +2478,7 @@ mod tests {
 	}
 
 	#[test]
-	fn ed25519_verify_works() {
-		signature_verify_test!(ed25519);
-	}
-
-	#[test]
 	fn sr25519_verify_works() {
 		signature_verify_test!(sr25519);
-	}
-
-	#[test]
-	fn ecdsa_verify_works() {
-		signature_verify_test!(ecdsa);
 	}
 }

@@ -56,8 +56,6 @@ sp-session.workspace = true
 sp-session.default-features = true
 sp-version.workspace = true
 sp-version.default-features = true
-sp-statement-store.workspace = true
-sp-statement-store.default-features = true
 tokio = { workspace = true, default-features = true }
 
 [dev-dependencies]

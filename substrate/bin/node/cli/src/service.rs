@@ -36,7 +36,6 @@ use sc_network::{
 };
 use sc_network_sync::{strategy::warp::WarpSyncConfig, SyncingService};
 use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager};
-use sc_statement_store::Store as StatementStore;
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sc_transaction_pool::TransactionPoolHandle;
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
@@ -47,16 +46,12 @@ use std::{path::Path, sync::Arc};
 
 /// Host functions required for kitchensink runtime and Substrate node.
 #[cfg(not(feature = "runtime-benchmarks"))]
-pub type HostFunctions =
-	(sp_io::SubstrateHostFunctions, sp_statement_store::runtime_api::HostFunctions);
+pub type HostFunctions = (sp_io::SubstrateHostFunctions,);
 
 /// Host functions required for kitchensink runtime and Substrate node.
 #[cfg(feature = "runtime-benchmarks")]
-pub type HostFunctions = (
-	sp_io::SubstrateHostFunctions,
-	sp_statement_store::runtime_api::HostFunctions,
-	frame_benchmarking::benchmarking::HostFunctions,
-);
+pub type HostFunctions =
+	(sp_io::SubstrateHostFunctions, frame_benchmarking::benchmarking::HostFunctions);
 
 /// A specialized `WasmExecutor` intended to use across substrate node. It provides all required
 /// HostFunctions.
@@ -178,7 +173,6 @@ pub fn new_partial(
 			),
 			grandpa::SharedVoterState,
 			Option<Telemetry>,
-			Arc<StatementStore>,
 			Option<sc_mixnet::ApiBackend>,
 		),
 	>,
@@ -265,16 +259,6 @@ pub fn new_partial(
 
 	let import_setup = (block_import, grandpa_link, babe_link);
 
-	let statement_store = sc_statement_store::Store::new_shared(
-		&config.data_path,
-		Default::default(),
-		client.clone(),
-		keystore_container.local_keystore(),
-		config.prometheus_registry(),
-		&task_manager.spawn_handle(),
-	)
-	.map_err(|e| ServiceError::Other(format!("Statement store error: {:?}", e)))?;
-
 	let (mixnet_api, mixnet_api_backend) = mixnet_config.map(sc_mixnet::Api::new).unzip();
 
 	let (rpc_extensions_builder, rpc_setup) = {
@@ -297,7 +281,6 @@ pub fn new_partial(
 		let chain_spec = config.chain_spec.cloned_box();
 
 		let rpc_backend = backend.clone();
-		let rpc_statement_store = statement_store.clone();
 		let rpc_extensions_builder =
 			move |subscription_executor: node_rpc::SubscriptionTaskExecutor| {
 				let deps = node_rpc::FullDeps {
@@ -316,7 +299,6 @@ pub fn new_partial(
 						subscription_executor: subscription_executor.clone(),
 						finality_provider: finality_proof_provider.clone(),
 					},
-					statement_store: rpc_statement_store.clone(),
 					backend: rpc_backend.clone(),
 					mixnet_api: mixnet_api.as_ref().cloned(),
 				};
@@ -335,14 +317,7 @@ pub fn new_partial(
 		select_chain,
 		import_queue,
 		transaction_pool,
-		other: (
-			rpc_extensions_builder,
-			import_setup,
-			rpc_setup,
-			telemetry,
-			statement_store,
-			mixnet_api_backend,
-		),
+		other: (rpc_extensions_builder, import_setup, rpc_setup, telemetry, mixnet_api_backend),
 	})
 }
 
@@ -398,8 +373,7 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 		keystore_container,
 		select_chain,
 		transaction_pool,
-		other:
-			(rpc_builder, import_setup, rpc_setup, mut telemetry, statement_store, mixnet_api_backend),
+		other: (rpc_builder, import_setup, rpc_setup, mut telemetry, mixnet_api_backend),
 	} = new_partial(&config, mixnet_config.as_ref())?;
 
 	let metrics = N::register_notification_metrics(
@@ -425,15 +399,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 			Arc::clone(&peer_store_handle),
 		);
 	net_config.add_notification_protocol(grandpa_protocol_config);
-
-	let (statement_handler_proto, statement_config) =
-		sc_network_statement::StatementHandlerPrototype::new::<_, _, N>(
-			genesis_hash,
-			config.chain_spec.fork_id(),
-			metrics.clone(),
-			Arc::clone(&peer_store_handle),
-		);
-	net_config.add_notification_protocol(statement_config);
 
 	let mixnet_protocol_name =
 		sc_mixnet::protocol_name(genesis_hash.as_ref(), config.chain_spec.fork_id());
@@ -657,26 +622,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 		);
 	}
 
-	// Spawn statement protocol worker
-	let statement_protocol_executor = {
-		let spawn_handle = task_manager.spawn_handle();
-		Box::new(move |fut| {
-			spawn_handle.spawn("network-statement-validator", Some("networking"), fut);
-		})
-	};
-	let statement_handler = statement_handler_proto.build(
-		network.clone(),
-		sync_service.clone(),
-		statement_store.clone(),
-		prometheus_registry.as_ref(),
-		statement_protocol_executor,
-	)?;
-	task_manager.spawn_handle().spawn(
-		"network-statement-handler",
-		Some("networking"),
-		statement_handler.run(),
-	);
-
 	if enable_offchain_worker {
 		let offchain_workers =
 			sc_offchain::OffchainWorkers::new(sc_offchain::OffchainWorkerOptions {
@@ -689,9 +634,7 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 				network_provider: Arc::new(network.clone()),
 				is_validator: role.is_authority(),
 				enable_http_requests: true,
-				custom_extensions: move |_| {
-					vec![Box::new(statement_store.clone().as_statement_store_ext()) as Box<_>]
-				},
+				custom_extensions: |_| vec![],
 			})?;
 		task_manager.spawn_handle().spawn(
 			"offchain-workers-runner",

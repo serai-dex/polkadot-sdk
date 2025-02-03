@@ -49,7 +49,6 @@ members = [
 	"substrate/client/network-gossip",
 	"substrate/client/network/common",
 	"substrate/client/network/light",
-	"substrate/client/network/statement",
 	"substrate/client/network/sync",
 	"substrate/client/network/test",
 	"substrate/client/network/transactions",
@@ -63,7 +62,6 @@ members = [
 	"substrate/client/service",
 	"substrate/client/service/test",
 	"substrate/client/state-db",
-	"substrate/client/statement-store",
 	"substrate/client/storage-monitor",
 	"substrate/client/sync-state-rpc",
 	"substrate/client/sysinfo",
@@ -131,7 +129,6 @@ members = [
 	"substrate/frame/staking/reward-fn",
 	"substrate/frame/staking/runtime-api",
 	"substrate/frame/state-trie-migration",
-	"substrate/frame/statement",
 	"substrate/frame/sudo",
 	"substrate/frame/support",
 	"substrate/frame/support/procedural",
@@ -204,7 +201,6 @@ members = [
 	"substrate/primitives/session",
 	"substrate/primitives/staking",
 	"substrate/primitives/state-machine",
-	"substrate/primitives/statement-store",
 	"substrate/primitives/std",
 	"substrate/primitives/storage",
 	"substrate/primitives/test-primitives",
@@ -543,7 +539,6 @@ pallet-staking-reward-curve = { path = "substrate/frame/staking/reward-curve", d
 pallet-staking-reward-fn = { path = "substrate/frame/staking/reward-fn", default-features = false, version = "22.0.0" }
 pallet-staking-runtime-api = { path = "substrate/frame/staking/runtime-api", default-features = false, version = "25.0.0" }
 pallet-state-trie-migration = { path = "substrate/frame/state-trie-migration", default-features = false, version = "43.0.0" }
-pallet-statement = { default-features = false, path = "substrate/frame/statement" }
 pallet-sudo = { path = "substrate/frame/sudo", default-features = false, version = "39.0.0" }
 pallet-template = { path = "templates/solochain/pallets/template", default-features = false, version = "0.1.0" }
 pallet-timestamp = { path = "substrate/frame/timestamp", default-features = false, version = "38.0.0" }
@@ -640,7 +635,6 @@ sc-network = { path = "substrate/client/network", default-features = false, vers
 sc-network-common = { path = "substrate/client/network/common", default-features = false, version = "0.47.0" }
 sc-network-gossip = { path = "substrate/client/network-gossip", default-features = false, version = "0.48.0" }
 sc-network-light = { path = "substrate/client/network/light", default-features = false, version = "0.47.0" }
-sc-network-statement = { default-features = false, path = "substrate/client/network/statement" }
 sc-network-sync = { path = "substrate/client/network/sync", default-features = false, version = "0.47.0" }
 sc-network-test = { path = "substrate/client/network/test" }
 sc-network-transactions = { path = "substrate/client/network/transactions", default-features = false, version = "0.47.0" }
@@ -655,7 +649,6 @@ sc-runtime-test = { path = "substrate/client/executor/runtime-test" }
 sc-service = { path = "substrate/client/service", default-features = false, version = "0.49.0" }
 sc-service-test = { path = "substrate/client/service/test" }
 sc-state-db = { path = "substrate/client/state-db", default-features = false, version = "0.37.0" }
-sc-statement-store = { default-features = false, path = "substrate/client/statement-store" }
 sc-storage-monitor = { path = "substrate/client/storage-monitor", default-features = false, version = "0.23.0" }
 sc-sync-state-rpc = { path = "substrate/client/sync-state-rpc", default-features = false, version = "0.48.0" }
 sc-sysinfo = { path = "substrate/client/sysinfo", default-features = false, version = "41.0.0" }
@@ -700,7 +693,6 @@ sp-consensus-aura = { path = "substrate/primitives/consensus/aura", default-feat
 sp-consensus-babe = { path = "substrate/primitives/consensus/babe", default-features = false, version = "0.41.0" }
 sp-consensus-grandpa = { path = "substrate/primitives/consensus/grandpa", default-features = false, version = "22.0.0" }
 sp-consensus-pow = { path = "substrate/primitives/consensus/pow", default-features = false, version = "0.41.0" }
-sp-consensus-sassafras = { path = "substrate/primitives/consensus/sassafras", default-features = false, version = "0.3.4" }
 sp-consensus-slots = { path = "substrate/primitives/consensus/slots", default-features = false, version = "0.41.0" }
 sp-core = { path = "substrate/primitives/core", default-features = false, version = "35.0.0" }
 sp-core-hashing = { default-features = false, path = "substrate/deprecated/hashing" }
@@ -731,7 +723,6 @@ sp-runtime-interface-test-wasm-deprecated = { path = "substrate/primitives/runti
 sp-session = { path = "substrate/primitives/session", default-features = false, version = "37.0.0" }
 sp-staking = { path = "substrate/primitives/staking", default-features = false, version = "37.0.0" }
 sp-state-machine = { path = "substrate/primitives/state-machine", default-features = false, version = "0.44.0" }
-sp-statement-store = { path = "substrate/primitives/statement-store", default-features = false, version = "19.0.0" }
 sp-std = { path = "substrate/primitives/std", default-features = false, version = "14.0.0" }
 sp-storage = { path = "substrate/primitives/storage", default-features = false, version = "22.0.0" }
 sp-test-primitives = { path = "substrate/primitives/test-primitives" }

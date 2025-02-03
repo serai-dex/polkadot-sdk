@@ -52,23 +52,11 @@ itertools = { optional = true, workspace = true }
 
 # full crypto
 array-bytes = { workspace = true, default-features = true }
-ed25519-zebra = { workspace = true }
 blake2 = { optional = true, workspace = true }
-libsecp256k1 = { features = ["static-context"], workspace = true }
 schnorrkel = { features = ["preaudit_deprecated"], workspace = true }
 merlin = { workspace = true }
 sp-crypto-hashing.workspace = true
 sp-runtime-interface.workspace = true
-# k256 crate, better portability, intended to be used in substrate-runtimes (no-std)
-k256 = { features = ["alloc", "ecdsa"], workspace = true }
-# secp256k1 crate, better performance, intended to be used on host side (std)
-secp256k1 = { features = [
-	"alloc",
-	"recovery",
-], optional = true, workspace = true }
-
-# bls crypto
-w3f-bls = { optional = true, workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true, default-features = true }
@@ -93,7 +81,6 @@ std = [
 	"bs58/std",
 	"codec/std",
 	"dyn-clonable",
-	"ed25519-zebra/std",
 	"full_crypto",
 	"futures",
 	"futures/thread-pool",
@@ -101,8 +88,6 @@ std = [
 	"hash256-std-hasher/std",
 	"impl-serde/std",
 	"itertools",
-	"k256/std",
-	"libsecp256k1/std",
 	"log/std",
 	"merlin/std",
 	"parking_lot",
@@ -113,8 +98,6 @@ std = [
 	"rand",
 	"scale-info/std",
 	"schnorrkel/std",
-	"secp256k1/global-context",
-	"secp256k1/std",
 	"serde/std",
 	"sp-crypto-hashing/std",
 	"sp-debug-derive/std",
@@ -126,7 +109,6 @@ std = [
 	"substrate-bip39/std",
 	"thiserror",
 	"tracing",
-	"w3f-bls?/std",
 	"zeroize/alloc",
 	"zeroize/std",
 ]
@@ -138,7 +120,6 @@ serde = [
 	"bs58/alloc",
 	"dep:serde",
 	"impl-serde",
-	"k256/serde",
 	"primitive-types/serde_no_std",
 	"scale-info/serde",
 	"sp-storage/serde",
@@ -155,4 +136,4 @@ full_crypto = [
 # This feature adds BLS crypto primitives.
 # It should not be used in production since the implementation and interface may still
 # be subject to significant changes.
-bls-experimental = ["w3f-bls"]
+bls-experimental = []

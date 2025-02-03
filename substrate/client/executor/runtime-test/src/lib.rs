@@ -38,10 +38,10 @@ extern crate alloc;
 use alloc::{vec, vec::Vec};
 
 #[cfg(not(feature = "std"))]
-use sp_core::{ed25519, sr25519};
+use sp_core::sr25519;
 #[cfg(not(feature = "std"))]
 use sp_io::{
-	crypto::{ed25519_verify, sr25519_verify},
+	crypto::sr25519_verify,
 	hashing::{blake2_128, blake2_256, sha2_256, twox_128, twox_256},
 	storage, wasm_tracing,
 };
@@ -174,17 +174,6 @@ sp_core::wasm_export_functions! {
 
 	fn test_twox_128(input: Vec<u8>) -> Vec<u8> {
 		twox_128(&input).to_vec()
-	}
-
-	fn test_ed25519_verify(input: Vec<u8>) -> bool {
-		let mut pubkey = [0; 32];
-		let mut sig = [0; 64];
-
-		pubkey.copy_from_slice(&input[0..32]);
-		sig.copy_from_slice(&input[32..96]);
-
-		let msg = b"all ok!";
-		ed25519_verify(&ed25519::Signature::from(sig), &msg[..], &ed25519::Public::from(pubkey))
 	}
 
 	fn test_sr25519_verify(input: Vec<u8>) -> bool {

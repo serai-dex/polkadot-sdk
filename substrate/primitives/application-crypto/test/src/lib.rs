@@ -18,8 +18,4 @@
 //! Integration tests for application crypto
 
 #[cfg(test)]
-mod ecdsa;
-#[cfg(test)]
-mod ed25519;
-#[cfg(test)]
 mod sr25519;

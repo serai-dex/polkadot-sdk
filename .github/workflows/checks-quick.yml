@@ -88,13 +88,6 @@ jobs:
       - name: check integrity
         run: >
           python3 .github/scripts/check-workspace.py .
-          --exclude
-          "substrate/frame/contracts/fixtures/build"
-          "substrate/frame/contracts/fixtures/contracts/common"
-          "substrate/frame/revive/fixtures/build"
-          "substrate/frame/revive/fixtures/contracts/common"
-          "substrate/frame/sassafras"
-          "substrate/primitives/consensus/sassafras"
       - name: deny git deps
         run: python3 .github/scripts/deny-git-deps.py .
   check-markdown:
