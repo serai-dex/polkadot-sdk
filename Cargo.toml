@@ -171,7 +171,6 @@ members = [
 	"substrate/primitives/consensus/slots",
 	"substrate/primitives/core",
 	"substrate/primitives/core/fuzz",
-	"substrate/primitives/crypto/ec-utils",
 	"substrate/primitives/crypto/hashing",
 	"substrate/primitives/crypto/hashing/proc-macro",
 	"substrate/primitives/database",
@@ -690,7 +689,6 @@ sp-consensus-slots = { path = "substrate/primitives/consensus/slots", default-fe
 sp-core = { path = "substrate/primitives/core", default-features = false, version = "35.0.0" }
 sp-core-hashing = { default-features = false, path = "substrate/deprecated/hashing" }
 sp-core-hashing-proc-macro = { default-features = false, path = "substrate/deprecated/hashing/proc-macro" }
-sp-crypto-ec-utils = { default-features = false, path = "substrate/primitives/crypto/ec-utils" }
 sp-crypto-hashing = { path = "substrate/primitives/crypto/hashing", default-features = false, version = "0.1.0" }
 sp-crypto-hashing-proc-macro = { path = "substrate/primitives/crypto/hashing/proc-macro", default-features = false, version = "0.1.0" }
 sp-database = { path = "substrate/primitives/database", default-features = false, version = "10.0.0" }
@@ -884,4 +882,5 @@ zeroize = { opt-level = 3 }
 lazy_static = { git = "https://github.com/rust-lang-nursery/lazy-static.rs", rev = "5735630d46572f1e5377c8f2ba0f79d18f53b10c" }
 
 sp-crypto-hashing = { path = "./substrate/primitives/crypto/hashing" }
+sp-core = { path = "./substrate/primitives/core" }
 polkadot-sdk = { path = "./patches/subxt-polkadot-sdk" }

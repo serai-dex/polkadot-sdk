@@ -90,7 +90,6 @@ std = [
 	"sp-consensus-slots?/std",
 	"sp-core-hashing?/std",
 	"sp-core?/std",
-	"sp-crypto-ec-utils?/std",
 	"sp-crypto-hashing?/std",
 	"sp-debug-derive?/std",
 	"sp-externalities?/std",
@@ -274,7 +273,7 @@ with-tracing = [
 	"sp-tracing?/with-tracing",
 	"sp-tracing?/with-tracing",
 ]
-runtime-full = ["binary-merkle-tree", "frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-ec-utils", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
+runtime-full = ["binary-merkle-tree", "frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
 runtime = [
 	"frame-benchmarking",
 	"frame-benchmarking-pallet-pov",
@@ -303,7 +302,6 @@ runtime = [
 	"sp-consensus-pow",
 	"sp-consensus-slots",
 	"sp-core",
-	"sp-crypto-ec-utils",
 	"sp-crypto-hashing",
 	"sp-crypto-hashing-proc-macro",
 	"sp-debug-derive",
@@ -855,12 +853,6 @@ path = "../substrate/primitives/core"
 default-features = false
 optional = true
 version = "35.0.0"
-
-[dependencies.sp-crypto-ec-utils]
-path = "../substrate/primitives/crypto/ec-utils"
-default-features = false
-optional = true
-version = "0.15.0"
 
 [dependencies.sp-crypto-hashing]
 path = "../substrate/primitives/crypto/hashing"

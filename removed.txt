@@ -72,6 +72,7 @@
 ./substrate/primitives/core/src/ecdsa.rs
 ./substrate/primitives/core/src/ed25519.rs
 ./substrate/primitives/core/src/paired_crypto.rs
+./substrate/primitives/crypto/ec-utils
 ./substrate/primitives/keyring/src/bandersnatch.rs
 ./substrate/primitives/keyring/src/ed25519.rs
 ./substrate/primitives/merkle-mountain-range
