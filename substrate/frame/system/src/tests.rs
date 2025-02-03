@@ -768,14 +768,14 @@ fn runtime_upgraded_with_set_storage() {
 }
 
 #[test]
-fn events_not_emitted_during_genesis() {
+fn events_emitted_during_genesis() {
 	new_test_ext().execute_with(|| {
 		// Block Number is zero at genesis
 		assert!(System::block_number().is_zero());
 		let mut account_data = AccountInfo::default();
 		System::on_created_account(Default::default(), &mut account_data);
-		// No events registered at the genesis block
-		assert!(!System::read_events_no_consensus().any(|_| true));
+		// Events registered at the genesis block
+		assert!(System::read_events_no_consensus().any(|_| true));
 		// Events will be emitted starting on block 1
 		System::set_block_number(1);
 		System::on_created_account(Default::default(), &mut account_data);
