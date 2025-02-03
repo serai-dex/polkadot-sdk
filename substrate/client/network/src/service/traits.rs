@@ -35,7 +35,6 @@ use futures::{channel::oneshot, Stream};
 use libp2p::kad::Record;
 use prometheus_endpoint::Registry;
 
-use sc_client_api::BlockBackend;
 use sc_network_common::{role::ObservedRole, ExHashT};
 use sc_network_types::{multiaddr::Multiaddr, PeerId};
 use sp_runtime::traits::Block as BlockT;
@@ -123,9 +122,6 @@ pub trait NetworkBackend<B: BlockT + 'static, H: ExHashT>: Send + 'static {
 	/// Type implementing [`PeerStore`].
 	type PeerStore: PeerStore;
 
-	/// Bitswap config.
-	type BitswapConfig;
-
 	/// Create new `NetworkBackend`.
 	fn new(params: Params<B, H, Self>) -> Result<Self, Error>
 	where
@@ -139,11 +135,6 @@ pub trait NetworkBackend<B: BlockT + 'static, H: ExHashT>: Send + 'static {
 
 	/// Register metrics that are used by the notification protocols.
 	fn register_notification_metrics(registry: Option<&Registry>) -> NotificationMetrics;
-
-	/// Create Bitswap server.
-	fn bitswap_server(
-		client: Arc<dyn BlockBackend<B> + Send + Sync>,
-	) -> (Pin<Box<dyn Future<Output = ()> + Send>>, Self::BitswapConfig);
 
 	/// Create notification protocol configuration and an associated `NotificationService`
 	/// for the protocol.

@@ -24,7 +24,6 @@ async-channel = { workspace = true }
 async-trait = { workspace = true }
 codec = { features = ["derive"], workspace = true, default-features = true }
 futures = { workspace = true }
-futures-timer = { workspace = true }
 log = { workspace = true, default-features = true }
 mockall = { workspace = true }
 prost = { workspace = true }

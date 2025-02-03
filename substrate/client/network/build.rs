@@ -16,8 +16,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const PROTOS: &[&str] = &["src/schema/bitswap.v1.2.0.proto"];
-
-fn main() {
-	prost_build::compile_protos(PROTOS, &["src/schema"]).unwrap();
-}
+fn main() {}

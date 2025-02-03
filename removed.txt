@@ -10,6 +10,9 @@
 ./substrate/client/consensus/beefy
 ./substrate/client/merkle-mountain-range
 ./substrate/client/mixnet
+./substrate/client/network/src/bitswap
+./substrate/client/network/src/litep2p/shim/bitswap.rs
+./substrate/client/network/src/schema/bitswap.v1.2.0.proto
 ./substrate/client/network/statement
 ./substrate/client/offchain/src/api/http.rs
 ./substrate/client/rpc/src/mixnet

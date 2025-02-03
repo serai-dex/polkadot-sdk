@@ -100,7 +100,6 @@ pub fn create_network_worker(
 		protocol_id: ProtocolId::from("bench-protocol-name"),
 		fork_id: None,
 		metrics_registry: None,
-		bitswap_config: None,
 		notification_metrics: NotificationMetrics::new(None),
 	})
 	.unwrap();

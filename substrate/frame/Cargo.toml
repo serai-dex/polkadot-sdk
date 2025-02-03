@@ -48,7 +48,6 @@ frame-benchmarking = { optional = true, workspace = true }
 frame-system-benchmarking = { optional = true, workspace = true }
 frame-try-runtime = { optional = true, workspace = true }
 
-docify = { workspace = true }
 log = { workspace = true }
 
 [dev-dependencies]

@@ -1307,19 +1307,6 @@ dependencies = [
 
 [[package]]
 name = "cid"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9b68e3193982cd54187d71afdb2a271ad4cf8af157858e9cb911b91321de143"
-dependencies = [
- "core2",
- "multibase",
- "multihash 0.17.0",
- "serde",
- "unsigned-varint 0.7.2",
-]
-
-[[package]]
-name = "cid"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd94671561e36e4e7de75f753f577edafb0e7c05d6e4547229fdf7938fbcd2c3"
@@ -3035,7 +3022,6 @@ dependencies = [
  "aquamarine",
  "array-bytes",
  "assert_matches",
- "binary-merkle-tree",
  "bitflags 1.3.2",
  "docify",
  "environmental",
@@ -3051,13 +3037,11 @@ dependencies = [
  "scale-info",
  "serde",
  "serde_json",
- "smallvec",
  "sp-api",
  "sp-arithmetic",
  "sp-core 35.0.0",
  "sp-crypto-hashing",
  "sp-crypto-hashing-proc-macro",
- "sp-debug-derive 14.0.0",
  "sp-genesis-builder",
  "sp-inherents",
  "sp-io",
@@ -3068,9 +3052,7 @@ dependencies = [
  "sp-std 14.0.0",
  "sp-timestamp",
  "sp-tracing 17.0.1",
- "sp-trie",
  "sp-weights",
- "static_assertions",
  "tt-call",
 ]
 
@@ -5603,7 +5585,7 @@ dependencies = [
  "async-trait",
  "bs58",
  "bytes",
- "cid 0.10.1",
+ "cid",
  "ed25519-dalek",
  "futures",
  "futures-timer",
@@ -6005,14 +5987,10 @@ version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "835d6ff01d610179fbce3de1694d007e500bf33a7f29689838941d6bf783ae40"
 dependencies = [
- "blake2b_simd",
- "blake2s_simd",
- "blake3",
  "core2",
  "digest 0.10.7",
  "multihash-derive",
  "sha2 0.10.8",
- "sha3",
  "unsigned-varint 0.7.2",
 ]
 
@@ -8288,7 +8266,6 @@ dependencies = [
 name = "polkadot-sdk-frame"
 version = "0.8.0"
 dependencies = [
- "docify",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -10209,7 +10186,6 @@ dependencies = [
  "async-trait",
  "asynchronous-codec",
  "bytes",
- "cid 0.9.0",
  "criterion",
  "either",
  "fnv",
@@ -10226,8 +10202,6 @@ dependencies = [
  "parking_lot 0.12.3",
  "partial_sort",
  "pin-project",
- "prost 0.12.6",
- "prost-build",
  "rand",
  "sc-block-builder",
  "sc-client-api",
@@ -10268,16 +10242,9 @@ dependencies = [
 name = "sc-network-common"
 version = "0.47.0"
 dependencies = [
- "async-trait",
  "bitflags 1.3.2",
- "futures",
- "libp2p-identity",
  "parity-scale-codec",
  "prost-build",
- "sc-consensus",
- "sc-network-types",
- "sp-consensus",
- "sp-consensus-grandpa",
  "sp-runtime",
  "tempfile",
 ]
@@ -10334,7 +10301,6 @@ dependencies = [
  "async-trait",
  "fork-tree",
  "futures",
- "futures-timer",
  "log",
  "mockall",
  "parity-scale-codec",
@@ -10435,28 +10401,19 @@ dependencies = [
 name = "sc-offchain"
 version = "43.0.0"
 dependencies = [
- "array-bytes",
  "async-trait",
- "bytes",
- "fnv",
  "futures",
- "futures-timer",
- "log",
  "num_cpus",
- "once_cell",
  "parity-scale-codec",
  "parking_lot 0.12.3",
  "rand",
- "rustls 0.23.22",
  "sc-block-builder",
  "sc-client-api",
  "sc-client-db",
  "sc-network",
- "sc-network-common",
  "sc-network-types",
  "sc-transaction-pool",
  "sc-transaction-pool-api",
- "sc-utils",
  "sp-api",
  "sp-consensus",
  "sp-core 35.0.0",
