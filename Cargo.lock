@@ -10128,8 +10128,6 @@ version = "0.36.0"
 dependencies = [
  "anyhow",
  "cargo_metadata",
- "cfg-if",
- "libc",
  "log",
  "parity-scale-codec",
  "parking_lot 0.12.3",

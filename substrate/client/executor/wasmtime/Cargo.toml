@@ -17,8 +17,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 log = { workspace = true, default-features = true }
-cfg-if = { workspace = true }
-libc = { workspace = true }
 parking_lot = { workspace = true, default-features = true }
 
 # When bumping wasmtime do not forget to also bump rustix
@@ -39,12 +37,8 @@ sp-runtime-interface.default-features = true
 sp-wasm-interface = { features = ["wasmtime"], workspace = true, default-features = true }
 
 # Here we include the rustix crate in the exactly same semver-compatible version as used by
-# wasmtime and enable its 'use-libc' flag.
-#
-# By default rustix directly calls the appropriate syscalls completely bypassing libc;
-# this doesn't have any actual benefits for us besides making it harder to debug memory
-# problems (since then `mmap` etc. cannot be easily hooked into).
-rustix = { features = ["fs", "mm", "param", "std", "use-libc"], workspace = true }
+# wasmtime
+rustix = { features = ["mm", "param", "std"], workspace = true }
 
 [dev-dependencies]
 wat = { workspace = true }
