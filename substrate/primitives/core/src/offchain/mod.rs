@@ -93,95 +93,6 @@ impl From<StorageKind> for u32 {
 	}
 }
 
-/// Opaque type for offchain http requests.
-#[derive(
-	Clone, Copy, PartialEq, Eq, PartialOrd, Ord, RuntimeDebug, Encode, Decode, PassByInner,
-)]
-#[cfg_attr(feature = "std", derive(Hash))]
-pub struct HttpRequestId(pub u16);
-
-impl From<HttpRequestId> for u32 {
-	fn from(c: HttpRequestId) -> Self {
-		c.0 as u32
-	}
-}
-
-/// An error enum returned by some http methods.
-#[derive(Clone, Copy, PartialEq, Eq, RuntimeDebug, Encode, Decode, PassByEnum)]
-#[repr(C)]
-pub enum HttpError {
-	/// The requested action couldn't been completed within a deadline.
-	DeadlineReached = 1_isize,
-	/// There was an IO Error while processing the request.
-	IoError = 2_isize,
-	/// The ID of the request is invalid in this context.
-	Invalid = 3_isize,
-}
-
-impl TryFrom<u32> for HttpError {
-	type Error = ();
-
-	fn try_from(error: u32) -> Result<Self, Self::Error> {
-		match error {
-			e if e == HttpError::DeadlineReached as u8 as u32 => Ok(HttpError::DeadlineReached),
-			e if e == HttpError::IoError as u8 as u32 => Ok(HttpError::IoError),
-			e if e == HttpError::Invalid as u8 as u32 => Ok(HttpError::Invalid),
-			_ => Err(()),
-		}
-	}
-}
-
-impl From<HttpError> for u32 {
-	fn from(c: HttpError) -> Self {
-		c as u8 as u32
-	}
-}
-
-/// Status of the HTTP request
-#[derive(Clone, Copy, PartialEq, Eq, RuntimeDebug, Encode, Decode, PassByCodec)]
-pub enum HttpRequestStatus {
-	/// Deadline was reached while we waited for this request to finish.
-	///
-	/// Note the deadline is controlled by the calling part, it not necessarily
-	/// means that the request has timed out.
-	DeadlineReached,
-	/// An error has occurred during the request, for example a timeout or the
-	/// remote has closed our socket.
-	///
-	/// The request is now considered destroyed. To retry the request you need
-	/// to construct it again.
-	IoError,
-	/// The passed ID is invalid in this context.
-	Invalid,
-	/// The request has finished with given status code.
-	Finished(u16),
-}
-
-impl From<HttpRequestStatus> for u32 {
-	fn from(status: HttpRequestStatus) -> Self {
-		match status {
-			HttpRequestStatus::Invalid => 0,
-			HttpRequestStatus::DeadlineReached => 10,
-			HttpRequestStatus::IoError => 20,
-			HttpRequestStatus::Finished(code) => u32::from(code),
-		}
-	}
-}
-
-impl TryFrom<u32> for HttpRequestStatus {
-	type Error = ();
-
-	fn try_from(status: u32) -> Result<Self, Self::Error> {
-		match status {
-			0 => Ok(HttpRequestStatus::Invalid),
-			10 => Ok(HttpRequestStatus::DeadlineReached),
-			20 => Ok(HttpRequestStatus::IoError),
-			100..=999 => u16::try_from(status).map(HttpRequestStatus::Finished).map_err(|_| ()),
-			_ => Err(()),
-		}
-	}
-}
-
 /// A blob to hold information about the local node's network state
 /// without committing to its format.
 #[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, PassByCodec, TypeInfo)]
@@ -260,8 +171,6 @@ impl Timestamp {
 bitflags::bitflags! {
 	/// Execution context extra capabilities.
 	pub struct Capabilities: u32 {
-		/// External http calls.
-		const HTTP = 1 << 0;
 		/// Keystore access.
 		const KEYSTORE = 1 << 2;
 		/// Randomness source.
@@ -302,113 +211,6 @@ pub trait Externalities: Send {
 	/// Obviously fine in the off-chain worker context.
 	fn random_seed(&mut self) -> [u8; 32];
 
-	/// Initiates a http request given HTTP verb and the URL.
-	///
-	/// Meta is a future-reserved field containing additional, parity-scale-codec encoded
-	/// parameters. Returns the id of newly started request.
-	///
-	/// Returns an error if:
-	/// - No new request identifier could be allocated.
-	/// - The method or URI contain invalid characters.
-	fn http_request_start(
-		&mut self,
-		method: &str,
-		uri: &str,
-		meta: &[u8],
-	) -> Result<HttpRequestId, ()>;
-
-	/// Append header to the request.
-	///
-	/// Calling this function multiple times with the same header name continues appending new
-	/// headers. In other words, headers are never replaced.
-	///
-	/// Returns an error if:
-	/// - The request identifier is invalid.
-	/// - You have called `http_request_write_body` on that request.
-	/// - The name or value contain invalid characters.
-	///
-	/// An error doesn't poison the request, and you can continue as if the call had never been
-	/// made.
-	fn http_request_add_header(
-		&mut self,
-		request_id: HttpRequestId,
-		name: &str,
-		value: &str,
-	) -> Result<(), ()>;
-
-	/// Write a chunk of request body.
-	///
-	/// Calling this function with a non-empty slice may or may not start the
-	/// HTTP request. Calling this function with an empty chunks finalizes the
-	/// request and always starts it. It is no longer valid to write more data
-	/// afterwards.
-	/// Passing `None` as deadline blocks forever.
-	///
-	/// Returns an error if:
-	/// - The request identifier is invalid.
-	/// - `http_response_wait` has already been called on this request.
-	/// - The deadline is reached.
-	/// - An I/O error has happened, for example the remote has closed our request. The request is
-	///   then considered invalid.
-	fn http_request_write_body(
-		&mut self,
-		request_id: HttpRequestId,
-		chunk: &[u8],
-		deadline: Option<Timestamp>,
-	) -> Result<(), HttpError>;
-
-	/// Block and wait for the responses for given requests.
-	///
-	/// Returns a vector of request statuses (the len is the same as ids).
-	/// Note that if deadline is not provided the method will block indefinitely,
-	/// otherwise unready responses will produce `DeadlineReached` status.
-	///
-	/// If a response returns an `IoError`, it is then considered destroyed.
-	/// Its id is then invalid.
-	///
-	/// Passing `None` as deadline blocks forever.
-	fn http_response_wait(
-		&mut self,
-		ids: &[HttpRequestId],
-		deadline: Option<Timestamp>,
-	) -> Vec<HttpRequestStatus>;
-
-	/// Read all response headers.
-	///
-	/// Returns a vector of pairs `(HeaderKey, HeaderValue)`.
-	///
-	/// Dispatches the request if it hasn't been done yet. It is no longer
-	/// valid to modify the headers or write data to the request.
-	///
-	/// Returns an empty list if the identifier is unknown/invalid, hasn't
-	/// received a response, or has finished.
-	fn http_response_headers(&mut self, request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)>;
-
-	/// Read a chunk of body response to given buffer.
-	///
-	/// Dispatches the request if it hasn't been done yet. It is no longer
-	/// valid to modify the headers or write data to the request.
-	///
-	/// Returns the number of bytes written or an error in case a deadline
-	/// is reached or server closed the connection.
-	/// Passing `None` as a deadline blocks forever.
-	///
-	/// If `Ok(0)` or `Err(IoError)` is returned, the request is considered
-	/// destroyed. Doing another read or getting the response's headers, for
-	/// example, is then invalid.
-	///
-	/// Returns an error if:
-	/// - The request identifier is invalid.
-	/// - The deadline is reached.
-	/// - An I/O error has happened, for example the remote has closed our request. The request is
-	///   then considered invalid.
-	fn http_response_read_body(
-		&mut self,
-		request_id: HttpRequestId,
-		buffer: &mut [u8],
-		deadline: Option<Timestamp>,
-	) -> Result<usize, HttpError>;
-
 	/// Set the authorized nodes from runtime.
 	///
 	/// In a permissioned network, the connections between nodes need to reach a
@@ -441,54 +243,6 @@ impl<T: Externalities + ?Sized> Externalities for Box<T> {
 
 	fn random_seed(&mut self) -> [u8; 32] {
 		(&mut **self).random_seed()
-	}
-
-	fn http_request_start(
-		&mut self,
-		method: &str,
-		uri: &str,
-		meta: &[u8],
-	) -> Result<HttpRequestId, ()> {
-		(&mut **self).http_request_start(method, uri, meta)
-	}
-
-	fn http_request_add_header(
-		&mut self,
-		request_id: HttpRequestId,
-		name: &str,
-		value: &str,
-	) -> Result<(), ()> {
-		(&mut **self).http_request_add_header(request_id, name, value)
-	}
-
-	fn http_request_write_body(
-		&mut self,
-		request_id: HttpRequestId,
-		chunk: &[u8],
-		deadline: Option<Timestamp>,
-	) -> Result<(), HttpError> {
-		(&mut **self).http_request_write_body(request_id, chunk, deadline)
-	}
-
-	fn http_response_wait(
-		&mut self,
-		ids: &[HttpRequestId],
-		deadline: Option<Timestamp>,
-	) -> Vec<HttpRequestStatus> {
-		(&mut **self).http_response_wait(ids, deadline)
-	}
-
-	fn http_response_headers(&mut self, request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
-		(&mut **self).http_response_headers(request_id)
-	}
-
-	fn http_response_read_body(
-		&mut self,
-		request_id: HttpRequestId,
-		buffer: &mut [u8],
-		deadline: Option<Timestamp>,
-	) -> Result<usize, HttpError> {
-		(&mut **self).http_response_read_body(request_id, buffer, deadline)
 	}
 
 	fn set_authorized_nodes(&mut self, nodes: Vec<OpaquePeerId>, authorized_only: bool) {
@@ -542,60 +296,6 @@ impl<T: Externalities> Externalities for LimitedExternalities<T> {
 	fn random_seed(&mut self) -> [u8; 32] {
 		self.check(Capabilities::RANDOMNESS, "random_seed");
 		self.externalities.random_seed()
-	}
-
-	fn http_request_start(
-		&mut self,
-		method: &str,
-		uri: &str,
-		meta: &[u8],
-	) -> Result<HttpRequestId, ()> {
-		self.check(Capabilities::HTTP, "http_request_start");
-		self.externalities.http_request_start(method, uri, meta)
-	}
-
-	fn http_request_add_header(
-		&mut self,
-		request_id: HttpRequestId,
-		name: &str,
-		value: &str,
-	) -> Result<(), ()> {
-		self.check(Capabilities::HTTP, "http_request_add_header");
-		self.externalities.http_request_add_header(request_id, name, value)
-	}
-
-	fn http_request_write_body(
-		&mut self,
-		request_id: HttpRequestId,
-		chunk: &[u8],
-		deadline: Option<Timestamp>,
-	) -> Result<(), HttpError> {
-		self.check(Capabilities::HTTP, "http_request_write_body");
-		self.externalities.http_request_write_body(request_id, chunk, deadline)
-	}
-
-	fn http_response_wait(
-		&mut self,
-		ids: &[HttpRequestId],
-		deadline: Option<Timestamp>,
-	) -> Vec<HttpRequestStatus> {
-		self.check(Capabilities::HTTP, "http_response_wait");
-		self.externalities.http_response_wait(ids, deadline)
-	}
-
-	fn http_response_headers(&mut self, request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
-		self.check(Capabilities::HTTP, "http_response_headers");
-		self.externalities.http_response_headers(request_id)
-	}
-
-	fn http_response_read_body(
-		&mut self,
-		request_id: HttpRequestId,
-		buffer: &mut [u8],
-		deadline: Option<Timestamp>,
-	) -> Result<usize, HttpError> {
-		self.check(Capabilities::HTTP, "http_response_read_body");
-		self.externalities.http_response_read_body(request_id, buffer, deadline)
 	}
 
 	fn set_authorized_nodes(&mut self, nodes: Vec<OpaquePeerId>, authorized_only: bool) {

@@ -110,10 +110,6 @@ pub(super) fn keccak_512(bytes: Vec<u8>) -> TokenStream {
 	bytes_to_array(sp_crypto_hashing::keccak_512(bytes.as_slice()))
 }
 
-pub(super) fn sha2_256(bytes: Vec<u8>) -> TokenStream {
-	bytes_to_array(sp_crypto_hashing::sha2_256(bytes.as_slice()))
-}
-
 fn bytes_to_array(bytes: impl IntoIterator<Item = u8>) -> TokenStream {
 	let bytes = bytes.into_iter();
 

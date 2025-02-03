@@ -42,7 +42,7 @@ use sp_core::sr25519;
 #[cfg(not(feature = "std"))]
 use sp_io::{
 	crypto::sr25519_verify,
-	hashing::{blake2_128, blake2_256, sha2_256, twox_128, twox_256},
+	hashing::{blake2_128, blake2_256, twox_128, twox_256},
 	storage, wasm_tracing,
 };
 #[cfg(not(feature = "std"))]
@@ -164,10 +164,6 @@ sp_core::wasm_export_functions! {
 		blake2_128(&input).to_vec()
 	}
 
-	fn test_sha2_256(input: Vec<u8>) -> Vec<u8> {
-		sha2_256(&input).to_vec()
-	}
-
 	fn test_twox_256(input: Vec<u8>) -> Vec<u8> {
 		twox_256(&input).to_vec()
 	}
@@ -225,34 +221,6 @@ sp_core::wasm_export_functions! {
 		let res = sp_io::offchain::local_storage_compare_and_set(kind, b"test", None, b"value");
 		assert_eq!(res, true);
 		assert_eq!(sp_io::offchain::local_storage_get(kind, b"test"), Some(b"value".to_vec()));
-	}
-
-	fn test_offchain_http() -> bool {
-		use sp_core::offchain::HttpRequestStatus;
-		let run = || -> Option<()> {
-			let id = sp_io::offchain::http_request_start(
-				"POST",
-				"http://localhost:12345",
-				&[],
-			).ok()?;
-			sp_io::offchain::http_request_add_header(id, "X-Auth", "test").ok()?;
-			sp_io::offchain::http_request_write_body(id, &[1, 2, 3, 4], None).ok()?;
-			sp_io::offchain::http_request_write_body(id, &[], None).ok()?;
-			let status = sp_io::offchain::http_response_wait(&[id], None);
-			assert!(status == vec![HttpRequestStatus::Finished(200)], "Expected Finished(200) status.");
-			let headers = sp_io::offchain::http_response_headers(id);
-			assert_eq!(headers, vec![(b"X-Auth".to_vec(), b"hello".to_vec())]);
-			let mut buffer = vec![0; 64];
-			let read = sp_io::offchain::http_response_read_body(id, &mut buffer, None).ok()?;
-			assert_eq!(read, 3);
-			assert_eq!(&buffer[0..read as usize], &[1, 2, 3]);
-			let read = sp_io::offchain::http_response_read_body(id, &mut buffer, None).ok()?;
-			assert_eq!(read, 0);
-
-			Some(())
-		};
-
-		run().is_some()
 	}
 
 	fn test_enter_span() -> u64 {

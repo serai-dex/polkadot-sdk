@@ -598,7 +598,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 				)),
 				network_provider: Arc::new(network.clone()),
 				is_validator: role.is_authority(),
-				enable_http_requests: true,
 				custom_extensions: |_| vec![],
 			})?;
 		task_manager.spawn_handle().spawn(
@@ -917,11 +916,7 @@ mod tests {
 			crate::chain_spec::tests::integration_test_config_with_two_authorities(),
 			|config| {
 				let NewFullBase { task_manager, client, network, sync, transaction_pool, .. } =
-					new_full_base::<sc_network::NetworkWorker<_, _>>(
-						config,
-						false,
-						|_, _| (),
-					)?;
+					new_full_base::<sc_network::NetworkWorker<_, _>>(config, false, |_, _| ())?;
 				Ok(sc_service_test::TestNetComponents::new(
 					task_manager,
 					client,

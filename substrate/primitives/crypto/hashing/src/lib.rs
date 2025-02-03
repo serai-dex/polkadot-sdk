@@ -117,11 +117,6 @@ pub fn keccak_512(data: &[u8]) -> [u8; 64] {
 	sha3::Keccak512::digest(data).into()
 }
 
-/// Do a sha2 256-bit hash and return result.
-pub fn sha2_256(data: &[u8]) -> [u8; 32] {
-	sha2::Sha256::digest(data).into()
-}
-
 #[cfg(test)]
 mod test {
 	use super::*;
@@ -137,11 +132,6 @@ mod test {
 	fn keccak() {
 		assert_eq!(sp_crypto_hashing_proc_macro::keccak_256!(b"test"), keccak_256(b"test")[..]);
 		assert_eq!(sp_crypto_hashing_proc_macro::keccak_512!(b"test"), keccak_512(b"test")[..]);
-	}
-
-	#[test]
-	fn sha2() {
-		assert_eq!(sp_crypto_hashing_proc_macro::sha2_256!(b"test"), sha2_256(b"test")[..]);
 	}
 
 	#[test]

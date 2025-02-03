@@ -31,7 +31,7 @@ use sp_core::{
 	traits::Externalities,
 	Pair,
 };
-use sp_crypto_hashing::{blake2_128, blake2_256, sha2_256, twox_128, twox_256};
+use sp_crypto_hashing::{blake2_128, blake2_256, twox_128, twox_256};
 use sp_runtime::traits::BlakeTwo256;
 use sp_state_machine::TestExternalities as CoreTestExternalities;
 use sp_trie::{LayoutV1 as Layout, TrieConfiguration};
@@ -249,21 +249,6 @@ fn blake2_128_should_work(wasm_method: WasmExecutionMethod) {
 	);
 }
 
-test_wasm_execution!(sha2_256_should_work);
-fn sha2_256_should_work(wasm_method: WasmExecutionMethod) {
-	let mut ext = TestExternalities::default();
-	let mut ext = ext.ext();
-	assert_eq!(
-		call_in_wasm("test_sha2_256", &[0], wasm_method, &mut ext,).unwrap(),
-		sha2_256(b"").to_vec().encode(),
-	);
-	assert_eq!(
-		call_in_wasm("test_sha2_256", &b"Hello world!".to_vec().encode(), wasm_method, &mut ext,)
-			.unwrap(),
-		sha2_256(b"Hello world!").to_vec().encode(),
-	);
-}
-
 test_wasm_execution!(twox_256_should_work);
 fn twox_256_should_work(wasm_method: WasmExecutionMethod) {
 	let mut ext = TestExternalities::default();
@@ -357,28 +342,6 @@ fn offchain_local_storage_should_work(wasm_method: WasmExecutionMethod) {
 		true.encode(),
 	);
 	assert_eq!(state.read().persistent_storage.get(b"test"), Some(vec![]));
-}
-
-test_wasm_execution!(offchain_http_should_work);
-fn offchain_http_should_work(wasm_method: WasmExecutionMethod) {
-	let mut ext = TestExternalities::default();
-	let (offchain, state) = testing::TestOffchainExt::new();
-	ext.register_extension(OffchainWorkerExt::new(offchain));
-	state.write().expect_request(testing::PendingRequest {
-		method: "POST".into(),
-		uri: "http://localhost:12345".into(),
-		body: vec![1, 2, 3, 4],
-		headers: vec![("X-Auth".to_owned(), "test".to_owned())],
-		sent: true,
-		response: Some(vec![1, 2, 3]),
-		response_headers: vec![("X-Auth".to_owned(), "hello".to_owned())],
-		..Default::default()
-	});
-
-	assert_eq!(
-		call_in_wasm("test_offchain_http", &[0], wasm_method, &mut ext.ext(),).unwrap(),
-		true.encode(),
-	);
 }
 
 test_wasm_execution!(should_trap_when_heap_exhausted);

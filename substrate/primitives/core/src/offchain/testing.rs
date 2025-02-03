@@ -22,41 +22,14 @@
 
 use crate::{
 	offchain::{
-		self, storage::InMemOffchainStorage, HttpError, HttpRequestId as RequestId,
-		HttpRequestStatus as RequestStatus, OffchainOverlayedChange, OffchainStorage,
+		self, storage::InMemOffchainStorage, OffchainOverlayedChange, OffchainStorage,
 		OpaqueNetworkState, StorageKind, Timestamp, TransactionPool,
 	},
 	OpaquePeerId,
 };
-use std::{
-	collections::{BTreeMap, VecDeque},
-	sync::Arc,
-};
+use std::sync::Arc;
 
 use parking_lot::RwLock;
-
-/// Pending request.
-#[derive(Debug, Default, PartialEq, Eq)]
-pub struct PendingRequest {
-	/// HTTP method
-	pub method: String,
-	/// URI
-	pub uri: String,
-	/// Encoded Metadata
-	pub meta: Vec<u8>,
-	/// Request headers
-	pub headers: Vec<(String, String)>,
-	/// Request body
-	pub body: Vec<u8>,
-	/// Has the request been sent already.
-	pub sent: bool,
-	/// Response body
-	pub response: Option<Vec<u8>>,
-	/// Number of bytes already read from the response body.
-	pub read: usize,
-	/// Response headers
-	pub response_headers: Vec<(String, String)>,
-}
 
 /// Sharable "persistent" offchain storage for test.
 #[derive(Debug, Clone, Default)]
@@ -122,10 +95,6 @@ impl OffchainStorage for TestPersistentOffchainDB {
 /// This can be used in tests to respond or assert stuff about interactions.
 #[derive(Debug, Default)]
 pub struct OffchainState {
-	/// A list of pending requests.
-	pub requests: BTreeMap<RequestId, PendingRequest>,
-	// Queue of requests that the test is expected to perform (in order).
-	expected_requests: VecDeque<PendingRequest>,
 	/// Persistent local storage
 	pub persistent_storage: TestPersistentOffchainDB,
 	/// Local storage
@@ -134,59 +103,6 @@ pub struct OffchainState {
 	pub seed: [u8; 32],
 	/// A timestamp simulating the current time.
 	pub timestamp: Timestamp,
-}
-
-impl OffchainState {
-	/// Asserts that pending request has been submitted and fills it's response.
-	pub fn fulfill_pending_request(
-		&mut self,
-		id: u16,
-		expected: PendingRequest,
-		response: impl Into<Vec<u8>>,
-		response_headers: impl IntoIterator<Item = (String, String)>,
-	) {
-		match self.requests.get_mut(&RequestId(id)) {
-			None => {
-				panic!("Missing pending request: {:?}.\n\nAll: {:?}", id, self.requests);
-			},
-			Some(req) => {
-				assert_eq!(*req, expected);
-				req.response = Some(response.into());
-				req.response_headers = response_headers.into_iter().collect();
-			},
-		}
-	}
-
-	fn fulfill_expected(&mut self, id: u16) {
-		if let Some(mut req) = self.expected_requests.pop_back() {
-			let response = req.response.take().expect("Response checked when added.");
-			let headers = std::mem::take(&mut req.response_headers);
-			self.fulfill_pending_request(id, req, response, headers);
-		}
-	}
-
-	/// Add expected HTTP request.
-	///
-	/// This method can be used to initialize expected HTTP requests and their responses
-	/// before running the actual code that utilizes them (for instance before calling into
-	/// runtime). Expected request has to be fulfilled before this struct is dropped,
-	/// the `response` and `response_headers` fields will be used to return results to the callers.
-	/// Requests are expected to be performed in the insertion order.
-	pub fn expect_request(&mut self, expected: PendingRequest) {
-		if expected.response.is_none() {
-			panic!("Expected request needs to have a response.");
-		}
-		self.expected_requests.push_front(expected);
-	}
-}
-
-impl Drop for OffchainState {
-	fn drop(&mut self) {
-		// If we panic! while we are already in a panic, the test dies with an illegal instruction.
-		if !self.expected_requests.is_empty() && !std::thread::panicking() {
-			panic!("Unfulfilled expected requests: {:?}", self.expected_requests);
-		}
-	}
 }
 
 /// Implementation of offchain externalities used for tests.
@@ -230,124 +146,6 @@ impl offchain::Externalities for TestOffchainExt {
 
 	fn random_seed(&mut self) -> [u8; 32] {
 		self.0.read().seed
-	}
-
-	fn http_request_start(
-		&mut self,
-		method: &str,
-		uri: &str,
-		meta: &[u8],
-	) -> Result<RequestId, ()> {
-		let mut state = self.0.write();
-		let id = RequestId(state.requests.len() as u16);
-		state.requests.insert(
-			id,
-			PendingRequest {
-				method: method.into(),
-				uri: uri.into(),
-				meta: meta.into(),
-				..Default::default()
-			},
-		);
-		Ok(id)
-	}
-
-	fn http_request_add_header(
-		&mut self,
-		request_id: RequestId,
-		name: &str,
-		value: &str,
-	) -> Result<(), ()> {
-		let mut state = self.0.write();
-		if let Some(req) = state.requests.get_mut(&request_id) {
-			req.headers.push((name.into(), value.into()));
-			Ok(())
-		} else {
-			Err(())
-		}
-	}
-
-	fn http_request_write_body(
-		&mut self,
-		request_id: RequestId,
-		chunk: &[u8],
-		_deadline: Option<Timestamp>,
-	) -> Result<(), HttpError> {
-		let mut state = self.0.write();
-
-		let sent = {
-			let req = state.requests.get_mut(&request_id).ok_or(HttpError::IoError)?;
-			req.body.extend(chunk);
-			if chunk.is_empty() {
-				req.sent = true;
-			}
-			req.sent
-		};
-
-		if sent {
-			state.fulfill_expected(request_id.0);
-		}
-
-		Ok(())
-	}
-
-	fn http_response_wait(
-		&mut self,
-		ids: &[RequestId],
-		_deadline: Option<Timestamp>,
-	) -> Vec<RequestStatus> {
-		let state = self.0.read();
-
-		ids.iter()
-			.map(|id| match state.requests.get(id) {
-				Some(req) if req.response.is_none() => {
-					panic!("No `response` provided for request with id: {:?}", id)
-				},
-				None => RequestStatus::Invalid,
-				_ => RequestStatus::Finished(200),
-			})
-			.collect()
-	}
-
-	fn http_response_headers(&mut self, request_id: RequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
-		let state = self.0.read();
-		if let Some(req) = state.requests.get(&request_id) {
-			req.response_headers
-				.clone()
-				.into_iter()
-				.map(|(k, v)| (k.into_bytes(), v.into_bytes()))
-				.collect()
-		} else {
-			Default::default()
-		}
-	}
-
-	fn http_response_read_body(
-		&mut self,
-		request_id: RequestId,
-		buffer: &mut [u8],
-		_deadline: Option<Timestamp>,
-	) -> Result<usize, HttpError> {
-		let mut state = self.0.write();
-		if let Some(req) = state.requests.get_mut(&request_id) {
-			let response = req
-				.response
-				.as_mut()
-				.unwrap_or_else(|| panic!("No response provided for request: {:?}", request_id));
-
-			if req.read >= response.len() {
-				// Remove the pending request as per spec.
-				state.requests.remove(&request_id);
-				Ok(0)
-			} else {
-				let read = std::cmp::min(buffer.len(), response[req.read..].len());
-				buffer[0..read].copy_from_slice(&response[req.read..req.read + read]);
-				req.read += read;
-				Ok(read)
-			}
-		} else {
-			Err(HttpError::IoError)
-		}
 	}
 
 	fn set_authorized_nodes(&mut self, _nodes: Vec<OpaquePeerId>, _authorized_only: bool) {

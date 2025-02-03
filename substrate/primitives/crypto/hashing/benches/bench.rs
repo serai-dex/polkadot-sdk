@@ -43,12 +43,6 @@ fn bench_twox_256(b: &mut Bencher, buf: &Vec<u8>) {
 	});
 }
 
-fn bench_sha_256(b: &mut Bencher, buf: &Vec<u8>) {
-	b.iter(|| {
-		let _a = sp_crypto_hashing::sha2_256(black_box(buf));
-	});
-}
-
 fn bench_keccak_256(b: &mut Bencher, buf: &Vec<u8>) {
 	b.iter(|| {
 		let _a = sp_crypto_hashing::keccak_256(black_box(buf));
@@ -71,7 +65,6 @@ fn bench_hash(c: &mut Criterion) {
 		let size = 1 << i;
 		group.bench_with_input(BenchmarkId::new("blake2-256", size), &buf, bench_blake2_256);
 		group.bench_with_input(BenchmarkId::new("twox-256", size), &buf, bench_twox_256);
-		group.bench_with_input(BenchmarkId::new("sha-256", size), &buf, bench_sha_256);
 		group.bench_with_input(BenchmarkId::new("keccak-256", size), &buf, bench_keccak_256);
 	}
 	group.finish();

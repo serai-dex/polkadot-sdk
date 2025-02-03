@@ -19,7 +19,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 blake2b_simd = { workspace = true }
 byteorder = { workspace = true }
 digest = { workspace = true }
-sha2 = { workspace = true }
 sha3 = { workspace = true }
 twox-hash = { features = ["digest_0_10"], workspace = true }
 
@@ -40,7 +39,6 @@ std = [
 	"blake2b_simd/std",
 	"byteorder/std",
 	"digest/std",
-	"sha2/std",
 	"sha3/std",
 	"twox-hash/std",
 ]

@@ -11,6 +11,7 @@
 ./substrate/client/merkle-mountain-range
 ./substrate/client/mixnet
 ./substrate/client/network/statement
+./substrate/client/offchain/src/api/http.rs
 ./substrate/client/rpc/src/mixnet
 ./substrate/client/rpc/src/statement
 ./substrate/client/rpc-api/src/mixnet
@@ -70,5 +71,6 @@
 ./substrate/primitives/keyring/src/ed25519.rs
 ./substrate/primitives/merkle-mountain-range
 ./substrate/primitives/mixnet
+./substrate/primitives/runtime/src/offchain/http.rs
 ./substrate/primitives/statement-store
 ./templates/parachain
