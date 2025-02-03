@@ -508,8 +508,7 @@ pub mod pallet {
 		type RuntimeCall: Parameter
 			+ Dispatchable<RuntimeOrigin = Self::RuntimeOrigin>
 			+ Debug
-			+ GetDispatchInfo
-			+ From<Call<Self>>;
+			+ GetDispatchInfo;
 
 		/// The aggregated `RuntimeTask` type.
 		#[pallet::no_default_bounds]
@@ -1720,8 +1719,8 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Deposits an event into this block's event record.
-	pub fn deposit_event(event: impl Into<T::RuntimeEvent>) {
-		Self::deposit_event_indexed(&[], event.into());
+	pub fn deposit_event(event: impl TryInto<T::RuntimeEvent>) {
+		Self::deposit_event_indexed(&[], event);
 	}
 
 	/// Deposits an event into this block's event record adding this event
@@ -1729,7 +1728,9 @@ impl<T: Config> Pallet<T> {
 	///
 	/// This will update storage entries that correspond to the specified topics.
 	/// It is expected that light-clients could subscribe to this topics.
-	pub fn deposit_event_indexed(topics: &[T::Hash], event: T::RuntimeEvent) {
+	pub fn deposit_event_indexed(topics: &[T::Hash], event: impl TryInto<T::RuntimeEvent>) {
+		let Ok(event) = event.try_into() else { return };
+
 		let block_number = Self::block_number();
 
 		let phase = ExecutionPhase::<T>::get().unwrap_or_default();
