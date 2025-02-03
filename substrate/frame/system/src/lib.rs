@@ -1728,9 +1728,10 @@ impl<T: Config> Pallet<T> {
 		let event_idx = {
 			let old_event_count = EventCount::<T>::get();
 			let new_event_count = match old_event_count.checked_add(1) {
-				// We've reached the maximum number of events at this block, just
-				// don't do anything and leave the event_count unaltered.
-				None => return,
+				// We've reached the maximum number of events at this block
+				// This is an infeasible effective invariant, a panic to not silently drop if it's
+				// ever reached
+				None => panic!("reached explicit maximum number of events"),
 				Some(nc) => nc,
 			};
 			EventCount::<T>::put(new_event_count);
