@@ -18,21 +18,32 @@
 
 //! Substrate blockchain API.
 
-pub mod error;
+use codec::Encode;
+use sp_runtime::generic::SignedBlock;
 
+pub mod error;
 use error::Error;
+
 use jsonrpsee::proc_macros::rpc;
 use sp_rpc::{list::ListOrValue, number::NumberOrHex};
 
 #[rpc(client, server)]
-pub trait ChainApi<Number, Hash, Header, SignedBlock> {
+pub trait ChainApi<Number, Hash, Header, Block: Encode> {
 	/// Get header.
 	#[method(name = "chain_getHeader", blocking)]
 	fn header(&self, hash: Option<Hash>) -> Result<Option<Header>, Error>;
 
 	/// Get header and body of a block.
 	#[method(name = "chain_getBlock", blocking)]
-	fn block(&self, hash: Option<Hash>) -> Result<Option<SignedBlock>, Error>;
+	fn block(&self, hash: Option<Hash>) -> Result<Option<SignedBlock<Block>>, Error>;
+
+	/// Get a hex-encoded block.
+	#[method(name = "chain_getBlockBin", blocking)]
+	fn block_bin(&self, hash: Option<Hash>) -> Result<Option<String>, Error> {
+		self.block(hash).map(|option| {
+			option.map(|signed_block| sp_core::bytes::to_hex(&signed_block.block.encode(), false))
+		})
+	}
 
 	/// Get hash of the n-th block in the canon chain.
 	///
