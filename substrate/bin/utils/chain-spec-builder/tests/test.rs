@@ -234,7 +234,7 @@ fn test_add_code_substitute() {
 	assert_output_eq_expected(true, SUFFIX, "tests/expected/add_code_substitute.json");
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_create_default(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder -c "/dev/stdout" create -r $runtime_path default
@@ -252,7 +252,7 @@ fn create_default() {
 	);
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_display_default_preset(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder display-preset -r $runtime_path
@@ -270,7 +270,7 @@ fn display_default_preset() {
 	);
 }
 
-#[docify::export]
+// #[docify::export]
 fn cmd_display_preset(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder display-preset -r $runtime_path -p "staging"
@@ -288,7 +288,7 @@ fn display_preset() {
 	);
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_list_presets(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder list-presets -r $runtime_path
@@ -306,7 +306,7 @@ fn list_presets() {
 	);
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_create_with_named_preset(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder -c "/dev/stdout" create --relay-chain "dev" --para-id 1000 -r $runtime_path named-preset "staging"
@@ -324,7 +324,7 @@ fn create_with_named_preset() {
 	)
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_create_with_patch_raw(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder -c "/dev/stdout" create -s -r $runtime_path patch "tests/input/patch.json"
@@ -342,7 +342,7 @@ fn create_with_patch_raw() {
 	);
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_create_with_patch_plain(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder -c "/dev/stdout" create -r $runtime_path patch "tests/input/patch.json"
@@ -360,7 +360,7 @@ fn create_with_patch_plain() {
 	);
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_create_full_plain(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder -c "/dev/stdout" create -r $runtime_path full "tests/input/full.json"
@@ -378,7 +378,7 @@ fn create_full_plain() {
 	);
 }
 
-#[docify::export_content]
+// #[docify::export_content]
 fn cmd_create_full_raw(runtime_path: &str) -> String {
 	bash!(
 		chain-spec-builder -c "/dev/stdout" create -s -r $runtime_path full "tests/input/full.json"

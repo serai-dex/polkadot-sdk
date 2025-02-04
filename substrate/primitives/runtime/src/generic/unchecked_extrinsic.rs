@@ -437,7 +437,7 @@ where
 	}
 }
 
-#[docify::export(unchecked_extrinsic_encode_impl)]
+// #[docify::export(unchecked_extrinsic_encode_impl)]
 impl<Address, Call, Signature, Extension> Encode
 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
 where
@@ -672,7 +672,7 @@ mod legacy {
 		}
 	}
 
-	#[docify::export(unchecked_extrinsic_encode_impl)]
+	// #[docify::export(unchecked_extrinsic_encode_impl)]
 	impl<Address, Call, Signature, Extra> Encode
 		for UncheckedExtrinsicV4<Address, Call, Signature, Extra>
 	where

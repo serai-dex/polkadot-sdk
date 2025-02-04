@@ -118,8 +118,8 @@
 //! pub type Executive = executive::Executive<Runtime, Block, Context, Runtime, AllPalletsWithSystem, CustomOnRuntimeUpgrade>;
 //! ```
 
-#[cfg(doc)]
-#[cfg_attr(doc, aquamarine::aquamarine)]
+// #[cfg(doc)]
+// #[cfg_attr(doc, aquamarine::aquamarine)]
 /// # Block Execution
 ///
 /// These are the steps of block execution as done by [`Executive::execute_block`]. A block is

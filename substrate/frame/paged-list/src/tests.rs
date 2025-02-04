@@ -23,7 +23,7 @@
 use crate::{mock::*, *};
 use frame_support::storage::{StorageList, StoragePrefixedContainer};
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn append_one_works() {
 	test_closure(|| {
@@ -33,7 +33,7 @@ fn append_one_works() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn append_many_works() {
 	test_closure(|| {
@@ -43,7 +43,7 @@ fn append_many_works() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn appender_works() {
 	use frame_support::storage::StorageAppender;
@@ -58,7 +58,7 @@ fn appender_works() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn iter_works() {
 	test_closure(|| {
@@ -71,7 +71,7 @@ fn iter_works() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn drain_works() {
 	test_closure(|| {

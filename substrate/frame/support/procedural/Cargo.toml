@@ -19,7 +19,7 @@ proc-macro = true
 
 [dependencies]
 derive-syn-parse = { workspace = true }
-docify = { workspace = true }
+# docify = { workspace = true }
 Inflector = { workspace = true }
 cfg-expr = { workspace = true }
 itertools = { workspace = true }

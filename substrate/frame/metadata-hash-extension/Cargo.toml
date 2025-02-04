@@ -16,7 +16,7 @@ sp-runtime = { features = ["serde"], workspace = true }
 frame-support.workspace = true
 frame-system.workspace = true
 log = { workspace = true }
-docify = { workspace = true }
+# docify = { workspace = true }
 const-hex = { workspace = true }
 
 [dev-dependencies]

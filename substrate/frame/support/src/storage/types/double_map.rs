@@ -91,7 +91,7 @@ use sp_metadata_ir::{StorageEntryMetadataIR, StorageEntryTypeIR};
 /// When `Hasher1` and `Hasher2` implement the
 /// [`ReversibleStorageHasher`](frame_support::ReversibleStorageHasher) trait, the first key `k1`
 /// can be used to partially iterate over keys and values of the double map, and to delete items.
-#[doc = docify::embed!("src/storage/types/double_map.rs", example_double_map_partial_operations)]
+// #[doc = docify::embed!("src/storage/types/double_map.rs", example_double_map_partial_operations)]
 pub struct StorageDoubleMap<
 	Prefix,
 	Hasher1,
@@ -1061,7 +1061,7 @@ mod test {
 		})
 	}
 
-	#[docify::export]
+	// #[docify::export]
 	#[test]
 	fn example_double_map_partial_operations() {
 		type FooDoubleMap =

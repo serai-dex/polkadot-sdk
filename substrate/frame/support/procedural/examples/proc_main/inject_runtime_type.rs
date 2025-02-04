@@ -22,7 +22,7 @@ use crate::{derive_impl, pallet_prelude::inject_runtime_type};
 #[cfg(test)]
 use static_assertions::assert_type_eq_all;
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn derive_impl_works_with_runtime_type_injection() {
 	assert_type_eq_all!(<Runtime as Config>::RuntimeOrigin, super::RuntimeOrigin);
@@ -30,7 +30,7 @@ fn derive_impl_works_with_runtime_type_injection() {
 	assert_type_eq_all!(<Runtime as Config>::PalletInfo, super::PalletInfo);
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn derive_impl_works_with_no_aggregated_types() {
 	struct DummyRuntime;

@@ -24,7 +24,7 @@ frame-system.workspace = true
 sp-io.workspace = true
 sp-runtime.workspace = true
 
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [dev-dependencies]
 sp-core = { default-features = true, path = "../../primitives/core" }

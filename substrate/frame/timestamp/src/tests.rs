@@ -30,7 +30,7 @@ fn timestamp_works() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 #[should_panic(expected = "Timestamp must be updated only once in the block")]
 fn double_timestamp_should_fail() {
@@ -40,7 +40,7 @@ fn double_timestamp_should_fail() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 #[should_panic(
 	expected = "Timestamp must increment by at least <MinimumPeriod> between sequential blocks"

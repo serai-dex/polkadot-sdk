@@ -25,7 +25,7 @@ use frame_support_procedural::pallet_section;
 
 #[pallet_section]
 mod tasks_example {
-	#[docify::export(tasks_example)]
+	// #[docify::export(tasks_example)]
 	#[pallet::tasks_experimental]
 	impl<T: Config> Pallet<T> {
 		/// Add a pair of numbers into the totals and remove them.
@@ -44,7 +44,7 @@ mod tasks_example {
 	}
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn tasks_work() {
 	super::new_test_ext().execute_with(|| {

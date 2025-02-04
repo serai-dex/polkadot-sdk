@@ -98,13 +98,13 @@
 //!
 //! 1. You can make a privileged runtime call using `sudo` with an account that matches the sudo
 //!    key.
-#![doc = docify::embed!("src/tests.rs", sudo_basics)]
+// #![doc = docify::embed!("src/tests.rs", sudo_basics)]
 //!
 //! 2. Only an existing sudo key can set a new one.
-#![doc = docify::embed!("src/tests.rs", set_key_basics)]
+// #![doc = docify::embed!("src/tests.rs", set_key_basics)]
 //!
 //! 3. You can also make non-privileged calls using `sudo_as`.
-#![doc = docify::embed!("src/tests.rs", sudo_as_emits_events_correctly)]
+// #![doc = docify::embed!("src/tests.rs", sudo_as_emits_events_correctly)]
 //!
 //! ## Low Level / Implementation Details
 //!

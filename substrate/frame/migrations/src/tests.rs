@@ -25,7 +25,7 @@ use crate::{
 	Cursor, Event, FailedMigrationHandling, MigrationCursor,
 };
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn simple_works() {
 	use Event::*;

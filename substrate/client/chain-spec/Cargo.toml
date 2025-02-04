@@ -48,7 +48,7 @@ log = { workspace = true }
 sp-tracing.workspace = true
 sp-tracing.default-features = true
 array-bytes = { workspace = true, default-features = true }
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [dev-dependencies]
 substrate-test-runtime = { path = "../../test-utils/runtime" }

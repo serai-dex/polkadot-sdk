@@ -84,7 +84,7 @@ impl frame_system::Config for Runtime {
 	type Block = Block;
 }
 
-#[docify::export(runtime_macro)]
+// #[docify::export(runtime_macro)]
 #[crate::runtime]
 mod runtime {
 	// The main runtime

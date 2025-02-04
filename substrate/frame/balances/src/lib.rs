@@ -769,7 +769,8 @@ pub mod pallet {
 		/// Can only be called by root and always needs a positive `delta`.
 		///
 		/// # Example
-		#[doc = docify::embed!("./src/tests/dispatchable_tests.rs", force_adjust_total_issuance_example)]
+		// #[doc = docify::embed!("./src/tests/dispatchable_tests.rs",
+		// force_adjust_total_issuance_example)]
 		#[pallet::call_index(9)]
 		#[pallet::weight(T::WeightInfo::force_adjust_total_issuance())]
 		pub fn force_adjust_total_issuance(

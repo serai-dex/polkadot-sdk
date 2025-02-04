@@ -34,7 +34,7 @@ log = { optional = true, workspace = true, default-features = true }
 tracing = { workspace = true }
 tracing-core = { workspace = true }
 
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies]
 polkavm-derive = { workspace = true, optional = true }

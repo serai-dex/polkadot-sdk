@@ -52,13 +52,13 @@
 //! ```
 //!
 //! Pause specific all:
-#![doc = docify::embed!("src/tests.rs", can_pause_specific_call)]
+// #![doc = docify::embed!("src/tests.rs", can_pause_specific_call)]
 //!
 //! Unpause specific all:
-#![doc = docify::embed!("src/tests.rs", can_unpause_specific_call)]
+// #![doc = docify::embed!("src/tests.rs", can_unpause_specific_call)]
 //!
 //! Pause all calls in a pallet:
-#![doc = docify::embed!("src/tests.rs", can_pause_all_calls_in_pallet_except_on_whitelist)]
+// #![doc = docify::embed!("src/tests.rs", can_pause_all_calls_in_pallet_except_on_whitelist)]
 //!
 //! ## Low Level / Implementation Details
 //!

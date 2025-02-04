@@ -29,8 +29,8 @@ frame-election-provider-support.workspace = true
 
 # third party
 log = { workspace = true }
-docify = { workspace = true }
-aquamarine = { workspace = true }
+# docify = { workspace = true }
+# aquamarine = { workspace = true }
 frame-benchmarking = { optional = true, workspace = true }
 pallet-balances = { optional = true, workspace = true }
 sp-core = { optional = true, workspace = true }

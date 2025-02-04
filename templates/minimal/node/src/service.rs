@@ -31,7 +31,7 @@ use std::sync::Arc;
 
 type HostFunctions = sp_io::SubstrateHostFunctions;
 
-#[docify::export]
+// #[docify::export]
 pub(crate) type FullClient =
 	sc_service::TFullClient<Block, RuntimeApi, WasmExecutor<HostFunctions>>;
 

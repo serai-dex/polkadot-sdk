@@ -91,7 +91,7 @@ use sp_runtime::traits::Saturating;
 /// ```
 ///
 /// Using a counted map in action:
-#[doc = docify::embed!("src/storage/types/counted_map.rs", test_simple_count_works)]
+// #[doc = docify::embed!("src/storage/types/counted_map.rs", test_simple_count_works)]
 pub struct CountedStorageMap<
 	Prefix,
 	Hasher,
@@ -1230,7 +1230,7 @@ mod test {
 		);
 	}
 
-	#[docify::export]
+	// #[docify::export]
 	#[test]
 	fn test_simple_count_works() {
 		type FooCountedMap = CountedStorageMap<Prefix, Twox64Concat, u16, u32>;

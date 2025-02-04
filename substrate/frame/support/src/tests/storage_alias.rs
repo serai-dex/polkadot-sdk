@@ -99,7 +99,7 @@ fn storage_value_try_mutate_exists_should_work() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn verbatim_attribute() {
 	new_test_ext().execute_with(|| {
@@ -116,7 +116,7 @@ fn verbatim_attribute() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn pallet_name_attribute() {
 	new_test_ext().execute_with(|| {
@@ -134,7 +134,7 @@ fn pallet_name_attribute() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn dynamic_attribute() {
 	new_test_ext().execute_with(|| {
@@ -158,7 +158,7 @@ fn dynamic_attribute() {
 	});
 }
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn storage_alias_guess() {
 	new_test_ext().execute_with(|| {

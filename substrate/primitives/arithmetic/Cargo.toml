@@ -26,7 +26,7 @@ num-traits = { workspace = true }
 scale-info = { features = ["derive"], workspace = true }
 serde = { features = ["alloc", "derive"], optional = true, workspace = true }
 static_assertions = { workspace = true, default-features = true }
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true, default-features = true }

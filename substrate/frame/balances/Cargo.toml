@@ -23,7 +23,7 @@ frame-benchmarking = { optional = true, workspace = true }
 frame-support.workspace = true
 frame-system.workspace = true
 sp-runtime.workspace = true
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [dev-dependencies]
 pallet-transaction-payment = { default-features = true, path = "../transaction-payment" }

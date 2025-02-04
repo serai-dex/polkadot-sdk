@@ -43,7 +43,7 @@ sp-debug-derive.workspace = true
 sp-storage.workspace = true
 sp-externalities = { optional = true, workspace = true }
 futures = { optional = true, workspace = true }
-dyn-clonable = { optional = true, workspace = true }
+dyn-clone = { optional = true, workspace = true }
 thiserror = { optional = true, workspace = true }
 tracing = { optional = true, workspace = true, default-features = true }
 bitflags = { workspace = true }
@@ -80,7 +80,7 @@ std = [
 	"bounded-collections/std",
 	"bs58/std",
 	"codec/std",
-	"dyn-clonable",
+	"dyn-clone",
 	"full_crypto",
 	"futures",
 	"futures/thread-pool",

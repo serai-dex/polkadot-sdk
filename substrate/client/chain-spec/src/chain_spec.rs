@@ -902,7 +902,7 @@ mod tests {
 		json
 	}
 
-	#[docify::export]
+	// #[docify::export]
 	#[test]
 	fn build_chain_spec_with_patch_works() {
 		let output = ChainSpec::<()>::builder(

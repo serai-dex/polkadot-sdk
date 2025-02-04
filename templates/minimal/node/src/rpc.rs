@@ -39,7 +39,7 @@ pub struct FullDeps<C, P> {
 	pub pool: Arc<P>,
 }
 
-#[docify::export]
+// #[docify::export]
 /// Instantiate all full RPC extensions.
 pub fn create_full<C, P>(
 	deps: FullDeps<C, P>,

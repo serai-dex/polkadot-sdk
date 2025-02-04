@@ -185,7 +185,7 @@ pub trait StorageValue<T: FullCodec> {
 	/// ignored by this function.
 	///
 	/// # Example
-	#[doc = docify::embed!("src/storage/mod.rs", btree_set_decode_non_dedup_len)]
+	// #[doc = docify::embed!("src/storage/mod.rs", btree_set_decode_non_dedup_len)]
 	/// This demonstrates how `decode_non_dedup_len` will count even the duplicate values in the
 	/// storage (in this case, the number `4` is counted twice).
 	fn decode_non_dedup_len() -> Option<usize>
@@ -2205,7 +2205,7 @@ mod test {
 		});
 	}
 
-	#[docify::export]
+	// #[docify::export]
 	#[test]
 	fn btree_set_decode_non_dedup_len() {
 		#[crate::storage_alias]

@@ -22,7 +22,7 @@ use frame_election_provider_support::{SortedListProvider, VoteWeight};
 use list::Bag;
 use mock::{test_utils::*, *};
 
-#[docify::export]
+// #[docify::export]
 #[test]
 fn examples_work() {
 	ExtBuilder::default()

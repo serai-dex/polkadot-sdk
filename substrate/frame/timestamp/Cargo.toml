@@ -29,7 +29,7 @@ sp-runtime.workspace = true
 sp-storage.workspace = true
 sp-timestamp.workspace = true
 
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [dev-dependencies]
 sp-core = { default-features = true, path = "../../primitives/core" }

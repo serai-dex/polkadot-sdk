@@ -231,7 +231,7 @@ fn upgrade_accounts_should_work() {
 }
 
 #[test]
-#[docify::export]
+// #[docify::export]
 fn force_adjust_total_issuance_example() {
 	ExtBuilder::default().build_and_execute_with(|| {
 		// First we set the TotalIssuance to 64 by giving Alice a balance of 64.

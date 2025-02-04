@@ -14,7 +14,7 @@ build = "build.rs"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-docify = { workspace = true }
+# docify = { workspace = true }
 clap = { features = ["derive"], workspace = true }
 futures = { features = ["thread-pool"], workspace = true }
 futures-timer = { workspace = true }

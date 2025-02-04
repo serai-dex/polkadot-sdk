@@ -15,9 +15,9 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
-#![doc = include_str!("../README.md")]
-#[cfg(feature = "generate-readme")]
-docify::compile_markdown!("README.docify.md", "README.md");
+// #![doc = include_str!("../README.md")]
+// #[cfg(feature = "generate-readme")]
+// docify::compile_markdown!("README.docify.md", "README.md");
 
 use clap::{Parser, Subcommand};
 use sc_chain_spec::{

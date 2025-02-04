@@ -122,7 +122,7 @@ fn ensure_check_metadata_works_on_real_extrinsics() {
 mod docs {
 	use super::*;
 
-	#[docify::export]
+	// #[docify::export]
 	mod add_metadata_hash_extension {
 		frame_support::construct_runtime! {
 			pub enum Runtime {
@@ -164,7 +164,7 @@ mod docs {
 		type PalletInfo = add_metadata_hash_extension::PalletInfo;
 	}
 
-	#[docify::export]
+	// #[docify::export]
 	fn enable_metadata_hash_in_wasm_builder() {
 		substrate_wasm_builder::WasmBuilder::init_with_defaults()
 			// Requires the `metadata-hash` feature to be activated.

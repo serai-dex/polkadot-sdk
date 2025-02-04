@@ -28,7 +28,7 @@ sp-runtime = { features = ["serde"], workspace = true }
 sp-std.workspace = true
 sp-version = { features = ["serde"], workspace = true }
 sp-weights = { features = ["serde"], workspace = true }
-docify = { workspace = true }
+# docify = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true, default-features = true }

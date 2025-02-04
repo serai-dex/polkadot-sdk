@@ -18,7 +18,7 @@
 //! Decimal Fixed Point implementations for Substrate runtime.
 //! Similar to types that implement [`PerThing`](crate::per_things), these are also
 //! fixed-point types, however, they are able to represent larger fractions:
-#![doc = docify::embed!("./src/lib.rs", fixed_u64)]
+// #![doc = docify::embed!("./src/lib.rs", fixed_u64)]
 //!
 //! ### Fixed Point Types in Practice
 //!
@@ -26,10 +26,10 @@
 //! [`FixedU64`](FixedU64) (and its signed and `u128` counterparts) can be utilized.
 //! Take for example this very rudimentary pricing mechanism, where we wish to calculate the demand
 //! / supply to get a price for some on-chain compute:
-#![doc = docify::embed!(
-	"./src/lib.rs",
-	fixed_u64_block_computation_example
-)]
+// #![doc = docify::embed!(
+// 	"./src/lib.rs",
+// 	fixed_u64_block_computation_example
+// )]
 //!
 //! For a much more comprehensive example, be sure to look at the source for broker (the "coretime")
 //! pallet.
@@ -38,10 +38,10 @@
 //!
 //! Just as with [`PerThing`](PerThing), you can also perform regular mathematical
 //! expressions:
-#![doc = docify::embed!(
-	"./src/lib.rs",
-	fixed_u64_operation_example
-)]
+// #![doc = docify::embed!(
+// 	"./src/lib.rs",
+// 	fixed_u64_operation_example
+// )]
 //!
 
 use crate::{
