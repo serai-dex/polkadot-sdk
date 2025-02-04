@@ -364,7 +364,7 @@ futures-util = { version = "0.3.30", default-features = false }
 generate-bags = { path = "substrate/utils/frame/generate-bags", default-features = false, version = "39.0.0" }
 gethostname = { version = "1" }
 glob = { version = "0.3" }
-governor = { version = "0.6.0" }
+governor = { version = "0.8.0" }
 handlebars = { version = "5.1.0" }
 hash-db = { version = "0.16.0", default-features = false }
 hash256-std-hasher = { version = "0.15.2", default-features = false }
