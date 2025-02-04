@@ -7020,26 +7020,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-transaction-storage"
-version = "38.0.0"
-dependencies = [
- "array-bytes",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core",
- "sp-inherents",
- "sp-io",
- "sp-runtime",
- "sp-transaction-storage-proof",
-]
-
-[[package]]
 name = "pallet-tx-pause"
 version = "20.0.0"
 dependencies = [
@@ -7539,7 +7519,6 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc",
  "pallet-transaction-payment-rpc-runtime-api",
- "pallet-transaction-storage",
  "pallet-tx-pause",
  "pallet-uniques",
  "pallet-utility",
@@ -7638,7 +7617,6 @@ dependencies = [
  "sp-timestamp",
  "sp-tracing",
  "sp-transaction-pool",
- "sp-transaction-storage-proof",
  "sp-trie",
  "sp-version",
  "sp-version-proc-macro",
@@ -10024,7 +10002,6 @@ dependencies = [
  "sp-state-machine",
  "sp-storage",
  "sp-transaction-pool",
- "sp-transaction-storage-proof",
  "sp-trie",
  "sp-version",
  "static_init",
@@ -11764,19 +11741,6 @@ version = "35.0.0"
 dependencies = [
  "sp-api",
  "sp-runtime",
-]
-
-[[package]]
-name = "sp-transaction-storage-proof"
-version = "35.0.0"
-dependencies = [
- "async-trait",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-inherents",
- "sp-runtime",
- "sp-trie",
 ]
 
 [[package]]

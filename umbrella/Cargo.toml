@@ -70,7 +70,6 @@ std = [
 	"pallet-timestamp?/std",
 	"pallet-transaction-payment-rpc-runtime-api?/std",
 	"pallet-transaction-payment?/std",
-	"pallet-transaction-storage?/std",
 	"pallet-tx-pause?/std",
 	"pallet-uniques?/std",
 	"pallet-utility?/std",
@@ -112,7 +111,6 @@ std = [
 	"sp-timestamp?/std",
 	"sp-tracing?/std",
 	"sp-transaction-pool?/std",
-	"sp-transaction-storage-proof?/std",
 	"sp-trie?/std",
 	"sp-version?/std",
 	"sp-wasm-interface?/std",
@@ -166,7 +164,6 @@ runtime-benchmarks = [
 	"pallet-sudo?/runtime-benchmarks",
 	"pallet-timestamp?/runtime-benchmarks",
 	"pallet-transaction-payment?/runtime-benchmarks",
-	"pallet-transaction-storage?/runtime-benchmarks",
 	"pallet-tx-pause?/runtime-benchmarks",
 	"pallet-uniques?/runtime-benchmarks",
 	"pallet-utility?/runtime-benchmarks",
@@ -227,7 +224,6 @@ try-runtime = [
 	"pallet-sudo?/try-runtime",
 	"pallet-timestamp?/try-runtime",
 	"pallet-transaction-payment?/try-runtime",
-	"pallet-transaction-storage?/try-runtime",
 	"pallet-tx-pause?/try-runtime",
 	"pallet-uniques?/try-runtime",
 	"pallet-utility?/try-runtime",
@@ -244,7 +240,6 @@ serde = [
 	"pallet-remark?/serde",
 	"pallet-state-trie-migration?/serde",
 	"pallet-transaction-payment?/serde",
-	"pallet-transaction-storage?/serde",
 	"sp-application-crypto?/serde",
 	"sp-arithmetic?/serde",
 	"sp-authority-discovery?/serde",
@@ -274,7 +269,7 @@ with-tracing = [
 	"sp-tracing?/with-tracing",
 	"sp-tracing?/with-tracing",
 ]
-runtime-full = ["frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-transaction-storage", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-transaction-storage-proof", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
+runtime-full = ["frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
 runtime = [
 	"frame-benchmarking",
 	"frame-benchmarking-pallet-pov",
@@ -326,7 +321,6 @@ runtime = [
 	"sp-timestamp",
 	"sp-tracing",
 	"sp-transaction-pool",
-	"sp-transaction-storage-proof",
 	"sp-trie",
 	"sp-version",
 	"sp-version-proc-macro",
@@ -723,12 +717,6 @@ default-features = false
 optional = true
 version = "39.0.0"
 
-[dependencies.pallet-transaction-storage]
-path = "../substrate/frame/transaction-storage"
-default-features = false
-optional = true
-version = "38.0.0"
-
 [dependencies.pallet-tx-pause]
 path = "../substrate/frame/tx-pause"
 default-features = false
@@ -983,12 +971,6 @@ version = "17.0.1"
 
 [dependencies.sp-transaction-pool]
 path = "../substrate/primitives/transaction-pool"
-default-features = false
-optional = true
-version = "35.0.0"
-
-[dependencies.sp-transaction-storage-proof]
-path = "../substrate/primitives/transaction-storage-proof"
 default-features = false
 optional = true
 version = "35.0.0"

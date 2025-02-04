@@ -56,6 +56,7 @@
 ./substrate/frame/support/src/traits/proving.rs
 ./substrate/frame/support/src/traits/voting.rs
 ./substrate/frame/tips
+./substrate/frame/transaction-storage
 ./substrate/frame/treasury
 ./substrate/frame/vesting
 ./substrate/primitives/application-crypto/src/bandersnatch.rs
@@ -80,5 +81,6 @@
 ./substrate/primitives/runtime/src/offchain/http.rs
 ./substrate/primitives/runtime/src/proving_trie/base2.rs
 ./substrate/primitives/statement-store
+./substrate/primitives/transaction-storage-proof
 ./substrate/utils/binary-merkle-tree
 ./templates/parachain

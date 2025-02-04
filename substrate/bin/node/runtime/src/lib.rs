@@ -1323,19 +1323,6 @@ impl pallet_nfts::Config for Runtime {
 	type Locker = ();
 }
 
-impl pallet_transaction_storage::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type Currency = Balances;
-	type RuntimeHoldReason = RuntimeHoldReason;
-	type RuntimeCall = RuntimeCall;
-	type FeeDestination = ();
-	type WeightInfo = pallet_transaction_storage::weights::SubstrateWeight<Runtime>;
-	type MaxBlockTransactions =
-		ConstU32<{ pallet_transaction_storage::DEFAULT_MAX_BLOCK_TRANSACTIONS }>;
-	type MaxTransactionSize =
-		ConstU32<{ pallet_transaction_storage::DEFAULT_MAX_TRANSACTION_SIZE }>;
-}
-
 #[cfg(feature = "runtime-benchmarks")]
 pub struct VerifySignatureBenchmarkHelper;
 #[cfg(feature = "runtime-benchmarks")]
@@ -1543,9 +1530,6 @@ mod runtime {
 	#[runtime::pallet_index(48)]
 	pub type NftFractionalization = pallet_nft_fractionalization::Pallet<Runtime>;
 
-	#[runtime::pallet_index(51)]
-	pub type TransactionStorage = pallet_transaction_storage::Pallet<Runtime>;
-
 	#[runtime::pallet_index(52)]
 	pub type VoterList = pallet_bags_list::Pallet<Runtime, Instance1>;
 
@@ -1739,7 +1723,6 @@ mod benches {
 		[frame_system, SystemBench::<Runtime>]
 		[frame_system_extensions, SystemExtensionsBench::<Runtime>]
 		[pallet_timestamp, Timestamp]
-		[pallet_transaction_storage, TransactionStorage]
 		[pallet_asset_rate, AssetRate]
 		[pallet_uniques, Uniques]
 		[pallet_nfts, Nfts]

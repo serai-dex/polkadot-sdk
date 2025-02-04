@@ -283,10 +283,6 @@ pub use pallet_transaction_payment_rpc;
 #[cfg(feature = "pallet-transaction-payment-rpc-runtime-api")]
 pub use pallet_transaction_payment_rpc_runtime_api;
 
-/// Storage chain pallet.
-#[cfg(feature = "pallet-transaction-storage")]
-pub use pallet_transaction_storage;
-
 /// FRAME transaction pause pallet.
 #[cfg(feature = "pallet-tx-pause")]
 pub use pallet_tx_pause;
@@ -679,10 +675,6 @@ pub use sp_tracing;
 /// Transaction pool runtime facing API.
 #[cfg(feature = "sp-transaction-pool")]
 pub use sp_transaction_pool;
-
-/// Transaction storage proof primitives.
-#[cfg(feature = "sp-transaction-storage-proof")]
-pub use sp_transaction_storage_proof;
 
 /// Patricia trie stuff using a parity-scale-codec node format.
 #[cfg(feature = "sp-trie")]
