@@ -2425,7 +2425,7 @@ dependencies = [
  "substrate-test-runtime",
  "subxt",
  "subxt-signer",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "thousands",
 ]
 
@@ -6944,7 +6944,7 @@ dependencies = [
  "substrate-state-trie-migration-rpc",
  "thousands",
  "tokio",
- "zstd 0.12.4",
+ "zstd",
 ]
 
 [[package]]
@@ -8957,7 +8957,7 @@ dependencies = [
  "log",
  "sp-core",
  "sp-wasm-interface",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -8989,7 +8989,7 @@ dependencies = [
  "sp-tracing",
  "substrate-prometheus-endpoint",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9113,7 +9113,7 @@ dependencies = [
  "sp-tracing",
  "sp-version",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9142,7 +9142,7 @@ dependencies = [
  "sp-trie",
  "substrate-prometheus-endpoint",
  "substrate-test-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9199,7 +9199,7 @@ dependencies = [
  "sp-state-machine",
  "sp-test-primitives",
  "substrate-prometheus-endpoint",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9236,7 +9236,7 @@ dependencies = [
  "substrate-prometheus-endpoint",
  "substrate-test-runtime-client",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9278,7 +9278,7 @@ dependencies = [
  "sp-tracing",
  "substrate-prometheus-endpoint",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9306,7 +9306,7 @@ dependencies = [
  "sp-keystore",
  "sp-runtime",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9368,7 +9368,7 @@ dependencies = [
  "sp-tracing",
  "substrate-prometheus-endpoint",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9392,7 +9392,7 @@ dependencies = [
  "sp-keyring",
  "sp-runtime",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9430,7 +9430,7 @@ dependencies = [
  "substrate-prometheus-endpoint",
  "substrate-test-runtime-client",
  "substrate-test-runtime-transaction-pool",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -9455,7 +9455,7 @@ dependencies = [
  "sp-inherents",
  "sp-runtime",
  "substrate-prometheus-endpoint",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9528,7 +9528,7 @@ dependencies = [
  "sc-allocator",
  "sp-maybe-compressed-blob",
  "sp-wasm-interface",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "wasm-instrument",
 ]
 
@@ -9591,7 +9591,7 @@ dependencies = [
  "sp-core",
  "sp-keystore",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9645,7 +9645,7 @@ dependencies = [
  "substrate-test-runtime",
  "substrate-test-runtime-client",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tokio-stream",
  "tokio-test",
@@ -9707,7 +9707,7 @@ dependencies = [
  "sp-blockchain",
  "sp-core",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9744,7 +9744,7 @@ dependencies = [
  "sp-tracing",
  "substrate-prometheus-endpoint",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tokio-stream",
 ]
@@ -9813,7 +9813,7 @@ dependencies = [
  "multihash 0.18.1",
  "quickcheck",
  "rand",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "zeroize",
 ]
 
@@ -9909,7 +9909,7 @@ dependencies = [
  "sp-rpc",
  "sp-runtime",
  "sp-version",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -9974,7 +9974,7 @@ dependencies = [
  "substrate-test-runtime",
  "substrate-test-runtime-client",
  "substrate-test-runtime-transaction-pool",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tokio-stream",
 ]
@@ -10049,7 +10049,7 @@ dependencies = [
  "substrate-test-runtime",
  "substrate-test-runtime-client",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
  "tracing-futures",
@@ -10109,7 +10109,7 @@ dependencies = [
  "fs4",
  "log",
  "sp-core",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -10128,7 +10128,7 @@ dependencies = [
  "serde_json",
  "sp-blockchain",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -10167,7 +10167,7 @@ dependencies = [
  "sc-utils",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "wasm-timer",
 ]
 
@@ -10193,7 +10193,7 @@ dependencies = [
  "sp-rpc",
  "sp-runtime",
  "sp-tracing",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
  "tracing-log",
  "tracing-subscriber",
@@ -10242,7 +10242,7 @@ dependencies = [
  "substrate-test-runtime",
  "substrate-test-runtime-client",
  "substrate-test-runtime-transaction-pool",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tokio-stream",
 ]
@@ -10260,7 +10260,7 @@ dependencies = [
  "sp-blockchain",
  "sp-core",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -11116,7 +11116,7 @@ dependencies = [
  "sp-test-primitives",
  "sp-trie",
  "sp-version",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -11239,7 +11239,7 @@ dependencies = [
  "sp-database",
  "sp-runtime",
  "sp-state-machine",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
 ]
 
@@ -11255,7 +11255,7 @@ dependencies = [
  "sp-runtime",
  "sp-state-machine",
  "sp-test-primitives",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -11353,7 +11353,7 @@ dependencies = [
  "regex",
  "scale-info",
  "schnorrkel",
- "secrecy 0.8.0",
+ "secrecy 0.10.3",
  "serde",
  "serde_json",
  "sp-crypto-hashing",
@@ -11364,7 +11364,7 @@ dependencies = [
  "sp-storage",
  "ss58-registry",
  "substrate-bip39",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
  "zeroize",
 ]
@@ -11460,7 +11460,7 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -11509,8 +11509,8 @@ dependencies = [
 name = "sp-maybe-compressed-blob"
 version = "11.0.0"
 dependencies = [
- "thiserror 1.0.69",
- "zstd 0.12.4",
+ "thiserror 2.0.11",
+ "zstd",
 ]
 
 [[package]]
@@ -11602,7 +11602,7 @@ dependencies = [
  "substrate-test-runtime-client",
  "tracing",
  "tuplex",
- "zstd 0.12.4",
+ "zstd",
 ]
 
 [[package]]
@@ -11722,7 +11722,7 @@ dependencies = [
  "sp-panic-handler",
  "sp-runtime",
  "sp-trie",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
  "trie-db",
 ]
@@ -11762,7 +11762,7 @@ dependencies = [
  "parity-scale-codec",
  "sp-inherents",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -11814,7 +11814,7 @@ dependencies = [
  "sp-core",
  "sp-externalities",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
  "trie-bench",
  "trie-db",
@@ -11835,7 +11835,7 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "sp-version-proc-macro",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -12009,7 +12009,7 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -12197,7 +12197,7 @@ dependencies = [
  "hyper-util",
  "log",
  "prometheus",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -12340,7 +12340,7 @@ dependencies = [
  "sp-blockchain",
  "sp-runtime",
  "substrate-test-runtime-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -13848,7 +13848,7 @@ dependencies = [
  "sha2 0.10.8",
  "toml 0.8.19",
  "windows-sys 0.59.0",
- "zstd 0.13.2",
+ "zstd",
 ]
 
 [[package]]
@@ -14693,30 +14693,11 @@ dependencies = [
 
 [[package]]
 name = "zstd"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a27595e173641171fc74a1232b7b1c7a7cb6e18222c11e9dfb9888fa424c53c"
-dependencies = [
- "zstd-safe 6.0.6",
-]
-
-[[package]]
-name = "zstd"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fcf2b778a664581e31e389454a7072dab1647606d44f7feea22cd5abb9c9f3f9"
 dependencies = [
- "zstd-safe 7.2.1",
-]
-
-[[package]]
-name = "zstd-safe"
-version = "6.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee98ffd0b48ee95e6c5168188e44a54550b1564d9d530ee21d5f0eaed1069581"
-dependencies = [
- "libc",
- "zstd-sys",
+ "zstd-safe",
 ]
 
 [[package]]

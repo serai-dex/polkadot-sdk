@@ -797,10 +797,8 @@ impl alloc::str::FromStr for SecretUri {
 		let phrase = cap.phrase.unwrap_or(DEV_PHRASE);
 
 		Ok(Self {
-			phrase: SecretString::from_str(phrase).expect("Returns infallible error; qed"),
-			password: cap
-				.pass
-				.map(|v| SecretString::from_str(v).expect("Returns infallible error; qed")),
+			phrase: SecretString::from(phrase),
+			password: cap.pass.map(|v| SecretString::from(v)),
 			junctions: cap.paths.iter().map(DeriveJunction::from).collect::<Vec<_>>(),
 		})
 	}
@@ -930,8 +928,7 @@ pub trait Pair: CryptoType + Sized {
 	) -> Result<(Self, Option<Self::Seed>), SecretStringError> {
 		use alloc::str::FromStr;
 		let SecretUri { junctions, phrase, password } = SecretUri::from_str(s)?;
-		let password =
-			password_override.or_else(|| password.as_ref().map(|p| p.expose_secret().as_str()));
+		let password = password_override.or_else(|| password.as_ref().map(|p| p.expose_secret()));
 
 		let (root, seed) = if let Some(stripped) = phrase.expose_secret().strip_prefix("0x") {
 			array_bytes::hex2bytes(stripped)
@@ -947,7 +944,7 @@ pub trait Pair: CryptoType + Sized {
 				})
 				.ok_or(SecretStringError::InvalidSeed)?
 		} else {
-			Self::from_phrase(phrase.expose_secret().as_str(), password)
+			Self::from_phrase(phrase.expose_secret(), password)
 				.map_err(|_| SecretStringError::InvalidPhrase)?
 		};
 		root.derive(junctions.into_iter(), Some(seed))

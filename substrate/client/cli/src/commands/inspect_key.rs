@@ -133,10 +133,8 @@ fn expect_public_from_phrase<Pair: sp_core::Pair>(
 	};
 
 	let pair = Pair::from_string_with_seed(
-		secret_uri.phrase.expose_secret().as_str(),
-		password
-			.or_else(|| secret_uri.password.as_ref())
-			.map(|p| p.expose_secret().as_str()),
+		secret_uri.phrase.expose_secret(),
+		password.or_else(|| secret_uri.password.as_ref()).map(|p| p.expose_secret()),
 	)
 	.map_err(|_| format!("Invalid secret uri: {}", suri))?
 	.0;

@@ -59,18 +59,18 @@ pub struct KeystoreParams {
 }
 
 /// Parse a secret string, returning a displayable error.
-pub fn secret_string_from_str(s: &str) -> std::result::Result<SecretString, String> {
-	std::str::FromStr::from_str(s).map_err(|_| "Could not get SecretString".to_string())
+pub fn secret_string_from_str(s: &str) -> core::result::Result<SecretString, String> {
+	Ok(SecretString::from(s))
 }
 
 impl KeystoreParams {
 	/// Get the keystore configuration for the parameters
 	pub fn keystore_config(&self, config_dir: &Path) -> Result<KeystoreConfig> {
 		let password = if self.password_interactive {
-			Some(SecretString::new(input_keystore_password()?))
+			Some(SecretString::new(input_keystore_password()?.into()))
 		} else if let Some(ref file) = self.password_filename {
 			let password = fs::read_to_string(file).map_err(|e| format!("{}", e))?;
-			Some(SecretString::new(password))
+			Some(SecretString::new(password.into()))
 		} else {
 			self.password.clone()
 		};
@@ -89,7 +89,7 @@ impl KeystoreParams {
 
 		let pass = if password_interactive {
 			let password = rpassword::prompt_password("Key password: ")?;
-			Some(SecretString::new(password))
+			Some(SecretString::new(password.into()))
 		} else {
 			password
 		};

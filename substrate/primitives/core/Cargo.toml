@@ -35,7 +35,7 @@ bip39 = { package = "parity-bip39", version = "2.0.1", default-features = false,
 	"alloc",
 ] }
 zeroize = { workspace = true }
-secrecy = { features = ["alloc"], workspace = true }
+secrecy = { workspace = true }
 parking_lot = { optional = true, workspace = true, default-features = true }
 ss58-registry = { workspace = true }
 sp-std.workspace = true
@@ -91,8 +91,6 @@ std = [
 	"log/std",
 	"merlin/std",
 	"parking_lot",
-	"primitive-types/byteorder",
-	"primitive-types/rustc-hex",
 	"primitive-types/serde",
 	"primitive-types/std",
 	"rand",

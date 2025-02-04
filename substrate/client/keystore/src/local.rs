@@ -235,7 +235,7 @@ impl KeystoreInner {
 
 	/// Get the password for this store.
 	fn password(&self) -> Option<&str> {
-		self.password.as_ref().map(|p| p.expose_secret()).map(|p| p.as_str())
+		self.password.as_ref().map(|p| p.expose_secret())
 	}
 
 	/// Create a new in-memory store.

@@ -391,7 +391,6 @@ kvdb = { version = "0.13.0" }
 kvdb-memorydb = { version = "0.13.0" }
 kvdb-rocksdb = { version = "0.19.0" }
 kvdb-shared-tests = { version = "0.11.0" }
-landlock = { version = "0.3.0" }
 libc = { version = "0.2.155" }
 libfuzzer-sys = { version = "0.4" }
 libp2p = { version = "0.54.1" }
@@ -588,7 +587,7 @@ scale-info = { version = "2.11.1", default-features = false }
 schemars = { version = "0.8.13", default-features = false }
 schnellru = { version = "0.2.3" }
 schnorrkel = { version = "0.11.4", default-features = false }
-secrecy = { version = "0.8.0", default-features = false }
+secrecy = { version = "0.10", default-features = false }
 serde = { version = "1.0.214", default-features = false }
 serde_derive = { version = "1.0.117" }
 serde_json = { version = "1.0.132", default-features = false }
@@ -674,7 +673,7 @@ syn = { version = "2.0.87" }
 tar = { version = "0.4" }
 tempfile = { version = "3.8.1" }
 test-pallet = { path = "substrate/frame/support/test/pallet", default-features = false, package = "frame-support-test-pallet", version = "4.0.0" }
-thiserror = { version = "1.0.64" }
+thiserror = { version = "2" }
 thousands = { version = "0.2.0" }
 threadpool = { version = "1.7" }
 time = { version = "0.3" }
@@ -712,7 +711,7 @@ wasmtime = { version = "29.0.1", default-features = false }
 wat = { version = "1.0.0" }
 zeroize = { version = "1.7.0", default-features = false }
 zombienet-sdk = { version = "0.2.13" }
-zstd = { version = "0.12.4", default-features = false }
+zstd = { version = "0.13", default-features = false }
 
 [profile.release]
 # Polkadot runtime requires unwinding.
