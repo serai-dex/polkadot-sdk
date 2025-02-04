@@ -529,7 +529,7 @@ pub mod derive {
 
 pub mod hashing {
 	pub use sp_core::{hashing::*, H160, H256, H512, U256, U512};
-	pub use sp_runtime::traits::{BlakeTwo256, Hash, Keccak256};
+	pub use sp_runtime::traits::{BlakeTwo256, Hash};
 }
 
 /// Access to all of the dependencies of this crate. In case the prelude re-exports are not enough,

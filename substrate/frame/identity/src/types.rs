@@ -51,12 +51,6 @@ pub enum Data {
 	/// Only the SHA2-256 hash of the data is stored. The preimage of the hash may be retrieved
 	/// through some hash-lookup service.
 	Sha256([u8; 32]),
-	/// Only the Keccak-256 hash of the data is stored. The preimage of the hash may be retrieved
-	/// through some hash-lookup service.
-	Keccak256([u8; 32]),
-	/// Only the SHA3-256 hash of the data is stored. The preimage of the hash may be retrieved
-	/// through some hash-lookup service.
-	ShaThree256([u8; 32]),
 }
 
 impl Data {
@@ -79,8 +73,6 @@ impl Decode for Data {
 			},
 			34 => Data::BlakeTwo256(<[u8; 32]>::decode(input)?),
 			35 => Data::Sha256(<[u8; 32]>::decode(input)?),
-			36 => Data::Keccak256(<[u8; 32]>::decode(input)?),
-			37 => Data::ShaThree256(<[u8; 32]>::decode(input)?),
 			_ => return Err(codec::Error::from("invalid leading byte")),
 		})
 	}
@@ -98,8 +90,6 @@ impl Encode for Data {
 			},
 			Data::BlakeTwo256(ref h) => once(34u8).chain(h.iter().cloned()).collect(),
 			Data::Sha256(ref h) => once(35u8).chain(h.iter().cloned()).collect(),
-			Data::Keccak256(ref h) => once(36u8).chain(h.iter().cloned()).collect(),
-			Data::ShaThree256(ref h) => once(37u8).chain(h.iter().cloned()).collect(),
 		}
 	}
 }
@@ -168,12 +158,6 @@ impl TypeInfo for Data {
 			})
 			.variant("Sha256", |v| {
 				v.index(35).fields(Fields::unnamed().field(|f| f.ty::<[u8; 32]>()))
-			})
-			.variant("Keccak256", |v| {
-				v.index(36).fields(Fields::unnamed().field(|f| f.ty::<[u8; 32]>()))
-			})
-			.variant("ShaThree256", |v| {
-				v.index(37).fields(Fields::unnamed().field(|f| f.ty::<[u8; 32]>()))
 			});
 
 		Type::builder().path(Path::new("Data", module_path!())).variant(variants)
@@ -381,8 +365,6 @@ mod tests {
 				Data::None => "None".to_string(),
 				Data::BlakeTwo256(_) => "BlakeTwo256".to_string(),
 				Data::Sha256(_) => "Sha256".to_string(),
-				Data::Keccak256(_) => "Keccak256".to_string(),
-				Data::ShaThree256(_) => "ShaThree256".to_string(),
 				Data::Raw(bytes) => format!("Raw{}", bytes.len()),
 			};
 			if let scale_info::TypeDef::Variant(variant) = &type_info.type_def {
@@ -417,8 +399,6 @@ mod tests {
 			Data::None,
 			Data::BlakeTwo256(Default::default()),
 			Data::Sha256(Default::default()),
-			Data::Keccak256(Default::default()),
-			Data::ShaThree256(Default::default()),
 		];
 
 		// A Raw instance for all possible sizes of the Raw data

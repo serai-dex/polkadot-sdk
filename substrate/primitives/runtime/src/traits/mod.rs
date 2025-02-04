@@ -1026,33 +1026,6 @@ impl Hash for BlakeTwo256 {
 	}
 }
 
-/// Keccak-256 Hash implementation.
-#[derive(PartialEq, Eq, Clone, RuntimeDebug, TypeInfo)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Keccak256;
-
-impl Hasher for Keccak256 {
-	type Out = sp_core::H256;
-	type StdHasher = hash256_std_hasher::Hash256StdHasher;
-	const LENGTH: usize = 32;
-
-	fn hash(s: &[u8]) -> Self::Out {
-		sp_io::hashing::keccak_256(s).into()
-	}
-}
-
-impl Hash for Keccak256 {
-	type Output = sp_core::H256;
-
-	fn ordered_trie_root(input: Vec<Vec<u8>>, version: StateVersion) -> Self::Output {
-		sp_io::trie::keccak_256_ordered_root(input, version)
-	}
-
-	fn trie_root(input: Vec<(Vec<u8>, Vec<u8>)>, version: StateVersion) -> Self::Output {
-		sp_io::trie::keccak_256_root(input, version)
-	}
-}
-
 /// Something that can be checked for equality and printed out to a debug channel if bad.
 pub trait CheckEqual {
 	/// Perform the equality check.

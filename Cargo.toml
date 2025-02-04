@@ -216,7 +216,6 @@ members = [
 	"substrate/test-utils/runtime",
 	"substrate/test-utils/runtime/client",
 	"substrate/test-utils/runtime/transaction-pool",
-	"substrate/utils/binary-merkle-tree",
 	"substrate/utils/build-script-utils",
 	"substrate/utils/fork-tree",
 	"substrate/utils/frame/benchmarking-cli",
@@ -295,10 +294,7 @@ assert_matches = { version = "1.5.0" }
 async-channel = { version = "1.8.0" }
 async-trait = { version = "0.1.79" }
 asynchronous-codec = { version = "0.6" }
-backoff = { version = "0.4" }
 backtrace = { version = "0.3.71" }
-binary-merkle-tree = { path = "substrate/utils/binary-merkle-tree", default-features = false, version = "16.0.0" }
-bincode = { version = "1.3.3" }
 bip39 = { version = "2.0.0" }
 bitflags = { version = "1.3.2" }
 bitvec = { version = "1.0.1", default-features = false }
@@ -316,34 +312,28 @@ cfg-if = { version = "1.0" }
 chain-spec-builder = { path = "substrate/bin/utils/chain-spec-builder", default-features = false, package = "staging-chain-spec-builder", version = "9.0.0" }
 chrono = { version = "0.4.31" }
 clap = { version = "4.5.13" }
-clap-num = { version = "1.0.2" }
 clap_complete = { version = "4.5.13" }
 cmd_lib = { version = "1.9.5" }
-coarsetime = { version = "0.1.22" }
 codec = { version = "3.6.12", default-features = false, package = "parity-scale-codec" }
 comfy-table = { version = "7.1.0", default-features = false }
 console = { version = "0.15.8" }
 const-hex = { version = "1.10.0", default-features = false }
 criterion = { version = "0.5.1", default-features = false }
 curve25519-dalek = { version = "4.1.3" }
-derivative = { version = "2.2.0", default-features = false }
 derive-syn-parse = { version = "0.2.0" }
 derive_more = { version = "0.99.17", default-features = false }
 digest = { version = "0.10.3", default-features = false }
 directories = { version = "5.0.1" }
-dlmalloc = { version = "0.2.4" }
 docify = { version = "0.2.9" }
 dyn-clonable = { version = "0.9.0" }
 dyn-clone = { version = "1.0.16" }
 ed25519-dalek = { version = "2.1", default-features = false }
 either = { version = "1.8.1", default-features = false }
 enumflags2 = { version = "0.7.7" }
-enumn = { version = "0.1.13" }
 env_logger = { version = "0.11.2" }
 environmental = { version = "1.1.4", default-features = false }
 exit-future = { version = "0.2.0" }
 expander = { version = "2.0.0" }
-fatality = { version = "0.1.1" }
 fdlimit = { version = "0.3.0" }
 finality-grandpa = { version = "0.16.2", default-features = false }
 flate2 = { version = "1.0" }
@@ -372,7 +362,6 @@ frame-try-runtime = { path = "substrate/frame/try-runtime", default-features = f
 fs4 = { version = "0.12.0" }
 fs_extra = { version = "1.3.0" }
 futures = { version = "0.3.31" }
-futures-channel = { version = "0.3.23" }
 futures-timer = { version = "3.0.2" }
 futures-util = { version = "0.3.30", default-features = false }
 generate-bags = { path = "substrate/utils/frame/generate-bags", default-features = false, version = "39.0.0" }
@@ -384,14 +373,11 @@ hash-db = { version = "0.16.0", default-features = false }
 hash256-std-hasher = { version = "0.15.2", default-features = false }
 hex = { version = "0.4.3", default-features = false }
 hex-literal = { version = "0.4.1", default-features = false }
-hkdf = { version = "0.12.0" }
 hmac = { version = "0.12.1" }
 honggfuzz = { version = "0.5.55" }
 http = { version = "1.1" }
-http-body = { version = "1", default-features = false }
 http-body-util = { version = "0.1.2", default-features = false }
 hyper = { version = "1.3.1", default-features = false }
-hyper-rustls = { version = "0.27.3", default-features = false, features = ["http1", "http2", "logging", "ring", "rustls-native-certs", "tls12"] }
 hyper-util = { version = "0.1.5", default-features = false }
 impl-serde = { version = "0.5.0", default-features = false }
 impl-trait-for-tuples = { version = "0.2.2" }
@@ -399,13 +385,8 @@ indexmap = { version = "2.0.0" }
 indicatif = { version = "0.17.7" }
 integer-sqrt = { version = "0.1.2" }
 ip_network = { version = "0.4.1" }
-is-terminal = { version = "0.4.9" }
-is_executable = { version = "1.0.1" }
-isahc = { version = "1.2" }
 itertools = { version = "0.13" }
-jemalloc_pprof = { version = "0.4" }
 jobserver = { version = "0.1.26" }
-jsonpath_lib = { version = "0.3" }
 jsonrpsee = { version = "0.24.3" }
 jsonrpsee-core = { version = "0.24.3" }
 kitchensink-runtime = { path = "substrate/bin/node/runtime", version = "3.0.0" }
@@ -418,26 +399,21 @@ libc = { version = "0.2.155" }
 libfuzzer-sys = { version = "0.4" }
 libp2p = { version = "0.52.4" }
 libp2p-identity = { version = "0.2.9" }
-libsecp256k1 = { version = "0.7.0", default-features = false }
 linked-hash-map = { version = "0.5.4" }
 linked_hash_set = { version = "0.1.4" }
 linregress = { version = "0.5.1" }
-lite-json = { version = "0.2.0", default-features = false }
 litep2p = { version = "0.9.0", features = ["websocket"] }
 log = { version = "0.4.22", default-features = false }
 macro_magic = { version = "0.5.1" }
-maplit = { version = "1.0.2" }
 memmap2 = { version = "0.9.3" }
 memory-db = { version = "0.32.0", default-features = false }
 merkleized-metadata = { version = "0.2.0" }
 merlin = { version = "3.0", default-features = false }
-metered = { version = "0.6.1", default-features = false, package = "prioritized-metered-channel" }
 minimal-template-node = { path = "templates/minimal/node" }
 minimal-template-runtime = { path = "templates/minimal/runtime", version = "0.1.0" }
 mockall = { version = "0.13.1" }
 multiaddr = { version = "0.18.1" }
 multihash = { version = "0.19.1", default-features = false }
-multihash-codetable = { version = "0.1.1" }
 multistream-select = { version = "0.13.0" }
 names = { version = "0.14.0", default-features = false }
 nix = { version = "0.28.0" }
@@ -453,7 +429,6 @@ num-rational = { version = "0.4.1" }
 num-traits = { version = "0.2.17", default-features = false }
 num_cpus = { version = "1.13.1" }
 once_cell = { version = "1.19.0" }
-orchestra = { version = "0.4.0", default-features = false }
 pallet-asset-conversion = { path = "substrate/frame/asset-conversion", default-features = false, version = "21.0.0" }
 pallet-asset-conversion-ops = { path = "substrate/frame/asset-conversion/ops", default-features = false, version = "0.7.0" }
 pallet-asset-conversion-tx-payment = { path = "substrate/frame/transaction-payment/asset-conversion-tx-payment", default-features = false, version = "21.0.0" }
@@ -519,7 +494,6 @@ pallet-utility = { path = "substrate/frame/utility", default-features = false, v
 pallet-verify-signature = { path = "substrate/frame/verify-signature", default-features = false }
 pallet-whitelist = { path = "substrate/frame/whitelist", default-features = false, version = "38.0.0" }
 parachain-template-runtime = { path = "templates/parachain/runtime", version = "0.1.0" }
-parity-bytes = { version = "0.1.2", default-features = false }
 parity-db = { version = "0.4.12" }
 parity-wasm = { version = "0.45.0" }
 parking_lot = { version = "0.12.1", default-features = false }
@@ -532,7 +506,6 @@ polkadot-sdk = { path = "umbrella", default-features = false, version = "0.10.1"
 polkavm = { version = "0.9.3", default-features = false }
 polkavm-derive = "0.9.1"
 polkavm-linker = "0.9.2"
-portpicker = { version = "0.1.1" }
 pretty_assertions = { version = "1.3.0" }
 primitive-types = { version = "0.13.1", default-features = false, features = [
 	"num-traits",
@@ -540,13 +513,10 @@ primitive-types = { version = "0.13.1", default-features = false, features = [
 proc-macro-crate = { version = "3.0.0" }
 proc-macro-warning = { version = "1.0.0", default-features = false }
 proc-macro2 = { version = "1.0.86" }
-procfs = { version = "0.16.0" }
 prometheus = { version = "0.13.0", default-features = false }
 prometheus-endpoint = { path = "substrate/utils/prometheus", default-features = false, package = "substrate-prometheus-endpoint", version = "0.17.1" }
-prometheus-parse = { version = "0.2.2" }
 prost = { version = "0.13" }
 prost-build = { version = "0.13.2" }
-quick_cache = { version = "0.3" }
 quickcheck = { version = "1.0.3", default-features = false }
 quote = { version = "1.0.37" }
 rand = { version = "0.8.5", default-features = false }
@@ -554,18 +524,13 @@ rand_chacha = { version = "0.3.1", default-features = false }
 rand_core = { version = "0.6.2" }
 rand_distr = { version = "0.4.3" }
 rand_pcg = { version = "0.3.1" }
-rayon = { version = "1.5.1" }
-rbtag = { version = "0.3" }
 ref-cast = { version = "1.0.23" }
 regex = { version = "1.10.2" }
 remote-externalities = { path = "substrate/utils/frame/remote-externalities", default-features = false, package = "frame-remote-externalities", version = "0.49.0" }
-rlp = { version = "0.6.1", default-features = false }
 rpassword = { version = "7.0.0" }
-rstest = { version = "0.18.2" }
 rustc-hash = { version = "1.1.0" }
 rustc-hex = { version = "2.1.0", default-features = false }
 rustix = { version = "0.38.31", default-features = false }
-rustls = { version = "0.23.14", default-features = false, features = ["logging", "ring", "std", "tls12"] }
 rustversion = { version = "1.0.17" }
 rusty-fork = { version = "0.3.0", default-features = false }
 safe-mix = { version = "1.0", default-features = false }
@@ -625,19 +590,12 @@ scale-info = { version = "2.11.1", default-features = false }
 schemars = { version = "0.8.13", default-features = false }
 schnellru = { version = "0.2.3" }
 schnorrkel = { version = "0.11.4", default-features = false }
-seccompiler = { version = "0.4.0" }
 secrecy = { version = "0.8.0", default-features = false }
-separator = { version = "0.4.1" }
 serde = { version = "1.0.214", default-features = false }
-serde-big-array = { version = "0.3.2" }
 serde_derive = { version = "1.0.117" }
 serde_json = { version = "1.0.132", default-features = false }
-serde_yaml = { version = "0.9" }
-sha1 = { version = "0.10.6" }
 sha2 = { version = "0.10.7", default-features = false }
-sha3 = { version = "0.10.0", default-features = false }
 shlex = { version = "1.3.0" }
-slotmap = { version = "1.0" }
 smallvec = { version = "1.11.0", default-features = false }
 soketto = { version = "0.8.0" }
 solochain-template-runtime = { path = "templates/solochain/runtime", version = "0.1.0" }
@@ -695,11 +653,8 @@ sp-wasm-interface = { path = "substrate/primitives/wasm-interface", default-feat
 sp-weights = { path = "substrate/primitives/weights", default-features = false, version = "31.0.0" }
 spinners = { version = "4.1.1" }
 ss58-registry = { version = "1.34.0", default-features = false }
-ssz_rs = { version = "0.9.0", default-features = false }
-ssz_rs_derive = { version = "0.9.0", default-features = false }
 static_assertions = { version = "1.1.0", default-features = false }
 static_init = { version = "1.0.3" }
-structopt = { version = "0.3" }
 strum = { version = "0.26.3", default-features = false }
 subkey = { path = "substrate/bin/utils/subkey", default-features = false, version = "23.0.0" }
 substrate-bip39 = { path = "substrate/utils/substrate-bip39", default-features = false, version = "0.6.0" }
@@ -718,23 +673,17 @@ substrate-wasm-builder = { path = "substrate/utils/wasm-builder", default-featur
 subxt = { version = "0.38", default-features = false }
 subxt-signer = { version = "0.38" }
 syn = { version = "2.0.87" }
-sysinfo = { version = "0.30" }
 tar = { version = "0.4" }
 tempfile = { version = "3.8.1" }
-test-log = { version = "0.2.14" }
 test-pallet = { path = "substrate/frame/support/test/pallet", default-features = false, package = "frame-support-test-pallet", version = "4.0.0" }
 thiserror = { version = "1.0.64" }
 thousands = { version = "0.2.0" }
 threadpool = { version = "1.7" }
-tikv-jemalloc-ctl = { version = "0.5.0" }
-tikv-jemallocator = { version = "0.5.0" }
 time = { version = "0.3" }
-tiny-keccak = { version = "2.0.2" }
 tokio = { version = "1.40.0", default-features = false }
 tokio-retry = { version = "0.3.0" }
 tokio-stream = { version = "0.1.14" }
 tokio-test = { version = "0.4.4" }
-tokio-tungstenite = { version = "0.20.1" }
 tokio-util = { version = "0.7.8" }
 toml = { version = "0.8.12" }
 toml_edit = { version = "0.22" }
@@ -758,13 +707,11 @@ url = { version = "2.4.0" }
 void = { version = "1.0.2" }
 wait-timeout = { version = "0.2" }
 walkdir = { version = "2.5.0" }
-wasm-bindgen-test = { version = "0.3.19" }
 wasm-instrument = { version = "0.4", default-features = false }
 wasm-opt = { version = "0.116" }
 wasm-timer = { version = "0.2.5" }
 wasmtime = { version = "29.0.1", default-features = false }
 wat = { version = "1.0.0" }
-x25519-dalek = { version = "2.0" }
 zeroize = { version = "1.7.0", default-features = false }
 zombienet-sdk = { version = "0.2.13" }
 zstd = { version = "0.12.4", default-features = false }
@@ -832,7 +779,6 @@ primitive-types = { opt-level = 3 }
 ring = { opt-level = 3 }
 rustls = { opt-level = 3 }
 sha2 = { opt-level = 3 }
-sha3 = { opt-level = 3 }
 smallvec = { opt-level = 3 }
 snow = { opt-level = 3 }
 substrate-bip39 = { opt-level = 3 }

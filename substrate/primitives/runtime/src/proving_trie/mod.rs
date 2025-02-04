@@ -18,7 +18,6 @@
 //! Types for merkle tries compatible with the runtime.
 
 pub mod base16;
-pub mod base2;
 
 use crate::{Decode, DispatchError, Encode, MaxEncodedLen, TypeInfo};
 #[cfg(feature = "serde")]
@@ -162,7 +161,6 @@ mod tests {
 	use crate::traits::BlakeTwo256;
 
 	// A trie which simulates a trie of accounts (u32) and balances (u128).
-	type BalanceTrie2 = base2::BasicProvingTrie<BlakeTwo256, u32, u128>;
 	type BalanceTrie16 = base16::BasicProvingTrie<BlakeTwo256, u32, u128>;
 
 	#[test]

@@ -78,5 +78,7 @@
 ./substrate/primitives/merkle-mountain-range
 ./substrate/primitives/mixnet
 ./substrate/primitives/runtime/src/offchain/http.rs
+./substrate/primitives/runtime/src/proving_trie/base2.rs
 ./substrate/primitives/statement-store
+./substrate/utils/binary-merkle-tree
 ./templates/parachain

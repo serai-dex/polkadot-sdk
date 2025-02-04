@@ -100,21 +100,3 @@ pub fn twox_64(input: TokenStream) -> TokenStream {
 pub fn twox_128(input: TokenStream) -> TokenStream {
 	impls::twox_128(syn::parse_macro_input!(input as MultipleInputBytes).concatenated())
 }
-
-/// Apply a keccak 256-bit hash on its bytes parameter, outputs a `[u8; 32]`.
-/// Multiple inputs are concatenated before hashing.
-/// Input can be identifier (name of identifier as bytes is used), byte string or
-/// array of bytes.
-#[proc_macro]
-pub fn keccak_256(input: TokenStream) -> TokenStream {
-	impls::keccak_256(syn::parse_macro_input!(input as MultipleInputBytes).concatenated())
-}
-
-/// Apply a keccak 512-bit hash on its bytes parameter, outputs a `[u8; 64]`.
-/// Multiple inputs are concatenated before hashing.
-/// Input can be identifier (name of identifier as bytes is used), byte string or
-/// array of bytes.
-#[proc_macro]
-pub fn keccak_512(input: TokenStream) -> TokenStream {
-	impls::keccak_512(syn::parse_macro_input!(input as MultipleInputBytes).concatenated())
-}

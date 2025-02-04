@@ -601,19 +601,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
 
 [[package]]
-name = "binary-merkle-tree"
-version = "16.0.0"
-dependencies = [
- "array-bytes",
- "hash-db",
- "log",
- "parity-scale-codec",
- "sp-core",
- "sp-runtime",
- "sp-tracing",
-]
-
-[[package]]
 name = "bindgen"
 version = "0.65.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7793,7 +7780,6 @@ dependencies = [
 name = "polkadot-sdk"
 version = "0.10.1"
 dependencies = [
- "binary-merkle-tree",
  "fork-tree",
  "frame-benchmarking",
  "frame-benchmarking-cli",
@@ -11721,7 +11707,6 @@ dependencies = [
  "byteorder",
  "criterion",
  "digest 0.10.7",
- "sha3",
  "sp-crypto-hashing-proc-macro",
  "twox-hash",
 ]
@@ -11901,7 +11886,6 @@ dependencies = [
 name = "sp-runtime"
 version = "40.1.0"
 dependencies = [
- "binary-merkle-tree",
  "docify",
  "either",
  "hash256-std-hasher",

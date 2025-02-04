@@ -36,23 +36,3 @@ pub mod blake2 {
 		}
 	}
 }
-
-pub mod keccak {
-	use crate::hash::H256;
-	use hash256_std_hasher::Hash256StdHasher;
-	use hash_db::Hasher;
-
-	/// Concrete implementation of Hasher using Keccak 256-bit hashes
-	#[derive(Debug)]
-	pub struct KeccakHasher;
-
-	impl Hasher for KeccakHasher {
-		type Out = H256;
-		type StdHasher = Hash256StdHasher;
-		const LENGTH: usize = 32;
-
-		fn hash(x: &[u8]) -> Self::Out {
-			sp_crypto_hashing::keccak_256(x).into()
-		}
-	}
-}

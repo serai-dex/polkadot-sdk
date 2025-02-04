@@ -107,16 +107,6 @@ pub fn twox_256(data: &[u8]) -> [u8; 32] {
 	r
 }
 
-/// Do a keccak 256-bit hash and return result.
-pub fn keccak_256(data: &[u8]) -> [u8; 32] {
-	sha3::Keccak256::digest(data).into()
-}
-
-/// Do a keccak 512-bit hash and return result.
-pub fn keccak_512(data: &[u8]) -> [u8; 64] {
-	sha3::Keccak512::digest(data).into()
-}
-
 #[cfg(test)]
 mod test {
 	use super::*;
@@ -126,12 +116,6 @@ mod test {
 		assert_eq!(sp_crypto_hashing_proc_macro::blake2b_64!(b""), blake2_64(b"")[..]);
 		assert_eq!(sp_crypto_hashing_proc_macro::blake2b_256!(b"test"), blake2_256(b"test")[..]);
 		assert_eq!(sp_crypto_hashing_proc_macro::blake2b_512!(b""), blake2_512(b"")[..]);
-	}
-
-	#[test]
-	fn keccak() {
-		assert_eq!(sp_crypto_hashing_proc_macro::keccak_256!(b"test"), keccak_256(b"test")[..]);
-		assert_eq!(sp_crypto_hashing_proc_macro::keccak_512!(b"test"), keccak_512(b"test")[..]);
 	}
 
 	#[test]

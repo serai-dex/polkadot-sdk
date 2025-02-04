@@ -3,10 +3,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// A no-std/Substrate compatible library to construct binary merkle tree.
-#[cfg(feature = "binary-merkle-tree")]
-pub use binary_merkle_tree;
-
 /// Utility library for managing tree-like ordered data with logic for pruning the tree while
 /// finalizing nodes.
 #[cfg(feature = "fork-tree")]
