@@ -10824,12 +10824,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "simple-mermaid"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "620a1d43d70e142b1d46a929af51d44f383db9c7a2ec122de2cd992ccfcf3c18"
-
-[[package]]
 name = "siphasher"
 version = "0.3.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -11595,7 +11589,6 @@ dependencies = [
  "scale-info",
  "serde",
  "serde_json",
- "simple-mermaid",
  "sp-api",
  "sp-application-crypto",
  "sp-arithmetic",
