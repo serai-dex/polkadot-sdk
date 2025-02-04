@@ -275,17 +275,6 @@ checksum = "9b34d609dfbaf33d6889b2b7106d3ca345eacad44200913df5ba02bfd31d2ba9"
 
 [[package]]
 name = "async-channel"
-version = "1.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81953c529336010edd6d8e358f886d9581267795c61b19475b71314bffa46d35"
-dependencies = [
- "concurrent-queue",
- "event-listener 2.5.3",
- "futures-core",
-]
-
-[[package]]
-name = "async-channel"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "89b47800b0be77592da0afd425cc03468052844aff33b84e33cc696f64e77b6a"
@@ -345,7 +334,7 @@ version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff6e472cdea888a4bd64f342f09b3f50e1886d32afe8df3d663c01140b811b18"
 dependencies = [
- "event-listener 5.4.0",
+ "event-listener",
  "event-listener-strategy",
  "pin-project-lite",
 ]
@@ -367,14 +356,14 @@ version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "63255f1dc2381611000436537bbedfe83183faa303a5a0edaf191edef06526bb"
 dependencies = [
- "async-channel 2.3.1",
+ "async-channel",
  "async-io",
  "async-lock",
  "async-signal",
  "async-task",
  "blocking",
  "cfg-if",
- "event-listener 5.4.0",
+ "event-listener",
  "futures-lite",
  "rustix",
  "tracing",
@@ -743,7 +732,7 @@ version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "703f41c54fc768e63e091340b424302bb1c29ef4aa0c7f10fe849dfb114d29ea"
 dependencies = [
- "async-channel 2.3.1",
+ "async-channel",
  "async-task",
  "futures-io",
  "futures-lite",
@@ -2111,12 +2100,6 @@ dependencies = [
 
 [[package]]
 name = "event-listener"
-version = "2.5.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
-
-[[package]]
-name = "event-listener"
 version = "5.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3492acde4c3fc54c845eaab3eed8bd00c7a7d881f78bfc801e43a93dec1331ae"
@@ -2132,7 +2115,7 @@ version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c3e4e0dd3673c1139bf041f3008816d9cf2946bbfac2945c09e523b8d7b05b2"
 dependencies = [
- "event-listener 5.4.0",
+ "event-listener",
  "pin-project-lite",
 ]
 
@@ -9600,7 +9583,7 @@ version = "0.48.0"
 dependencies = [
  "array-bytes",
  "assert_matches",
- "async-channel 1.9.0",
+ "async-channel",
  "async-trait",
  "asynchronous-codec 0.6.2",
  "bytes",
@@ -9695,7 +9678,7 @@ name = "sc-network-light"
 version = "0.47.0"
 dependencies = [
  "array-bytes",
- "async-channel 1.9.0",
+ "async-channel",
  "futures",
  "log",
  "parity-scale-codec",
@@ -9715,7 +9698,7 @@ name = "sc-network-sync"
 version = "0.47.0"
 dependencies = [
  "array-bytes",
- "async-channel 1.9.0",
+ "async-channel",
  "async-trait",
  "fork-tree",
  "futures",
@@ -10060,7 +10043,7 @@ name = "sc-service-test"
 version = "2.0.0"
 dependencies = [
  "array-bytes",
- "async-channel 1.9.0",
+ "async-channel",
  "fdlimit",
  "futures",
  "log",
@@ -10267,7 +10250,7 @@ dependencies = [
 name = "sc-utils"
 version = "18.0.0"
 dependencies = [
- "async-channel 1.9.0",
+ "async-channel",
  "futures",
  "futures-timer",
  "log",
@@ -10865,7 +10848,7 @@ version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a33bd3e260892199c3ccfc487c88b2da2265080acb316cd920da72fdfd7c599f"
 dependencies = [
- "async-channel 2.3.1",
+ "async-channel",
  "async-executor",
  "async-fs",
  "async-io",
@@ -10894,7 +10877,7 @@ dependencies = [
  "derive_more 0.99.18",
  "ed25519-zebra",
  "either",
- "event-listener 5.4.0",
+ "event-listener",
  "fnv",
  "futures-lite",
  "futures-util",
@@ -10936,14 +10919,14 @@ version = "0.16.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a33b06891f687909632ce6a4e3fd7677b24df930365af3d0bcb078310129f3f"
 dependencies = [
- "async-channel 2.3.1",
+ "async-channel",
  "async-lock",
  "base64 0.22.1",
  "blake2-rfc",
  "bs58",
  "derive_more 0.99.18",
  "either",
- "event-listener 5.4.0",
+ "event-listener",
  "fnv",
  "futures-channel",
  "futures-lite",

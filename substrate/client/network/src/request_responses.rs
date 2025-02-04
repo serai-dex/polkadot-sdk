@@ -1133,12 +1133,13 @@ mod tests {
 		// Build swarms whose behaviour is [`RequestResponsesBehaviour`].
 		let mut swarms = (0..2)
 			.map(|_| {
-				let (tx, mut rx) = async_channel::bounded::<IncomingRequest>(64);
+				let (tx, rx) = async_channel::bounded::<IncomingRequest>(64);
+				let mut rx = Box::pin(rx);
 
 				pool.spawner()
 					.spawn_obj(
 						async move {
-							while let Some(rq) = rx.next().await {
+							while let Some(rq) = rx.as_mut().next().await {
 								let (fb_tx, fb_rx) = oneshot::channel();
 								assert_eq!(rq.payload, b"this is a request");
 								let _ = rq.pending_response.send(super::OutgoingResponse {
@@ -1236,12 +1237,13 @@ mod tests {
 		// Build swarms whose behaviour is [`RequestResponsesBehaviour`].
 		let mut swarms = (0..2)
 			.map(|_| {
-				let (tx, mut rx) = async_channel::bounded::<IncomingRequest>(64);
+				let (tx, rx) = async_channel::bounded::<IncomingRequest>(64);
+				let mut rx = Box::pin(rx);
 
 				pool.spawner()
 					.spawn_obj(
 						async move {
-							while let Some(rq) = rx.next().await {
+							while let Some(rq) = rx.as_mut().next().await {
 								assert_eq!(rq.payload, b"this is a request");
 								let _ = rq.pending_response.send(super::OutgoingResponse {
 									result: Ok(b"this response exceeds the limit".to_vec()),
@@ -1397,7 +1399,7 @@ mod tests {
 
 			let (swarm, listen_addr) = build_swarm(protocol_configs.into_iter());
 
-			(swarm, rx_1, rx_2, listen_addr)
+			(swarm, Box::pin(rx_1), Box::pin(rx_2), listen_addr)
 		};
 
 		// Ask swarm 1 to dial swarm 2. There isn't any discovery mechanism in place in this test,
@@ -1429,8 +1431,8 @@ mod tests {
 		pool.spawner()
 			.spawn_obj(
 				async move {
-					let protocol_1_request = swarm_2_handler_1.next().await;
-					let protocol_2_request = swarm_2_handler_2.next().await;
+					let protocol_1_request = swarm_2_handler_1.as_mut().next().await;
+					let protocol_2_request = swarm_2_handler_2.as_mut().next().await;
 
 					protocol_1_request
 						.unwrap()
