@@ -7,6 +7,7 @@ publish = false
 
 [features]
 default = ["std"]
+sc-executor-polkavm = ["substrate-wasm-builder/polkavm-linker", "dep:sc-executor-polkavm", "sc-executor/sc-executor-polkavm"]
 std = [
 	"frame-benchmarking-pallet-pov?/std",
 	"frame-benchmarking?/std",

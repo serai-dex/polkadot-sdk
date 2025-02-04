@@ -26,6 +26,7 @@ sc-executor-common.workspace = true
 sc-executor-common.default-features = true
 sc-executor-polkavm.workspace = true
 sc-executor-polkavm.default-features = true
+sc-executor-polkavm.optional = true
 sc-executor-wasmtime.workspace = true
 sc-executor-wasmtime.default-features = true
 sp-api.workspace = true

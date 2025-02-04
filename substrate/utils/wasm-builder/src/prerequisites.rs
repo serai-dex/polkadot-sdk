@@ -60,6 +60,7 @@ pub(crate) fn check(target: RuntimeTarget) -> Result<CargoCommandVersioned, Stri
 
 			check_wasm_toolchain_installed(cargo_command)
 		},
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => {
 			if !cargo_command.supports_substrate_runtime_env(target) {
 				return Err(colorize_error_message(

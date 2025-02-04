@@ -26,7 +26,7 @@ sp-maybe-compressed-blob.workspace = true
 sp-maybe-compressed-blob.default-features = true
 wasm-opt = { workspace = true }
 parity-wasm = { workspace = true }
-polkavm-linker = { workspace = true }
+polkavm-linker = { workspace = true, optional = true }
 jobserver = { workspace = true }
 
 # Dependencies required for the `metadata-hash` feature.

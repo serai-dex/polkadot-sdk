@@ -204,6 +204,7 @@ pub(crate) fn create_and_compile(
 				&build_config,
 			)
 		},
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => {
 			let out_path = project.join(format!("{blob_name}.polkavm"));
 			fs::copy(raw_blob_path, &out_path).expect("copying the runtime blob should never fail");
@@ -400,6 +401,7 @@ fn get_blob_name(target: RuntimeTarget, cargo_manifest: &Path) -> String {
 		RuntimeTarget::Wasm => get_lib_name(cargo_manifest)
 			.expect("The wasm project should have a `lib.name`; qed")
 			.replace('-', "_"),
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => get_crate_name(cargo_manifest),
 	}
 }
@@ -512,6 +514,7 @@ fn create_project_cargo_toml(
 
 	wasm_workspace_toml.insert("workspace".into(), workspace.into());
 
+	#[cfg(feature = "polkavm-linker")]
 	if target == RuntimeTarget::Riscv {
 		// This dependency currently doesn't compile under RISC-V, so patch it with our own fork.
 		//
@@ -670,6 +673,7 @@ fn create_project(
 				"#![no_std] pub use wasm_project::*;",
 			);
 		},
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => {
 			write_file_if_changed(
 				wasm_project_folder.join("src/main.rs"),
@@ -841,6 +845,7 @@ fn build_bloaty_blob(
 				"-C target-cpu=mvp -C target-feature=-sign-ext -C link-arg=--export-table ",
 			);
 		},
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => {
 			rustflags.push_str("-C target-feature=+lui-addi-fusion -C relocation-model=pie -C link-arg=--emit-relocs -C link-arg=--unique ");
 		},
@@ -937,6 +942,7 @@ fn build_bloaty_blob(
 		.join(target.rustc_target())
 		.join(blob_build_profile.directory());
 	match target {
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => {
 			let elf_path = target_directory.join(&blob_name);
 			let elf_metadata = match elf_path.metadata() {

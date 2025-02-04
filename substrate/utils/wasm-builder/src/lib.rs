@@ -254,6 +254,7 @@ struct CargoCommand {
 	program: String,
 	args: Vec<String>,
 	version: Option<Version>,
+	#[allow(dead_code)]
 	target_list: Option<BTreeSet<String>>,
 }
 
@@ -326,11 +327,13 @@ impl CargoCommand {
 	fn supports_substrate_runtime_env(&self, target: RuntimeTarget) -> bool {
 		match target {
 			RuntimeTarget::Wasm => self.supports_substrate_runtime_env_wasm(),
+			#[cfg(feature = "polkavm-linker")]
 			RuntimeTarget::Riscv => self.supports_substrate_runtime_env_riscv(),
 		}
 	}
 
 	/// Check if the supplied cargo command supports our RISC-V runtime environment.
+	#[cfg(feature = "polkavm-linker")]
 	fn supports_substrate_runtime_env_riscv(&self) -> bool {
 		let Some(target_list) = self.target_list.as_ref() else { return false };
 		// This is our custom target which currently doesn't exist on any upstream toolchain,
@@ -419,6 +422,7 @@ fn build_std_required() -> bool {
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum RuntimeTarget {
 	Wasm,
+	#[cfg(feature = "polkavm-linker")]
 	Riscv,
 }
 
@@ -426,6 +430,7 @@ impl RuntimeTarget {
 	fn rustc_target(self) -> &'static str {
 		match self {
 			RuntimeTarget::Wasm => "wasm32-unknown-unknown",
+			#[cfg(feature = "polkavm-linker")]
 			RuntimeTarget::Riscv => "riscv32ema-unknown-none-elf",
 		}
 	}
@@ -435,6 +440,7 @@ impl RuntimeTarget {
 		// the targets we won't trigger unnecessary rebuilds.
 		match self {
 			RuntimeTarget::Wasm => "wbuild",
+			#[cfg(feature = "polkavm-linker")]
 			RuntimeTarget::Riscv => "rbuild",
 		}
 	}
@@ -448,7 +454,14 @@ fn runtime_target() -> RuntimeTarget {
 	if value == "wasm" {
 		RuntimeTarget::Wasm
 	} else if value == "riscv" {
-		RuntimeTarget::Riscv
+		#[cfg(feature = "polkavm-linker")]
+		let res = RuntimeTarget::Riscv;
+		#[cfg(not(feature = "polkavm-linker"))]
+		#[allow(unused_variables)]
+		let res: RuntimeTarget =
+			panic!("runtime target was riscv yet wasn't compiled with polkavm-linker");
+		#[allow(unreachable_code)]
+		res
 	} else {
 		build_helper::warning!(
 			"the '{RUNTIME_TARGET}' environment variable has an invalid value; it must be either 'wasm' or 'riscv'"
