@@ -41,6 +41,7 @@ pub fn register(registry: &Registry, sources: MetricSources) -> Result<Metrics, 
 }
 
 // Register `sc-network` metrics without bandwidth/connected peer sources.
+#[cfg(feature = "litep2p")]
 pub fn register_without_sources(registry: &Registry) -> Result<Metrics, PrometheusError> {
 	Metrics::register(registry)
 }
@@ -51,6 +52,7 @@ pub struct MetricSources {
 	pub connected_peers: Arc<AtomicUsize>,
 }
 
+#[cfg(feature = "litep2p")]
 impl MetricSources {
 	pub fn register(
 		registry: &Registry,

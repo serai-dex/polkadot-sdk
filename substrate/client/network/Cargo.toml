@@ -63,7 +63,7 @@ sp-core.default-features = true
 sp-runtime.workspace = true
 sp-runtime.default-features = true
 wasm-timer = { workspace = true }
-litep2p = { workspace = true }
+litep2p = { workspace = true, optional = true }
 void = { workspace = true }
 schnellru = { workspace = true }
 
@@ -91,7 +91,7 @@ sc-consensus = { default-features = true, path = "../consensus/common" }
 
 [features]
 default = []
-
+litep2p = ["dep:litep2p", "sc-network-types/litep2p"]
 
 [[bench]]
 name = "notifications_protocol"

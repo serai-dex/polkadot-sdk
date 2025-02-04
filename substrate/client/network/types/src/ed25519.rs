@@ -22,6 +22,7 @@ use crate::PeerId;
 use core::{cmp, fmt, hash};
 use ed25519_dalek::{self as ed25519, Signer as _, Verifier as _};
 use libp2p_identity::ed25519 as libp2p_ed25519;
+#[cfg(feature = "litep2p")]
 use litep2p::crypto::ed25519 as litep2p_ed25519;
 use zeroize::Zeroize;
 
@@ -80,6 +81,7 @@ impl fmt::Debug for Keypair {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<litep2p_ed25519::Keypair> for Keypair {
 	fn from(kp: litep2p_ed25519::Keypair) -> Self {
 		Self::try_from_bytes(&mut kp.to_bytes())
@@ -87,6 +89,7 @@ impl From<litep2p_ed25519::Keypair> for Keypair {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<Keypair> for litep2p_ed25519::Keypair {
 	fn from(kp: Keypair) -> Self {
 		Self::try_from_bytes(&mut kp.to_bytes())
@@ -185,10 +188,14 @@ impl PublicKey {
 
 	/// Convert public key to `PeerId`.
 	pub fn to_peer_id(&self) -> PeerId {
-		litep2p::PeerId::from(litep2p::crypto::PublicKey::Ed25519(self.clone().into())).into()
+		let key: libp2p_ed25519::PublicKey = self.clone().into();
+		let public: libp2p_identity::PublicKey = key.into();
+		let peer_id: libp2p_identity::PeerId = public.into();
+		peer_id.into()
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<litep2p_ed25519::PublicKey> for PublicKey {
 	fn from(k: litep2p_ed25519::PublicKey) -> Self {
 		Self::try_from_bytes(&k.to_bytes())
@@ -196,6 +203,7 @@ impl From<litep2p_ed25519::PublicKey> for PublicKey {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<PublicKey> for litep2p_ed25519::PublicKey {
 	fn from(k: PublicKey) -> Self {
 		Self::try_from_bytes(&k.to_bytes())
@@ -264,12 +272,14 @@ impl Drop for SecretKey {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<litep2p_ed25519::SecretKey> for SecretKey {
 	fn from(sk: litep2p_ed25519::SecretKey) -> Self {
 		Self::try_from_bytes(&mut sk.to_bytes()).expect("Ed25519 key to be 32 bytes length")
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<SecretKey> for litep2p_ed25519::SecretKey {
 	fn from(sk: SecretKey) -> Self {
 		Self::try_from_bytes(&mut sk.to_bytes())
@@ -350,6 +360,7 @@ mod tests {
 		assert!(!pk.verify(invalid_msg, &sig));
 	}
 
+	#[cfg(feature = "litep2p")]
 	#[test]
 	fn substrate_kp_to_libs() {
 		let kp = Keypair::generate();
@@ -385,6 +396,7 @@ mod tests {
 		assert!(pk4.verify(msg, &sig));
 	}
 
+	#[cfg(feature = "litep2p")]
 	#[test]
 	fn litep2p_kp_to_substrate_kp() {
 		let kp = litep2p_ed25519::Keypair::generate();
@@ -431,6 +443,7 @@ mod tests {
 		assert!(pk2.verify(msg, &sig));
 	}
 
+	#[cfg(feature = "litep2p")]
 	#[test]
 	fn substrate_pk_to_libs() {
 		let kp = Keypair::generate();
@@ -454,6 +467,7 @@ mod tests {
 		assert!(pk4.verify(msg, &sig));
 	}
 
+	#[cfg(feature = "litep2p")]
 	#[test]
 	fn litep2p_pk_to_substrate_pk() {
 		let kp = litep2p_ed25519::Keypair::generate();
@@ -490,6 +504,7 @@ mod tests {
 		assert!(pk2.verify(msg, &sig));
 	}
 
+	#[cfg(feature = "litep2p")]
 	#[test]
 	fn substrate_sk_to_libs() {
 		let sk = SecretKey::generate();
@@ -514,6 +529,7 @@ mod tests {
 		assert_eq!(sig, kp4.sign(msg));
 	}
 
+	#[cfg(feature = "litep2p")]
 	#[test]
 	fn litep2p_sk_to_substrate_sk() {
 		let sk = litep2p_ed25519::SecretKey::generate();

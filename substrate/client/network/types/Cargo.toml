@@ -12,12 +12,13 @@ documentation = "https://docs.rs/sc-network-types"
 [dependencies]
 bs58 = { workspace = true, default-features = true }
 ed25519-dalek = { workspace = true, default-features = true }
+libp2p-core = { workspace = true }
 libp2p-identity = { features = ["ed25519", "peerid", "rand"], workspace = true }
 libp2p-kad = { version = "0.46.2", default-features = false }
-litep2p = { workspace = true }
+litep2p = { workspace = true, optional = true }
 log = { workspace = true, default-features = true }
 multiaddr = { workspace = true }
-multihash = { workspace = true }
+multihash = { workspace = true, features = ["std", "multihash-impl", "identity", "sha2"] }
 rand = { workspace = true, default-features = true }
 thiserror = { workspace = true }
 zeroize = { workspace = true }

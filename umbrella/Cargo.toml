@@ -6,8 +6,9 @@ license = "Apache-2.0"
 publish = false
 
 [features]
-default = ["std"]
-sc-executor-polkavm = ["substrate-wasm-builder/polkavm-linker", "dep:sc-executor-polkavm", "sc-executor/sc-executor-polkavm"]
+default = ["std", "sc-executor-polkavm", "litep2p"]
+sc-executor-polkavm = ["substrate-wasm-builder?/polkavm-linker", "dep:sc-executor-polkavm", "sc-executor?/sc-executor-polkavm"]
+litep2p = ["sc-cli?/litep2p", "sc-network?/litep2p", "sc-network-types?/litep2p"]
 std = [
 	"frame-benchmarking-pallet-pov?/std",
 	"frame-benchmarking?/std",

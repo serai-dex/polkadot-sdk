@@ -314,6 +314,7 @@ pub enum NetworkBackendType {
 	Libp2p,
 
 	/// Use litep2p for P2P networking.
+	#[cfg(feature = "litep2p")]
 	Litep2p,
 }
 
@@ -321,6 +322,7 @@ impl Into<sc_network::config::NetworkBackendType> for NetworkBackendType {
 	fn into(self) -> sc_network::config::NetworkBackendType {
 		match self {
 			Self::Libp2p => sc_network::config::NetworkBackendType::Libp2p,
+			#[cfg(feature = "litep2p")]
 			Self::Litep2p => sc_network::config::NetworkBackendType::Litep2p,
 		}
 	}

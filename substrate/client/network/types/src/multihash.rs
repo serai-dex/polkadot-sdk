@@ -19,8 +19,8 @@
 //! [`Multihash`] implemenattion used by substrate. Currently it's a wrapper over
 //! multihash used by litep2p, but it can be switched to other implementation if needed.
 
-use litep2p::types::multihash::{
-	Code as LiteP2pCode, Error as LiteP2pError, Multihash as LiteP2pMultihash, MultihashDigest as _,
+use multihash::{
+	Code as CoreCode, Error as CoreError, Multihash as CoreMultihash, MultihashDigest as _,
 };
 use std::fmt::{self, Debug};
 
@@ -36,7 +36,7 @@ pub enum Code {
 impl Code {
 	/// Calculate digest using this [`Code`]'s hashing algorithm.
 	pub fn digest(&self, input: &[u8]) -> Multihash {
-		LiteP2pCode::from(*self).digest(input).into()
+		CoreCode::from(*self).digest(input).into()
 	}
 }
 
@@ -55,32 +55,32 @@ pub enum Error {
 	Other(Box<dyn std::error::Error + Send + Sync>),
 }
 
-impl From<LiteP2pError> for Error {
-	fn from(error: LiteP2pError) -> Self {
+impl From<CoreError> for Error {
+	fn from(error: CoreError) -> Self {
 		match error {
-			LiteP2pError::InvalidSize(s) => Self::InvalidSize(s),
-			LiteP2pError::UnsupportedCode(c) => Self::UnsupportedCode(c),
+			CoreError::InvalidSize(s) => Self::InvalidSize(s),
+			CoreError::UnsupportedCode(c) => Self::UnsupportedCode(c),
 			e => Self::Other(Box::new(e)),
 		}
 	}
 }
 
-impl From<Code> for LiteP2pCode {
+impl From<Code> for CoreCode {
 	fn from(code: Code) -> Self {
 		match code {
-			Code::Identity => LiteP2pCode::Identity,
-			Code::Sha2_256 => LiteP2pCode::Sha2_256,
+			Code::Identity => CoreCode::Identity,
+			Code::Sha2_256 => CoreCode::Sha2_256,
 		}
 	}
 }
 
-impl TryFrom<LiteP2pCode> for Code {
+impl TryFrom<CoreCode> for Code {
 	type Error = Error;
 
-	fn try_from(code: LiteP2pCode) -> Result<Self, Self::Error> {
+	fn try_from(code: CoreCode) -> Result<Self, Self::Error> {
 		match code {
-			LiteP2pCode::Identity => Ok(Code::Identity),
-			LiteP2pCode::Sha2_256 => Ok(Code::Sha2_256),
+			CoreCode::Identity => Ok(Code::Identity),
+			CoreCode::Sha2_256 => Ok(Code::Sha2_256),
 			_ => Err(Error::UnsupportedCode(code.into())),
 		}
 	}
@@ -90,7 +90,7 @@ impl TryFrom<u64> for Code {
 	type Error = Error;
 
 	fn try_from(code: u64) -> Result<Self, Self::Error> {
-		match LiteP2pCode::try_from(code) {
+		match CoreCode::try_from(code) {
 			Ok(code) => code.try_into(),
 			Err(e) => Err(e.into()),
 		}
@@ -99,13 +99,13 @@ impl TryFrom<u64> for Code {
 
 impl From<Code> for u64 {
 	fn from(code: Code) -> Self {
-		LiteP2pCode::from(code).into()
+		CoreCode::from(code).into()
 	}
 }
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Ord, PartialOrd)]
 pub struct Multihash {
-	multihash: LiteP2pMultihash,
+	multihash: CoreMultihash,
 }
 
 impl Multihash {
@@ -121,14 +121,14 @@ impl Multihash {
 
 	/// Wraps the digest in a multihash.
 	pub fn wrap(code: u64, input_digest: &[u8]) -> Result<Self, Error> {
-		LiteP2pMultihash::wrap(code, input_digest).map(Into::into).map_err(Into::into)
+		CoreMultihash::wrap(code, input_digest).map(Into::into).map_err(Into::into)
 	}
 
 	/// Parses a multihash from bytes.
 	///
 	/// You need to make sure the passed in bytes have the length of 64.
 	pub fn from_bytes(bytes: &[u8]) -> Result<Self, Error> {
-		LiteP2pMultihash::from_bytes(bytes).map(Into::into).map_err(Into::into)
+		CoreMultihash::from_bytes(bytes).map(Into::into).map_err(Into::into)
 	}
 
 	/// Returns the bytes of a multihash.
@@ -144,29 +144,49 @@ impl Debug for Multihash {
 	}
 }
 
-impl From<LiteP2pMultihash> for Multihash {
-	fn from(multihash: LiteP2pMultihash) -> Self {
+// From/Into the multihash 0.18 we wrap
+impl From<CoreMultihash> for Multihash {
+	fn from(multihash: CoreMultihash) -> Self {
 		Multihash { multihash }
 	}
 }
 
-impl From<Multihash> for LiteP2pMultihash {
+impl From<Multihash> for CoreMultihash {
 	fn from(multihash: Multihash) -> Self {
 		multihash.multihash
 	}
 }
 
-impl From<multihash::Multihash<64>> for Multihash {
-	fn from(generic: multihash::Multihash<64>) -> Self {
-		LiteP2pMultihash::wrap(generic.code(), generic.digest())
+// From/Into libp2p's multihash
+impl From<libp2p_core::multihash::Multihash<64>> for Multihash {
+	fn from(generic: libp2p_core::multihash::Multihash<64>) -> Self {
+		CoreMultihash::wrap(generic.code(), generic.digest())
 			.expect("both have size 64; qed")
 			.into()
 	}
 }
 
-impl From<Multihash> for multihash::Multihash<64> {
+impl From<Multihash> for libp2p_core::multihash::Multihash<64> {
 	fn from(multihash: Multihash) -> Self {
-		multihash::Multihash::<64>::wrap(multihash.code(), multihash.digest())
+		libp2p_core::multihash::Multihash::wrap(multihash.code(), multihash.digest())
+			.expect("both have size 64; qed")
+	}
+}
+
+// From/Into litep2p's multihash
+#[cfg(feature = "litep2p")]
+impl From<litep2p::types::multihash::Multihash> for Multihash {
+	fn from(generic: litep2p::types::multihash::Multihash) -> Self {
+		CoreMultihash::wrap(generic.code(), generic.digest())
+			.expect("both have size 64; qed")
+			.into()
+	}
+}
+
+#[cfg(feature = "litep2p")]
+impl From<Multihash> for litep2p::types::multihash::Multihash {
+	fn from(multihash: Multihash) -> Self {
+		litep2p::types::multihash::Multihash::wrap(multihash.code(), multihash.digest())
 			.expect("both have size 64; qed")
 	}
 }

@@ -930,6 +930,7 @@ pub enum NetworkBackendType {
 	Libp2p,
 
 	/// Use litep2p for P2P networking.
+	#[cfg(feature = "litep2p")]
 	Litep2p,
 }
 

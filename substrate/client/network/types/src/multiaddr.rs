@@ -16,11 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use litep2p::types::multiaddr::{
-	Error as LiteP2pError, Iter as LiteP2pIter, Multiaddr as LiteP2pMultiaddr,
-	Protocol as LiteP2pProtocol,
-};
-use multiaddr::Multiaddr as LibP2pMultiaddr;
+use multiaddr::{Iter as LibP2pIter, Multiaddr as LibP2pMultiaddr, Protocol as LibP2pProtocol};
 use std::{
 	fmt::{self, Debug, Display},
 	net::{IpAddr, Ipv4Addr, Ipv6Addr},
@@ -38,13 +34,13 @@ pub use crate::build_multiaddr as multiaddr;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
 pub struct Multiaddr {
-	multiaddr: LiteP2pMultiaddr,
+	multiaddr: LibP2pMultiaddr,
 }
 
 impl Multiaddr {
 	/// Create a new, empty multiaddress.
 	pub fn empty() -> Self {
-		Self { multiaddr: LiteP2pMultiaddr::empty() }
+		Self { multiaddr: LibP2pMultiaddr::empty() }
 	}
 
 	/// Adds an address component to the end of this multiaddr.
@@ -92,27 +88,29 @@ impl AsRef<[u8]> for Multiaddr {
 	}
 }
 
-impl From<LiteP2pMultiaddr> for Multiaddr {
-	fn from(multiaddr: LiteP2pMultiaddr) -> Self {
-		Self { multiaddr }
+#[cfg(feature = "litep2p")]
+impl From<litep2p::types::multiaddr::Multiaddr> for Multiaddr {
+	fn from(multiaddr: litep2p::types::multiaddr::Multiaddr) -> Self {
+		multiaddr.into_iter().map(Into::into).collect()
 	}
 }
 
-impl From<Multiaddr> for LiteP2pMultiaddr {
+#[cfg(feature = "litep2p")]
+impl From<Multiaddr> for litep2p::types::multiaddr::Multiaddr {
 	fn from(multiaddr: Multiaddr) -> Self {
-		multiaddr.multiaddr
+		multiaddr.into_iter().map(Into::into).collect()
 	}
 }
 
 impl From<LibP2pMultiaddr> for Multiaddr {
 	fn from(multiaddr: LibP2pMultiaddr) -> Self {
-		multiaddr.into_iter().map(Into::into).collect()
+		Self { multiaddr }
 	}
 }
 
 impl From<Multiaddr> for LibP2pMultiaddr {
 	fn from(multiaddr: Multiaddr) -> Self {
-		multiaddr.into_iter().map(Into::into).collect()
+		multiaddr.multiaddr
 	}
 }
 
@@ -141,7 +139,7 @@ impl TryFrom<Vec<u8>> for Multiaddr {
 	type Error = ParseError;
 
 	fn try_from(v: Vec<u8>) -> Result<Self, ParseError> {
-		let multiaddr = LiteP2pMultiaddr::try_from(v)?;
+		let multiaddr = LibP2pMultiaddr::try_from(v)?;
 		Ok(Self { multiaddr })
 	}
 }
@@ -172,16 +170,16 @@ pub enum ParseError {
 	ParsingError(Box<dyn std::error::Error + Send + Sync>),
 }
 
-impl From<LiteP2pError> for ParseError {
-	fn from(error: LiteP2pError) -> Self {
+impl From<multiaddr::Error> for ParseError {
+	fn from(error: multiaddr::Error) -> Self {
 		match error {
-			LiteP2pError::DataLessThanLen => ParseError::DataLessThanLen,
-			LiteP2pError::InvalidMultiaddr => ParseError::InvalidMultiaddr,
-			LiteP2pError::InvalidProtocolString => ParseError::InvalidProtocolString,
-			LiteP2pError::UnknownProtocolString(s) => ParseError::UnknownProtocolString(s),
-			LiteP2pError::UnknownProtocolId(n) => ParseError::UnknownProtocolId(n),
-			LiteP2pError::InvalidUvar(e) => ParseError::InvalidUvar(Box::new(e)),
-			LiteP2pError::ParsingError(e) => ParseError::ParsingError(e),
+			multiaddr::Error::DataLessThanLen => ParseError::DataLessThanLen,
+			multiaddr::Error::InvalidMultiaddr => ParseError::InvalidMultiaddr,
+			multiaddr::Error::InvalidProtocolString => ParseError::InvalidProtocolString,
+			multiaddr::Error::UnknownProtocolString(s) => ParseError::UnknownProtocolString(s),
+			multiaddr::Error::UnknownProtocolId(n) => ParseError::UnknownProtocolId(n),
+			multiaddr::Error::InvalidUvar(e) => ParseError::InvalidUvar(Box::new(e)),
+			multiaddr::Error::ParsingError(e) => ParseError::ParsingError(e),
 			error => ParseError::ParsingError(Box::new(error)),
 		}
 	}
@@ -191,7 +189,7 @@ impl FromStr for Multiaddr {
 	type Err = ParseError;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		let multiaddr = LiteP2pMultiaddr::from_str(s)?;
+		let multiaddr = LibP2pMultiaddr::from_str(s)?;
 		Ok(Self { multiaddr })
 	}
 }
@@ -213,7 +211,7 @@ impl<'a> TryFrom<&'a str> for Multiaddr {
 }
 
 /// Iterator over `Multiaddr` [`Protocol`]s.
-pub struct Iter<'a>(LiteP2pIter<'a>);
+pub struct Iter<'a>(LibP2pIter<'a>);
 
 impl<'a> Iterator for Iter<'a> {
 	type Item = Protocol<'a>;
@@ -223,8 +221,8 @@ impl<'a> Iterator for Iter<'a> {
 	}
 }
 
-impl<'a> From<LiteP2pIter<'a>> for Iter<'a> {
-	fn from(iter: LiteP2pIter<'a>) -> Self {
+impl<'a> From<LibP2pIter<'a>> for Iter<'a> {
+	fn from(iter: LibP2pIter<'a>) -> Self {
 		Self(iter)
 	}
 }
@@ -243,14 +241,14 @@ impl<'a> FromIterator<Protocol<'a>> for Multiaddr {
 	where
 		T: IntoIterator<Item = Protocol<'a>>,
 	{
-		LiteP2pMultiaddr::from_iter(iter.into_iter().map(Into::into)).into()
+		LibP2pMultiaddr::from_iter(iter.into_iter().map(Into::into)).into()
 	}
 }
 
 impl<'a> From<Protocol<'a>> for Multiaddr {
 	fn from(p: Protocol<'a>) -> Multiaddr {
-		let protocol: LiteP2pProtocol = p.into();
-		let multiaddr: LiteP2pMultiaddr = protocol.into();
+		let protocol: LibP2pProtocol = p.into();
+		let multiaddr: LibP2pMultiaddr = protocol.into();
 		multiaddr.into()
 	}
 }

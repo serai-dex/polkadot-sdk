@@ -72,5 +72,6 @@ futures-timer = { workspace = true }
 sp-tracing = { default-features = true, path = "../../primitives/tracing" }
 
 [features]
-default = ["rocksdb"]
+default = ["rocksdb", "litep2p"]
 rocksdb = ["sc-client-db/rocksdb"]
+litep2p = ["sc-network/litep2p"]

@@ -98,6 +98,7 @@ impl AsRef<str> for ProtocolName {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<ProtocolName> for litep2p::ProtocolName {
 	fn from(protocol: ProtocolName) -> Self {
 		match protocol {
@@ -107,6 +108,7 @@ impl From<ProtocolName> for litep2p::ProtocolName {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<litep2p::ProtocolName> for ProtocolName {
 	fn from(protocol: litep2p::ProtocolName) -> Self {
 		match protocol {

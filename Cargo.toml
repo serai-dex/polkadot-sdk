@@ -398,6 +398,7 @@ landlock = { version = "0.3.0" }
 libc = { version = "0.2.155" }
 libfuzzer-sys = { version = "0.4" }
 libp2p = { version = "0.54.1" }
+libp2p-core = { version = "0.42.0" }
 libp2p-identity = { version = "0.2.9" }
 linked-hash-map = { version = "0.5.4" }
 linked_hash_set = { version = "0.1.4" }
@@ -413,7 +414,7 @@ minimal-template-node = { path = "templates/minimal/node" }
 minimal-template-runtime = { path = "templates/minimal/runtime", version = "0.1.0" }
 mockall = { version = "0.13.1" }
 multiaddr = { version = "0.18.1" }
-multihash = { version = "0.19.1", default-features = false }
+multihash = { version = "0.18.0", default-features = false }
 multistream-select = { version = "0.13.0" }
 names = { version = "0.14.0", default-features = false }
 nix = { version = "0.28.0" }
