@@ -122,6 +122,7 @@ mod global_alloc_wasm;
 
 #[cfg(all(
 	not(feature = "disable_allocator"),
+	feature = "polkavm-derive",
 	substrate_runtime,
 	any(target_arch = "riscv32", target_arch = "riscv64")
 ))]

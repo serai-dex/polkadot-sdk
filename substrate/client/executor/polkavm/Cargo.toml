@@ -20,5 +20,6 @@ log = { workspace = true }
 polkavm = { workspace = true }
 sc-executor-common.workspace = true
 sc-executor-common.default-features = true
+sc-executor-common.features = ["polkavm"]
 sp-wasm-interface.workspace = true
 sp-wasm-interface.default-features = true
