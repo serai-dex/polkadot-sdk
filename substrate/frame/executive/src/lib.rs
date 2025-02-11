@@ -402,10 +402,9 @@ where
 			}
 
 			if state_root_check {
-				let storage_root = new_header.state_root();
-				header.state_root().check_equal(storage_root);
+				header.state_root().check_equal(new_header.state_root());
 				assert!(
-					header.state_root() == storage_root,
+					header.state_root() == new_header.state_root(),
 					"Storage root must match that calculated."
 				);
 			}
@@ -830,9 +829,11 @@ where
 		}
 
 		// check storage root.
-		let storage_root = new_header.state_root();
-		header.state_root().check_equal(storage_root);
-		assert!(header.state_root() == storage_root, "Storage root must match that calculated.");
+		header.state_root().check_equal(new_header.state_root());
+		assert!(
+			header.state_root() == new_header.state_root(),
+			"Storage root must match that calculated."
+		);
 
 		assert!(
 			header.extrinsics_root() == new_header.extrinsics_root(),
