@@ -32,10 +32,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, Debug, TypeInfo, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BlockStats {
-	/// The length in bytes of the storage proof produced by executing the block.
-	pub witness_len: u64,
-	/// The length in bytes of the storage proof after compaction.
-	pub witness_compact_len: u64,
 	/// Length of the block in bytes.
 	///
 	/// This information can also be acquired by downloading the whole block. This merely

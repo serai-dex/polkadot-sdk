@@ -83,34 +83,8 @@ where
 				return Ok(None)
 			}
 		};
-		let parent_header = {
-			let parent_hash = *block.header().parent_hash();
-			let parent_header = self
-				.client
-				.header(parent_hash)
-				.map_err(|e| Error::BlockQueryError(Box::new(e)))?;
-			if let Some(header) = parent_header {
-				header
-			} else {
-				return Ok(None)
-			}
-		};
 		let block_len = block.encoded_size() as u64;
 		let num_extrinsics = block.extrinsics().len() as u64;
-		let pre_root = *parent_header.state_root();
-		let mut runtime_api = self.client.runtime_api();
-		runtime_api.record_proof();
-		runtime_api
-			.execute_block(parent_header.hash(), block)
-			.map_err(|_| Error::BlockExecutionFailed)?;
-		let witness = runtime_api
-			.extract_proof()
-			.expect("We enabled proof recording. A proof must be available; qed");
-		let witness_len = witness.encoded_size() as u64;
-		let witness_compact_len = witness
-			.into_compact_proof::<HasherOf<Block>>(pre_root)
-			.map_err(|_| Error::WitnessCompactionFailed)?
-			.encoded_size() as u64;
-		Ok(Some(BlockStats { witness_len, witness_compact_len, block_len, num_extrinsics }))
+		Ok(Some(BlockStats { block_len, num_extrinsics }))
 	}
 }
