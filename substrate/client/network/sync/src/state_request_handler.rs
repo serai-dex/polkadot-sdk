@@ -156,7 +156,10 @@ where
 		let capacity = ByLength::new(num_peer_hint.max(1) as u32 * 2);
 		let seen_requests = LruMap::new(capacity);
 
-		(Self { client, request_receiver: Box::pin(request_receiver), seen_requests }, protocol_config)
+		(
+			Self { client, request_receiver: Box::pin(request_receiver), seen_requests },
+			protocol_config,
+		)
 	}
 
 	/// Run [`StateRequestHandler`].

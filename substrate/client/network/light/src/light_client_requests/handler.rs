@@ -79,7 +79,14 @@ where
 			tx,
 		);
 
-		(Self { client, request_receiver: Box::pin(request_receiver), _block: PhantomData::default() }, protocol_config)
+		(
+			Self {
+				client,
+				request_receiver: Box::pin(request_receiver),
+				_block: PhantomData::default(),
+			},
+			protocol_config,
+		)
 	}
 
 	/// Run [`LightClientRequestHandler`].

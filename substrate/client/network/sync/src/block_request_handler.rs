@@ -188,7 +188,11 @@ where
 		let seen_requests = LruMap::new(capacity);
 
 		BlockRelayParams {
-			server: Box::new(Self { client, request_receiver: Box::pin(request_receiver), seen_requests }),
+			server: Box::new(Self {
+				client,
+				request_receiver: Box::pin(request_receiver),
+				seen_requests,
+			}),
 			downloader: Arc::new(FullBlockDownloader::new(
 				protocol_config.protocol_name().clone(),
 				network,
