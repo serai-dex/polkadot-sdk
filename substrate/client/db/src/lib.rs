@@ -917,6 +917,7 @@ impl<Block: BlockT> sc_client_api::backend::BlockImportOperation<Block>
 
 	fn update_db_storage(
 		&mut self,
+		_root: Block::Hash,
 		update: PrefixedMemoryDB<HashingFor<Block>>,
 	) -> ClientResult<()> {
 		self.db_updates = update;
@@ -2616,7 +2617,7 @@ pub(crate) mod tests {
 			vec![(block_hash.as_ref(), Some(block_hash.as_ref()))].into_iter(),
 			StateVersion::V1,
 		);
-		op.update_db_storage(overlay).unwrap();
+		op.update_db_storage(root, overlay).unwrap();
 		header.state_root = root.into();
 
 		op.set_block_data(header.clone(), Some(body), None, None, NewBlockState::Best)
@@ -2807,7 +2808,7 @@ pub(crate) mod tests {
 				storage.iter().map(|(k, v)| (k.as_slice(), v.as_ref().map(|v| &v[..]))),
 				state_version,
 			);
-			op.update_db_storage(overlay).unwrap();
+			op.update_db_storage(root, overlay).unwrap();
 			header.state_root = root.into();
 
 			op.update_storage(storage, Vec::new()).unwrap();
@@ -3625,7 +3626,7 @@ pub(crate) mod tests {
 				storage.iter().map(|(k, v)| (k.as_slice(), v.as_ref().map(|v| &v[..]))),
 				state_version,
 			);
-			op.update_db_storage(overlay).unwrap();
+			op.update_db_storage(root, overlay).unwrap();
 			header.state_root = root.into();
 			let hash = header.hash();
 
@@ -4364,7 +4365,7 @@ pub(crate) mod tests {
 					storage.iter().map(|(k, v)| (k.as_slice(), v.as_ref().map(|v| &v[..]))),
 					StateVersion::V1,
 				);
-				op.update_db_storage(overlay).unwrap();
+				op.update_db_storage(root, overlay).unwrap();
 				header.state_root = root.into();
 
 				op.update_storage(storage, Vec::new()).unwrap();
@@ -4409,7 +4410,7 @@ pub(crate) mod tests {
 					storage.iter().map(|(k, v)| (k.as_slice(), v.as_ref().map(|v| &v[..]))),
 					StateVersion::V1,
 				);
-				op.update_db_storage(overlay).unwrap();
+				op.update_db_storage(root, overlay).unwrap();
 				header.state_root = root.into();
 
 				op.update_storage(storage, Vec::new()).unwrap();
@@ -4454,7 +4455,7 @@ pub(crate) mod tests {
 					storage.iter().map(|(k, v)| (k.as_slice(), v.as_ref().map(|v| &v[..]))),
 					StateVersion::V1,
 				);
-				op.update_db_storage(overlay).unwrap();
+				op.update_db_storage(root, overlay).unwrap();
 				header.state_root = root.into();
 
 				op.update_storage(storage, Vec::new()).unwrap();
@@ -4491,7 +4492,7 @@ pub(crate) mod tests {
 					storage.iter().map(|(k, v)| (k.as_slice(), v.as_ref().map(|v| &v[..]))),
 					StateVersion::V1,
 				);
-				op.update_db_storage(overlay).unwrap();
+				op.update_db_storage(root, overlay).unwrap();
 				header.state_root = root.into();
 
 				op.update_storage(storage, Vec::new()).unwrap();

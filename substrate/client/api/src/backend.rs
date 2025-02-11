@@ -176,6 +176,7 @@ pub trait BlockImportOperation<Block: BlockT> {
 	/// Inject storage data into the database.
 	fn update_db_storage(
 		&mut self,
+		root: Block::Hash,
 		update: BackendTransaction<HashingFor<Block>>,
 	) -> sp_blockchain::Result<()>;
 

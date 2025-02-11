@@ -466,7 +466,7 @@ impl<Block: BlockT> backend::AuxStore for Blockchain<Block> {
 pub struct BlockImportOperation<Block: BlockT> {
 	pending_block: Option<PendingBlock<Block>>,
 	old_state: InMemoryBackend<HashingFor<Block>>,
-	new_state: Option<BackendTransaction<HashingFor<Block>>>,
+	new_state: Option<(Block::Hash, BackendTransaction<HashingFor<Block>>)>,
 	aux: Vec<(Vec<u8>, Option<Vec<u8>>)>,
 	finalized_blocks: Vec<(Block::Hash, Option<Justification>)>,
 	set_head: Option<Block::Hash>,
@@ -495,7 +495,7 @@ impl<Block: BlockT> BlockImportOperation<Block> {
 		);
 
 		if commit {
-			self.new_state = Some(transaction);
+			self.new_state = Some((root, transaction));
 		}
 		Ok(root)
 	}
@@ -524,9 +524,10 @@ impl<Block: BlockT> backend::BlockImportOperation<Block> for BlockImportOperatio
 
 	fn update_db_storage(
 		&mut self,
+		root: Block::Hash,
 		update: BackendTransaction<HashingFor<Block>>,
 	) -> sp_blockchain::Result<()> {
-		self.new_state = Some(update);
+		self.new_state = Some((root, update));
 		Ok(())
 	}
 
@@ -686,7 +687,7 @@ impl<Block: BlockT> backend::Backend<Block> for Backend<Block> {
 			let hash = header.hash();
 
 			let new_state = match operation.new_state {
-				Some(state) => old_state.update_backend(*header.state_root(), state),
+				Some((root, state)) => old_state.update_backend(root, state),
 				None => old_state.clone(),
 			};
 

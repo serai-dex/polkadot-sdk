@@ -635,14 +635,14 @@ where
 				let storage_changes = match storage_changes {
 					sc_consensus::StorageChanges::Changes(storage_changes) => {
 						self.backend.begin_state_operation(&mut operation.op, parent_hash)?;
-						let (main_sc, child_sc, offchain_sc, tx, _, tx_index) =
+						let (main_sc, child_sc, offchain_sc, tx, tx_storage_root, tx_index) =
 							storage_changes.into_inner();
 
 						if self.config.offchain_indexing_api {
 							operation.op.update_offchain_storage(offchain_sc)?;
 						}
 
-						operation.op.update_db_storage(tx)?;
+						operation.op.update_db_storage(tx_storage_root, tx)?;
 						operation.op.update_storage(main_sc.clone(), child_sc.clone())?;
 						operation.op.update_transaction_index(tx_index)?;
 

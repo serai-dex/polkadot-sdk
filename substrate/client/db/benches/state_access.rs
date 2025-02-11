@@ -89,7 +89,7 @@ fn insert_blocks(db: &Backend<Block>, storage: Vec<(Vec<u8>, Vec<u8>)>) -> H256 
 		);
 		header.state_root = state_root;
 
-		op.update_db_storage(tx).unwrap();
+		op.update_db_storage(state_root, tx).unwrap();
 		op.update_storage(changes.clone(), Default::default()).unwrap();
 
 		op.set_block_data(header.clone(), Some(vec![]), None, None, NewBlockState::Best)
