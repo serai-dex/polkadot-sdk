@@ -5686,7 +5686,6 @@ dependencies = [
  "sc-consensus-grandpa",
  "sc-consensus-grandpa-rpc",
  "sc-rpc",
- "sc-sync-state-rpc",
  "sc-transaction-pool-api",
  "sp-api",
  "sp-block-builder",
@@ -7553,7 +7552,6 @@ dependencies = [
  "sc-network",
  "sc-network-common",
  "sc-network-gossip",
- "sc-network-light",
  "sc-network-sync",
  "sc-network-transactions",
  "sc-network-types",
@@ -7566,7 +7564,6 @@ dependencies = [
  "sc-service",
  "sc-state-db",
  "sc-storage-monitor",
- "sc-sync-state-rpc",
  "sc-sysinfo",
  "sc-telemetry",
  "sc-tracing",
@@ -9586,7 +9583,6 @@ dependencies = [
  "sc-client-api",
  "sc-consensus",
  "sc-network-common",
- "sc-network-light",
  "sc-network-sync",
  "sc-network-types",
  "sc-utils",
@@ -9652,26 +9648,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sc-network-light"
-version = "0.47.0"
-dependencies = [
- "array-bytes",
- "async-channel",
- "futures",
- "log",
- "parity-scale-codec",
- "prost 0.13.4",
- "prost-build",
- "sc-client-api",
- "sc-network",
- "sc-network-types",
- "sp-blockchain",
- "sp-core",
- "sp-runtime",
- "thiserror 2.0.11",
-]
-
-[[package]]
 name = "sc-network-sync"
 version = "0.47.0"
 dependencies = [
@@ -9726,7 +9702,6 @@ dependencies = [
  "sc-consensus",
  "sc-network",
  "sc-network-common",
- "sc-network-light",
  "sc-network-sync",
  "sc-network-types",
  "sc-service",
@@ -9975,7 +9950,6 @@ dependencies = [
  "sc-keystore",
  "sc-network",
  "sc-network-common",
- "sc-network-light",
  "sc-network-sync",
  "sc-network-transactions",
  "sc-network-types",
@@ -10071,24 +10045,6 @@ dependencies = [
  "sp-core",
  "thiserror 2.0.11",
  "tokio",
-]
-
-[[package]]
-name = "sc-sync-state-rpc"
-version = "0.48.0"
-dependencies = [
- "jsonrpsee",
- "parity-scale-codec",
- "sc-chain-spec",
- "sc-client-api",
- "sc-consensus-babe",
- "sc-consensus-epochs",
- "sc-consensus-grandpa",
- "serde",
- "serde_json",
- "sp-blockchain",
- "sp-runtime",
- "thiserror 2.0.11",
 ]
 
 [[package]]

@@ -415,10 +415,6 @@ pub use sc_network_common;
 #[cfg(feature = "sc-network-gossip")]
 pub use sc_network_gossip;
 
-/// Substrate light network protocol.
-#[cfg(feature = "sc-network-light")]
-pub use sc_network_light;
-
 /// Substrate sync network protocol.
 #[cfg(feature = "sc-network-sync")]
 pub use sc_network_sync;
@@ -467,10 +463,6 @@ pub use sc_state_db;
 /// Storage monitor service for substrate.
 #[cfg(feature = "sc-storage-monitor")]
 pub use sc_storage_monitor;
-
-/// A RPC handler to create sync states for light clients.
-#[cfg(feature = "sc-sync-state-rpc")]
-pub use sc_sync_state_rpc;
 
 /// A crate that provides basic hardware and software telemetry information.
 #[cfg(feature = "sc-sysinfo")]

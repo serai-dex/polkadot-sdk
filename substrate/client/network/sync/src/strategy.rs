@@ -24,10 +24,6 @@
 
 pub mod chain_sync;
 mod disconnected_peers;
-pub mod polkadot;
-mod state;
-pub mod state_sync;
-pub mod warp;
 
 use crate::{
 	pending_responses::ResponseFuture,
@@ -177,6 +173,7 @@ pub enum SyncingAction<B: BlockT> {
 }
 
 impl<B: BlockT> SyncingAction<B> {
+	#[allow(unused)]
 	fn is_finished(&self) -> bool {
 		matches!(self, SyncingAction::Finished)
 	}

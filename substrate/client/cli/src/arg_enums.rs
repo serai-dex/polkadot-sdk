@@ -281,27 +281,12 @@ pub enum OffchainWorkerEnabled {
 pub enum SyncMode {
 	/// Full sync. Download and verify all blocks.
 	Full,
-	/// Download blocks without executing them. Download latest state with proofs.
-	Fast,
-	/// Download blocks without executing them. Download latest state without proofs.
-	FastUnsafe,
-	/// Prove finality and download the latest state.
-	Warp,
 }
 
 impl Into<sc_network::config::SyncMode> for SyncMode {
 	fn into(self) -> sc_network::config::SyncMode {
 		match self {
 			SyncMode::Full => sc_network::config::SyncMode::Full,
-			SyncMode::Fast => sc_network::config::SyncMode::LightState {
-				skip_proofs: false,
-				storage_chain_mode: false,
-			},
-			SyncMode::FastUnsafe => sc_network::config::SyncMode::LightState {
-				skip_proofs: true,
-				storage_chain_mode: false,
-			},
-			SyncMode::Warp => sc_network::config::SyncMode::Warp,
 		}
 	}
 }

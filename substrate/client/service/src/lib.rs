@@ -60,8 +60,8 @@ use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 pub use self::{
 	builder::{
 		build_default_block_downloader, build_default_syncing_engine, build_network,
-		build_network_advanced, build_polkadot_syncing_strategy, gen_rpc_module, init_telemetry,
-		new_client, new_db_backend, new_full_client, new_full_parts, new_full_parts_record_import,
+		build_network_advanced, gen_rpc_module, init_telemetry, new_client, new_db_backend,
+		new_full_client, new_full_parts, new_full_parts_record_import,
 		new_full_parts_with_genesis_builder, new_wasm_executor,
 		propagate_transaction_notifications, spawn_tasks, BuildNetworkAdvancedParams,
 		BuildNetworkParams, DefaultSyncingEngineConfig, KeystoreContainer, NetworkStarter,
@@ -91,7 +91,6 @@ use crate::config::RpcConfiguration;
 use prometheus_endpoint::Registry;
 pub use sc_consensus::ImportQueue;
 pub use sc_executor::NativeExecutionDispatch;
-pub use sc_network_sync::WarpSyncConfig;
 #[doc(hidden)]
 pub use sc_network_transactions::config::{TransactionImport, TransactionImportFuture};
 pub use sc_rpc::{RandomIntegerSubscriptionId, RandomStringSubscriptionId};

@@ -42,28 +42,19 @@ use sc_executor::{
 };
 use sc_keystore::LocalKeystore;
 use sc_network::{
-	config::{FullNetworkConfiguration, ProtocolId, SyncMode},
+	config::{FullNetworkConfiguration, ProtocolId},
 	multiaddr::Protocol,
-	service::{
-		traits::{PeerStore, RequestResponseConfig},
-		NotificationMetrics,
-	},
+	service::{traits::PeerStore, NotificationMetrics},
 	NetworkBackend, NetworkStateInfo,
 };
 use sc_network_common::role::{Role, Roles};
-use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
 use sc_network_sync::{
 	block_relay_protocol::{BlockDownloader, BlockRelayParams},
 	block_request_handler::BlockRequestHandler,
 	engine::SyncingEngine,
 	service::network::{NetworkServiceHandle, NetworkServiceProvider},
-	state_request_handler::StateRequestHandler,
-	strategy::{
-		polkadot::{PolkadotSyncingStrategy, PolkadotSyncingStrategyConfig},
-		SyncingStrategy,
-	},
-	warp_request_handler::RequestHandler as WarpSyncRequestHandler,
-	SyncingService, WarpSyncConfig,
+	strategy::chain_sync::ChainSync,
+	SyncingService,
 };
 use sc_rpc::{
 	author::AuthorApiServer,
@@ -804,8 +795,6 @@ where
 	pub block_announce_validator_builder: Option<
 		Box<dyn FnOnce(Arc<Client>) -> Box<dyn BlockAnnounceValidator<Block> + Send> + Send>,
 	>,
-	/// Optional warp sync config.
-	pub warp_sync_config: Option<WarpSyncConfig<Block>>,
 	/// User specified block relay params. If not specified, the default
 	/// block request handler will be used.
 	pub block_relay: Option<BlockRelayParams<Block, Net>>,
@@ -849,7 +838,6 @@ where
 		spawn_handle,
 		import_queue,
 		block_announce_validator_builder,
-		warp_sync_config,
 		block_relay,
 		metrics,
 	} = params;
@@ -889,16 +877,15 @@ where
 		),
 	};
 
-	let syncing_strategy = build_polkadot_syncing_strategy(
-		protocol_id.clone(),
-		fork_id,
-		&mut net_config,
-		warp_sync_config,
-		block_downloader,
+	let syncing_strategy = Box::new(ChainSync::new(
+		net_config.network_config.sync_mode.into(),
 		client.clone(),
-		&spawn_handle,
+		net_config.network_config.max_parallel_downloads,
+		net_config.network_config.max_blocks_per_request,
+		block_downloader,
 		metrics_registry,
-	)?;
+		core::iter::empty(),
+	)?);
 
 	let (syncing_engine, sync_service, block_announce_config) = SyncingEngine::new(
 		Roles::from(&config.role),
@@ -1018,17 +1005,6 @@ where
 	} = params;
 
 	let genesis_hash = client.info().genesis_hash;
-
-	let light_client_request_protocol_config = {
-		// Allow both outgoing and incoming requests.
-		let (handler, protocol_config) =
-			LightClientRequestHandler::new::<Net>(&protocol_id, fork_id, client.clone());
-		spawn_handle.spawn("light-client-request-handler", Some("networking"), handler.run());
-		protocol_config
-	};
-
-	// install request handlers to `FullNetworkConfiguration`
-	net_config.add_request_response_protocol(light_client_request_protocol_config);
 
 	// Create transactions protocol and add it to the list of supported protocols of
 	let (transactions_handler_proto, transactions_config) =
@@ -1175,8 +1151,6 @@ where
 	pub block_announce_validator: Box<dyn BlockAnnounceValidator<Block> + Send>,
 	/// Handle to communicate with `NetworkService`.
 	pub network_service_handle: NetworkServiceHandle,
-	/// Warp sync configuration (when used).
-	pub warp_sync_config: Option<WarpSyncConfig<Block>>,
 	/// A shared client returned by `new_full_parts`.
 	pub client: Arc<Client>,
 	/// Blocks import queue API.
@@ -1192,7 +1166,7 @@ where
 }
 
 /// Build default syncing engine using [`build_default_block_downloader`] and
-/// [`build_polkadot_syncing_strategy`] internally.
+/// [`ChainSync::new`] internally.
 pub fn build_default_syncing_engine<Block, Client, Net>(
 	config: DefaultSyncingEngineConfig<Block, Client, Net>,
 ) -> Result<(SyncingService<Block>, Net::NotificationProtocolConfig), Error>
@@ -1214,7 +1188,6 @@ where
 		net_config,
 		block_announce_validator,
 		network_service_handle,
-		warp_sync_config,
 		client,
 		import_queue_service,
 		num_peers_hint,
@@ -1232,16 +1205,16 @@ where
 		num_peers_hint,
 		spawn_handle,
 	);
-	let syncing_strategy = build_polkadot_syncing_strategy(
-		protocol_id.clone(),
-		fork_id,
-		net_config,
-		warp_sync_config,
-		block_downloader,
+
+	let syncing_strategy = Box::new(ChainSync::new(
+		net_config.network_config.sync_mode.into(),
 		client.clone(),
-		spawn_handle,
+		net_config.network_config.max_parallel_downloads,
+		net_config.network_config.max_blocks_per_request,
+		block_downloader,
 		metrics_registry,
-	)?;
+		core::iter::empty(),
+	)?);
 
 	let (syncing_engine, sync_service, block_announce_config) = SyncingEngine::new(
 		Roles::from(&role),
@@ -1296,92 +1269,6 @@ where
 	net_config.add_request_response_protocol(request_response_config);
 
 	downloader
-}
-
-/// Build standard polkadot syncing strategy
-pub fn build_polkadot_syncing_strategy<Block, Client, Net>(
-	protocol_id: ProtocolId,
-	fork_id: Option<&str>,
-	net_config: &mut FullNetworkConfiguration<Block, <Block as BlockT>::Hash, Net>,
-	warp_sync_config: Option<WarpSyncConfig<Block>>,
-	block_downloader: Arc<dyn BlockDownloader<Block>>,
-	client: Arc<Client>,
-	spawn_handle: &SpawnTaskHandle,
-	metrics_registry: Option<&Registry>,
-) -> Result<Box<dyn SyncingStrategy<Block>>, Error>
-where
-	Block: BlockT,
-	Client: HeaderBackend<Block>
-		+ BlockBackend<Block>
-		+ HeaderMetadata<Block, Error = sp_blockchain::Error>
-		+ ProofProvider<Block>
-		+ Send
-		+ Sync
-		+ 'static,
-	Net: NetworkBackend<Block, <Block as BlockT>::Hash>,
-{
-	if warp_sync_config.is_none() && net_config.network_config.sync_mode.is_warp() {
-		return Err("Warp sync enabled, but no warp sync provider configured.".into())
-	}
-
-	if client.requires_full_sync() {
-		match net_config.network_config.sync_mode {
-			SyncMode::LightState { .. } =>
-				return Err("Fast sync doesn't work for archive nodes".into()),
-			SyncMode::Warp => return Err("Warp sync doesn't work for archive nodes".into()),
-			SyncMode::Full => {},
-		}
-	}
-
-	let genesis_hash = client.info().genesis_hash;
-
-	let (state_request_protocol_config, state_request_protocol_name) = {
-		let num_peer_hint = net_config.network_config.default_peers_set_num_full as usize +
-			net_config.network_config.default_peers_set.reserved_nodes.len();
-		// Allow both outgoing and incoming requests.
-		let (handler, protocol_config) =
-			StateRequestHandler::new::<Net>(&protocol_id, fork_id, client.clone(), num_peer_hint);
-		let config_name = protocol_config.protocol_name().clone();
-
-		spawn_handle.spawn("state-request-handler", Some("networking"), handler.run());
-		(protocol_config, config_name)
-	};
-	net_config.add_request_response_protocol(state_request_protocol_config);
-
-	let (warp_sync_protocol_config, warp_sync_protocol_name) = match warp_sync_config.as_ref() {
-		Some(WarpSyncConfig::WithProvider(warp_with_provider)) => {
-			// Allow both outgoing and incoming requests.
-			let (handler, protocol_config) = WarpSyncRequestHandler::new::<_, Net>(
-				protocol_id,
-				genesis_hash,
-				fork_id,
-				warp_with_provider.clone(),
-			);
-			let config_name = protocol_config.protocol_name().clone();
-
-			spawn_handle.spawn("warp-sync-request-handler", Some("networking"), handler.run());
-			(Some(protocol_config), Some(config_name))
-		},
-		_ => (None, None),
-	};
-	if let Some(config) = warp_sync_protocol_config {
-		net_config.add_request_response_protocol(config);
-	}
-
-	let syncing_config = PolkadotSyncingStrategyConfig {
-		mode: net_config.network_config.sync_mode,
-		max_parallel_downloads: net_config.network_config.max_parallel_downloads,
-		max_blocks_per_request: net_config.network_config.max_blocks_per_request,
-		metrics_registry: metrics_registry.cloned(),
-		state_request_protocol_name,
-		block_downloader,
-	};
-	Ok(Box::new(PolkadotSyncingStrategy::new(
-		syncing_config,
-		client,
-		warp_sync_config,
-		warp_sync_protocol_name,
-	)?))
 }
 
 /// Object used to start the network.

@@ -32,25 +32,20 @@ use crate::{
 	block_relay_protocol::{BlockDownloader, BlockResponseError},
 	blocks::BlockCollection,
 	justification_requests::ExtraRequests,
-	schema::v1::{StateRequest, StateResponse},
 	service::network::NetworkServiceHandle,
 	strategy::{
-		disconnected_peers::DisconnectedPeers,
-		state_sync::{ImportResult, StateSync, StateSyncProvider},
-		warp::{WarpSyncPhase, WarpSyncProgress},
-		StrategyKey, SyncingAction, SyncingStrategy,
+		disconnected_peers::DisconnectedPeers, StrategyKey, SyncingAction, SyncingStrategy,
 	},
 	types::{BadPeer, SyncState, SyncStatus},
 	LOG_TARGET,
 };
 
-use futures::{channel::oneshot, FutureExt};
+use futures::FutureExt;
 use log::{debug, error, info, trace, warn};
 use prometheus_endpoint::{register, Gauge, PrometheusError, Registry, U64};
-use prost::Message;
 use sc_client_api::{blockchain::BlockGap, BlockBackend, ProofProvider};
 use sc_consensus::{BlockImportError, BlockImportStatus, IncomingBlock};
-use sc_network::{IfDisconnected, ProtocolName};
+use sc_network::ProtocolName;
 use sc_network_common::sync::message::{
 	BlockAnnounce, BlockAttributes, BlockData, BlockRequest, BlockResponse, Direction, FromBlock,
 };
@@ -84,9 +79,6 @@ const MAX_DOWNLOAD_AHEAD: u32 = 2048;
 /// Maximum blocks to look backwards. The gap is the difference between the highest block and the
 /// common block of a node.
 const MAX_BLOCKS_TO_LOOK_BACKWARDS: u32 = MAX_DOWNLOAD_AHEAD / 2;
-
-/// Pick the state to sync as the latest finalized number minus this.
-const STATE_SYNC_FINALITY_THRESHOLD: u32 = 8;
 
 /// We use a heuristic that with a high likelihood, by the time
 /// `MAJOR_SYNC_BLOCKS` have been imported we'll be on the same
@@ -182,6 +174,7 @@ impl AllowedRequests {
 		}
 	}
 
+	#[allow(unused)]
 	fn is_empty(&self) -> bool {
 		match self {
 			Self::Some(set) => set.is_empty(),
@@ -189,6 +182,7 @@ impl AllowedRequests {
 		}
 	}
 
+	#[allow(unused)]
 	fn clear(&mut self) {
 		std::mem::take(self);
 	}
@@ -211,13 +205,14 @@ struct GapSync<B: BlockT> {
 pub enum ChainSyncMode {
 	/// Full block download and verification.
 	Full,
-	/// Download blocks and the latest state.
-	LightState {
-		/// Skip state proof download and verification.
-		skip_proofs: bool,
-		/// Download indexed transactions for recent blocks.
-		storage_chain_mode: bool,
-	},
+}
+
+impl From<sc_network::config::SyncMode> for ChainSyncMode {
+	fn from(mode: sc_network::config::SyncMode) -> Self {
+		match mode {
+			sc_network::config::SyncMode::Full => Self::Full,
+		}
+	}
 }
 
 /// All the data we have about a Peer that we are trying to sync with
@@ -277,8 +272,6 @@ pub(crate) enum PeerSyncState<B: BlockT> {
 	DownloadingStale(B::Hash),
 	/// Downloading justification for given block hash.
 	DownloadingJustification(B::Hash),
-	/// Downloading state.
-	DownloadingState,
 	/// Actively downloading block history after warp sync.
 	DownloadingGap(NumberFor<B>),
 }
@@ -310,14 +303,6 @@ pub struct ChainSync<B: BlockT, Client> {
 	/// A set of hashes of blocks that are being downloaded or have been
 	/// downloaded and are queued for import.
 	queue_blocks: HashSet<B::Hash>,
-	/// A pending attempt to start the state sync.
-	///
-	/// The initiation of state sync may be deferred in cases where other conditions
-	/// are not yet met when the finalized block notification is received, such as
-	/// when `queue_blocks` is not empty or there are no peers. This field holds the
-	/// necessary information to attempt the state sync at a later point when
-	/// conditions are satisfied.
-	pending_state_sync_attempt: Option<(B::Hash, NumberFor<B>, bool)>,
 	/// Fork sync targets.
 	fork_targets: HashMap<B::Hash, ForkTarget<B>>,
 	/// A set of peers for which there might be potential block requests
@@ -326,12 +311,8 @@ pub struct ChainSync<B: BlockT, Client> {
 	max_parallel_downloads: u32,
 	/// Maximum blocks per request.
 	max_blocks_per_request: u32,
-	/// Protocol name used to send out state requests
-	state_request_protocol_name: ProtocolName,
 	/// Total number of downloaded blocks.
 	downloaded_blocks: usize,
-	/// State sync in progress, if any.
-	state_sync: Option<StateSync<B, Client>>,
 	/// Enable importing existing blocks. This is used after the state download to
 	/// catch up to the latest state while re-importing blocks.
 	import_existing: bool,
@@ -589,17 +570,7 @@ where
 			return;
 		}
 
-		if protocol_name == self.state_request_protocol_name {
-			let Ok(response) = response.downcast::<Vec<u8>>() else {
-				warn!(target: LOG_TARGET, "Failed to downcast state response");
-				debug_assert!(false);
-				return;
-			};
-
-			if let Err(bad_peer) = self.on_state_data(&peer_id, &response) {
-				self.actions.push(SyncingAction::DropPeer(bad_peer));
-			}
-		} else if &protocol_name == self.block_downloader.protocol_name() {
+		if &protocol_name == self.block_downloader.protocol_name() {
 			let Ok(response) = response
 				.downcast::<(BlockRequest<B>, Result<Vec<BlockData<B>>, BlockResponseError>)>()
 			else {
@@ -708,18 +679,6 @@ where
 					if let Some(peer) = peer_id {
 						self.update_peer_common_number(&peer, number);
 					}
-					let state_sync_complete =
-						self.state_sync.as_ref().map_or(false, |s| s.target_hash() == hash);
-					if state_sync_complete {
-						info!(
-							target: LOG_TARGET,
-							"State sync is complete ({} MiB), restarting block sync.",
-							self.state_sync.as_ref().map_or(0, |s| s.progress().size / (1024 * 1024)),
-						);
-						self.state_sync = None;
-						self.mode = ChainSyncMode::Full;
-						self.restart();
-					}
 					let gap_sync_complete =
 						self.gap_sync.as_ref().map_or(false, |s| s.target == number);
 					if gap_sync_complete {
@@ -772,7 +731,6 @@ where
 				},
 				e @ Err(BlockImportError::UnknownParent) | e @ Err(BlockImportError::Other(_)) => {
 					warn!(target: LOG_TARGET, "💔 Error importing block {hash:?}: {}", e.unwrap_err());
-					self.state_sync = None;
 					self.restart();
 				},
 				Err(BlockImportError::Cancelled) => {},
@@ -787,16 +745,6 @@ where
 		let r = self.extra_justifications.on_block_finalized(hash, number, |base, block| {
 			is_descendent_of(&**client, base, block)
 		});
-
-		if let ChainSyncMode::LightState { skip_proofs, .. } = &self.mode {
-			if self.state_sync.is_none() {
-				if !self.peers.is_empty() && self.queue_blocks.is_empty() {
-					self.attempt_state_sync(*hash, number, *skip_proofs);
-				} else {
-					self.pending_state_sync_attempt.replace((*hash, number, *skip_proofs));
-				}
-			}
-		}
 
 		if let Err(err) = r {
 			warn!(
@@ -841,18 +789,11 @@ where
 			SyncState::Idle
 		};
 
-		let warp_sync_progress = self.gap_sync.as_ref().map(|gap_sync| WarpSyncProgress {
-			phase: WarpSyncPhase::DownloadingBlocks(gap_sync.best_queued_number),
-			total_bytes: 0,
-		});
-
 		SyncStatus {
 			state: sync_state,
 			best_seen_block,
 			num_peers: self.peers.len() as u32,
 			queued_blocks: self.queue_blocks.len() as u32,
-			state_sync: self.state_sync.as_ref().map(|s| s.progress()),
-			warp_sync: warp_sync_progress,
 		}
 	}
 
@@ -869,14 +810,8 @@ where
 
 	fn actions(
 		&mut self,
-		network_service: &NetworkServiceHandle,
+		_network_service: &NetworkServiceHandle,
 	) -> Result<Vec<SyncingAction<B>>, ClientError> {
-		if !self.peers.is_empty() && self.queue_blocks.is_empty() {
-			if let Some((hash, number, skip_proofs)) = self.pending_state_sync_attempt.take() {
-				self.attempt_state_sync(hash, number, skip_proofs);
-			}
-		}
-
 		let block_requests = self
 			.block_requests()
 			.into_iter()
@@ -890,36 +825,6 @@ where
 			.map(|(peer_id, request)| self.create_block_request_action(peer_id, request))
 			.collect::<Vec<_>>();
 		self.actions.extend(justification_requests);
-
-		let state_request = self.state_request().into_iter().map(|(peer_id, request)| {
-			trace!(
-				target: LOG_TARGET,
-				"Created `StrategyRequest` to {peer_id}.",
-			);
-
-			let (tx, rx) = oneshot::channel();
-
-			network_service.start_request(
-				peer_id,
-				self.state_request_protocol_name.clone(),
-				request.encode_to_vec(),
-				tx,
-				IfDisconnected::ImmediateError,
-			);
-
-			SyncingAction::StartRequest {
-				peer_id,
-				key: Self::STRATEGY_KEY,
-				request: async move {
-					Ok(rx.await?.and_then(|(response, protocol_name)| {
-						Ok((Box::new(response) as Box<dyn Any + Send>, protocol_name))
-					}))
-				}
-				.boxed(),
-				remove_obsolete: false,
-			}
-		});
-		self.actions.extend(state_request);
 
 		Ok(std::mem::take(&mut self.actions))
 	}
@@ -945,7 +850,6 @@ where
 		client: Arc<Client>,
 		max_parallel_downloads: u32,
 		max_blocks_per_request: u32,
-		state_request_protocol_name: ProtocolName,
 		block_downloader: Arc<dyn BlockDownloader<B>>,
 		metrics_registry: Option<&Registry>,
 		initial_peers: impl Iterator<Item = (PeerId, B::Hash, NumberFor<B>)>,
@@ -960,14 +864,11 @@ where
 			extra_justifications: ExtraRequests::new("justification", metrics_registry),
 			mode,
 			queue_blocks: Default::default(),
-			pending_state_sync_attempt: None,
 			fork_targets: Default::default(),
 			allowed_requests: Default::default(),
 			max_parallel_downloads,
 			max_blocks_per_request,
-			state_request_protocol_name,
 			downloaded_blocks: 0,
-			state_sync: None,
 			import_existing: false,
 			block_downloader,
 			gap_sync: None,
@@ -1355,9 +1256,8 @@ where
 							return Ok(());
 						}
 					},
-					PeerSyncState::Available |
-					PeerSyncState::DownloadingJustification(..) |
-					PeerSyncState::DownloadingState => Vec::new(),
+					PeerSyncState::Available | PeerSyncState::DownloadingJustification(..) =>
+						Vec::new(),
 				}
 			} else {
 				// When request.is_none() this is a block announcement. Just accept blocks.
@@ -1518,19 +1418,12 @@ where
 		match self.mode {
 			ChainSyncMode::Full =>
 				BlockAttributes::HEADER | BlockAttributes::JUSTIFICATION | BlockAttributes::BODY,
-			ChainSyncMode::LightState { storage_chain_mode: false, .. } =>
-				BlockAttributes::HEADER | BlockAttributes::JUSTIFICATION | BlockAttributes::BODY,
-			ChainSyncMode::LightState { storage_chain_mode: true, .. } =>
-				BlockAttributes::HEADER |
-					BlockAttributes::JUSTIFICATION |
-					BlockAttributes::INDEXED_BODY,
 		}
 	}
 
 	fn skip_execution(&self) -> bool {
 		match self.mode {
 			ChainSyncMode::Full => false,
-			ChainSyncMode::LightState { .. } => true,
 		}
 	}
 
@@ -1647,8 +1540,7 @@ where
 				PeerSyncState::AncestorSearch { .. } |
 				PeerSyncState::DownloadingNew(_) |
 				PeerSyncState::DownloadingStale(_) |
-				PeerSyncState::DownloadingGap(_) |
-				PeerSyncState::DownloadingState => {
+				PeerSyncState::DownloadingGap(_) => {
 					// Cancel a request first, as `add_peer` may generate a new request.
 					self.actions
 						.push(SyncingAction::CancelRequest { peer_id, key: Self::STRATEGY_KEY });
@@ -1676,13 +1568,6 @@ where
 	/// state for.
 	fn reset_sync_start_point(&mut self) -> Result<(), ClientError> {
 		let info = self.client.info();
-		if matches!(self.mode, ChainSyncMode::LightState { .. }) && info.finalized_state.is_some() {
-			warn!(
-				target: LOG_TARGET,
-				"Can't use fast sync mode with a partially synced database. Reverting to full sync mode."
-			);
-			self.mode = ChainSyncMode::Full;
-		}
 
 		self.import_existing = false;
 		self.best_queued_hash = info.best_hash;
@@ -1796,10 +1681,6 @@ where
 
 	/// Get block requests scheduled by sync to be sent out.
 	fn block_requests(&mut self) -> Vec<(PeerId, BlockRequest<B>)> {
-		if self.allowed_requests.is_empty() || self.state_sync.is_some() {
-			return Vec::new();
-		}
-
 		if self.queue_blocks.len() > MAX_IMPORTING_BLOCKS {
 			trace!(target: LOG_TARGET, "Too many blocks in the queue.");
 			return Vec::new();
@@ -1928,128 +1809,6 @@ where
 		}
 
 		requests
-	}
-
-	/// Get a state request scheduled by sync to be sent out (if any).
-	fn state_request(&mut self) -> Option<(PeerId, StateRequest)> {
-		if self.allowed_requests.is_empty() {
-			return None;
-		}
-		if self.state_sync.is_some() &&
-			self.peers.iter().any(|(_, peer)| peer.state == PeerSyncState::DownloadingState)
-		{
-			// Only one pending state request is allowed.
-			return None;
-		}
-		if let Some(sync) = &self.state_sync {
-			if sync.is_complete() {
-				return None;
-			}
-
-			for (id, peer) in self.peers.iter_mut() {
-				if peer.state.is_available() &&
-					peer.common_number >= sync.target_number() &&
-					self.disconnected_peers.is_peer_available(&id)
-				{
-					peer.state = PeerSyncState::DownloadingState;
-					let request = sync.next_request();
-					trace!(target: LOG_TARGET, "New StateRequest for {}: {:?}", id, request);
-					self.allowed_requests.clear();
-					return Some((*id, request));
-				}
-			}
-		}
-		None
-	}
-
-	#[must_use]
-	fn on_state_data(&mut self, peer_id: &PeerId, response: &[u8]) -> Result<(), BadPeer> {
-		let response = match StateResponse::decode(response) {
-			Ok(response) => response,
-			Err(error) => {
-				debug!(
-					target: LOG_TARGET,
-					"Failed to decode state response from peer {peer_id:?}: {error:?}.",
-				);
-
-				return Err(BadPeer(*peer_id, rep::BAD_RESPONSE));
-			},
-		};
-
-		if let Some(peer) = self.peers.get_mut(peer_id) {
-			if let PeerSyncState::DownloadingState = peer.state {
-				peer.state = PeerSyncState::Available;
-				self.allowed_requests.set_all();
-			}
-		}
-		let import_result = if let Some(sync) = &mut self.state_sync {
-			debug!(
-				target: LOG_TARGET,
-				"Importing state data from {} with {} keys, {} proof nodes.",
-				peer_id,
-				response.entries.len(),
-				response.proof.len(),
-			);
-			sync.import(response)
-		} else {
-			debug!(target: LOG_TARGET, "Ignored obsolete state response from {peer_id}");
-			return Err(BadPeer(*peer_id, rep::NOT_REQUESTED));
-		};
-
-		match import_result {
-			ImportResult::Import(hash, header, state, body, justifications) => {
-				let origin = BlockOrigin::NetworkInitialSync;
-				let block = IncomingBlock {
-					hash,
-					header: Some(header),
-					body,
-					indexed_body: None,
-					justifications,
-					origin: None,
-					allow_missing_state: true,
-					import_existing: true,
-					skip_execution: self.skip_execution(),
-					state: Some(state),
-				};
-				debug!(target: LOG_TARGET, "State download is complete. Import is queued");
-				self.actions.push(SyncingAction::ImportBlocks { origin, blocks: vec![block] });
-				Ok(())
-			},
-			ImportResult::Continue => Ok(()),
-			ImportResult::BadResponse => {
-				debug!(target: LOG_TARGET, "Bad state data received from {peer_id}");
-				Err(BadPeer(*peer_id, rep::BAD_BLOCK))
-			},
-		}
-	}
-
-	fn attempt_state_sync(
-		&mut self,
-		finalized_hash: B::Hash,
-		finalized_number: NumberFor<B>,
-		skip_proofs: bool,
-	) {
-		let mut heads: Vec<_> = self.peers.values().map(|peer| peer.best_number).collect();
-		heads.sort();
-		let median = heads[heads.len() / 2];
-		if finalized_number + STATE_SYNC_FINALITY_THRESHOLD.saturated_into() >= median {
-			if let Ok(Some(header)) = self.client.header(finalized_hash) {
-				log::debug!(
-					target: LOG_TARGET,
-					"Starting state sync for #{finalized_number} ({finalized_hash})",
-				);
-				self.state_sync =
-					Some(StateSync::new(self.client.clone(), header, None, None, skip_proofs));
-				self.allowed_requests.set_all();
-			} else {
-				log::error!(
-					target: LOG_TARGET,
-					"Failed to start state sync: header for finalized block \
-					  #{finalized_number} ({finalized_hash}) is not available",
-				);
-				debug_assert!(false);
-			}
-		}
 	}
 
 	/// A version of `actions()` that doesn't schedule extra requests. For testing only.

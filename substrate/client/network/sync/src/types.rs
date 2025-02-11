@@ -21,8 +21,6 @@
 use futures::Stream;
 use sc_network_common::{role::Roles, types::ReputationChange};
 
-use crate::strategy::{state_sync::StateSyncProgress, warp::WarpSyncProgress};
-
 use sc_network_types::PeerId;
 use sp_runtime::traits::{Block as BlockT, NumberFor};
 
@@ -88,10 +86,6 @@ pub struct SyncStatus<Block: BlockT> {
 	pub num_peers: u32,
 	/// Number of blocks queued for import
 	pub queued_blocks: u32,
-	/// State sync status in progress, if any.
-	pub state_sync: Option<StateSyncProgress>,
-	/// Warp sync in progress, if any.
-	pub warp_sync: Option<WarpSyncProgress<Block>>,
 }
 
 /// A peer did not behave as expected and should be reported.

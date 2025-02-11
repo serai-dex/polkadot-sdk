@@ -20,7 +20,7 @@ use console::style;
 use log::info;
 use sc_client_api::ClientInfo;
 use sc_network::NetworkStatus;
-use sc_network_sync::{SyncState, SyncStatus, WarpSyncPhase, WarpSyncProgress};
+use sc_network_sync::{SyncState, SyncStatus};
 use sp_runtime::traits::{Block as BlockT, CheckedDiv, NumberFor, Saturating, Zero};
 use std::{fmt, time::Instant};
 
@@ -89,46 +89,13 @@ impl<B: BlockT> InformantDisplay<B> {
 			(diff_bytes_inbound, diff_bytes_outbound)
 		};
 
-		let (level, status, target) =
-			match (sync_status.state, sync_status.state_sync, sync_status.warp_sync) {
-				// Do not set status to "Block history" when we are doing a major sync.
-				//
-				// A node could for example have been warp synced to the tip of the chain and
-				// shutdown. At the next start we still need to download the block history, but
-				// first will sync to the tip of the chain.
-				(
-					sync_status,
-					_,
-					Some(WarpSyncProgress { phase: WarpSyncPhase::DownloadingBlocks(n), .. }),
-				) if !sync_status.is_major_syncing() => ("⏩", "Block history".into(), format!(", #{}", n)),
-				// Handle all phases besides the two phases we already handle above.
-				(_, _, Some(warp))
-					if !matches!(warp.phase, WarpSyncPhase::DownloadingBlocks(_)) =>
-					(
-						"⏩",
-						"Warping".into(),
-						format!(
-							", {}, {:.2} Mib",
-							warp.phase,
-							(warp.total_bytes as f32) / (1024f32 * 1024f32)
-						),
-					),
-				(_, Some(state), _) => (
-					"⚙️ ",
-					"State sync".into(),
-					format!(
-						", {}, {}%, {:.2} Mib",
-						state.phase,
-						state.percentage,
-						(state.size as f32) / (1024f32 * 1024f32)
-					),
-				),
-				(SyncState::Idle, _, _) => ("💤", "Idle".into(), "".into()),
-				(SyncState::Downloading { target }, _, _) =>
-					("⚙️ ", format!("Syncing{}", speed), format!(", target=#{target}")),
-				(SyncState::Importing { target }, _, _) =>
-					("⚙️ ", format!("Preparing{}", speed), format!(", target=#{target}")),
-			};
+		let (level, status, target) = match sync_status.state {
+			SyncState::Idle => ("💤", "Idle".into(), "".into()),
+			SyncState::Downloading { target } =>
+				("⚙️ ", format!("Syncing{}", speed), format!(", target=#{target}")),
+			SyncState::Importing { target } =>
+				("⚙️ ", format!("Preparing{}", speed), format!(", target=#{target}")),
+		};
 
 		info!(
 			target: "substrate",

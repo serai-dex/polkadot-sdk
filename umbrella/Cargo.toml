@@ -327,7 +327,7 @@ runtime = [
 	"sp-wasm-interface",
 	"sp-weights",
 ]
-node = ["fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
+node = ["fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-storage-monitor", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
 tuples-96 = [
 	"frame-support-procedural?/tuples-96",
 	"frame-support?/tuples-96",
@@ -1209,12 +1209,6 @@ default-features = false
 optional = true
 version = "0.48.0"
 
-[dependencies.sc-network-light]
-path = "../substrate/client/network/light"
-default-features = false
-optional = true
-version = "0.47.0"
-
 [dependencies.sc-network-sync]
 path = "../substrate/client/network/sync"
 default-features = false
@@ -1286,12 +1280,6 @@ path = "../substrate/client/storage-monitor"
 default-features = false
 optional = true
 version = "0.23.0"
-
-[dependencies.sc-sync-state-rpc]
-path = "../substrate/client/sync-state-rpc"
-default-features = false
-optional = true
-version = "0.48.0"
 
 [dependencies.sc-sysinfo]
 path = "../substrate/client/sysinfo"

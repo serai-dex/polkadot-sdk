@@ -91,7 +91,7 @@ pub struct FullDeps<C, P, SC, B> {
 
 /// Instantiate all Full RPC extensions.
 pub fn create_full<C, P, SC, B>(
-	FullDeps { client, pool, select_chain, chain_spec, babe, grandpa, backend }: FullDeps<
+	FullDeps { client, pool, select_chain, chain_spec: _, babe, grandpa, backend }: FullDeps<
 		C,
 		P,
 		SC,
@@ -120,7 +120,6 @@ where
 	use sc_consensus_babe_rpc::{Babe, BabeApiServer};
 	use sc_consensus_grandpa_rpc::{Grandpa, GrandpaApiServer};
 	use sc_rpc::dev::{Dev, DevApiServer};
-	use sc_sync_state_rpc::{SyncState, SyncStateApiServer};
 	use substrate_frame_rpc_system::{System, SystemApiServer};
 	use substrate_state_trie_migration_rpc::{StateMigration, StateMigrationApiServer};
 
@@ -149,11 +148,6 @@ where
 			finality_provider,
 		)
 		.into_rpc(),
-	)?;
-
-	io.merge(
-		SyncState::new(chain_spec, client.clone(), shared_authority_set, babe_worker_handle)?
-			.into_rpc(),
 	)?;
 
 	io.merge(StateMigration::new(client.clone(), backend).into_rpc())?;

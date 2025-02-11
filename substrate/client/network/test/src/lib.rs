@@ -61,19 +61,10 @@ use sc_network::{
 	NotificationMetrics, NotificationService,
 };
 use sc_network_common::role::Roles;
-use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
 use sc_network_sync::{
 	block_request_handler::BlockRequestHandler,
 	service::{network::NetworkServiceProvider, syncing_service::SyncingService},
-	state_request_handler::StateRequestHandler,
-	strategy::{
-		polkadot::{PolkadotSyncingStrategy, PolkadotSyncingStrategyConfig},
-		warp::{
-			AuthorityList, EncodedProof, SetId, VerificationResult, WarpSyncConfig,
-			WarpSyncProvider,
-		},
-	},
-	warp_request_handler,
+	strategy::ChainSync,
 };
 use sc_network_types::{build_multiaddr, multiaddr::Multiaddr};
 use sc_service::client::Client;
@@ -652,32 +643,6 @@ impl<B: BlockT> VerifierAdapter<B> {
 	}
 }
 
-struct TestWarpSyncProvider<B: BlockT>(Arc<dyn HeaderBackend<B>>);
-
-impl<B: BlockT> WarpSyncProvider<B> for TestWarpSyncProvider<B> {
-	fn generate(
-		&self,
-		_start: B::Hash,
-	) -> Result<EncodedProof, Box<dyn std::error::Error + Send + Sync>> {
-		let info = self.0.info();
-		let best_header = self.0.header(info.best_hash).unwrap().unwrap();
-		Ok(EncodedProof(best_header.encode()))
-	}
-	fn verify(
-		&self,
-		proof: &EncodedProof,
-		_set_id: SetId,
-		_authorities: AuthorityList,
-	) -> Result<VerificationResult<B>, Box<dyn std::error::Error + Send + Sync>> {
-		let EncodedProof(encoded) = proof;
-		let header = B::Header::decode(&mut encoded.as_slice()).unwrap();
-		Ok(VerificationResult::Complete(0, Default::default(), header))
-	}
-	fn current_authorities(&self) -> AuthorityList {
-		Default::default()
-	}
-}
-
 /// Configuration for a full peer.
 #[derive(Default)]
 pub struct FullPeerConfig {
@@ -766,11 +731,6 @@ pub trait TestNetFactory: Default + Sized + Send {
 			*genesis_extra_storage = storage;
 		}
 
-		if !config.force_genesis &&
-			matches!(config.sync_mode, SyncMode::LightState { .. } | SyncMode::Warp)
-		{
-			test_client_builder = test_client_builder.set_no_genesis();
-		}
 		let backend = test_client_builder.backend();
 		let (c, longest_chain) = test_client_builder.build_with_longest_chain();
 		let client = Arc::new(c);
@@ -846,49 +806,6 @@ pub trait TestNetFactory: Default + Sized + Send {
 			block_relay_params.server.run().await;
 		}));
 
-		let state_request_protocol_config = {
-			let (handler, protocol_config) = StateRequestHandler::new::<NetworkWorker<_, _>>(
-				&protocol_id,
-				None,
-				client.clone(),
-				50,
-			);
-			self.spawn_task(handler.run().boxed());
-			protocol_config
-		};
-
-		let light_client_request_protocol_config =
-			{
-				let (handler, protocol_config) = LightClientRequestHandler::new::<
-					NetworkWorker<_, _>,
-				>(&protocol_id, None, client.clone());
-				self.spawn_task(handler.run().boxed());
-				protocol_config
-			};
-
-		let warp_sync = Arc::new(TestWarpSyncProvider(client.clone()));
-
-		let warp_sync_config = match config.target_header {
-			Some(target_header) => WarpSyncConfig::WithTarget(target_header),
-			_ => WarpSyncConfig::WithProvider(warp_sync.clone()),
-		};
-
-		let warp_protocol_config = {
-			let (handler, protocol_config) =
-				warp_request_handler::RequestHandler::new::<_, NetworkWorker<_, _>>(
-					protocol_id.clone(),
-					client
-						.block_hash(0u32.into())
-						.ok()
-						.flatten()
-						.expect("Genesis block exists; qed"),
-					None,
-					warp_sync.clone(),
-				);
-			self.spawn_task(handler.run().boxed());
-			protocol_config
-		};
-
 		let peer_store = PeerStore::new(
 			network_config
 				.boot_nodes
@@ -908,21 +825,16 @@ pub trait TestNetFactory: Default + Sized + Send {
 			<Block as BlockT>::Hash,
 		>>::register_notification_metrics(None);
 
-		let syncing_config = PolkadotSyncingStrategyConfig {
-			mode: network_config.sync_mode,
-			max_parallel_downloads: network_config.max_parallel_downloads,
-			max_blocks_per_request: network_config.max_blocks_per_request,
-			metrics_registry: None,
-			state_request_protocol_name: state_request_protocol_config.name.clone(),
-			block_downloader: block_relay_params.downloader,
-		};
 		// Initialize syncing strategy.
 		let syncing_strategy = Box::new(
-			PolkadotSyncingStrategy::new(
-				syncing_config,
+			ChainSync::new(
+				network_config.sync_mode,
 				client.clone(),
-				Some(warp_sync_config),
-				Some(warp_protocol_config.name.clone()),
+				network_config.max_parallel_downloads,
+				network_config.max_blocks_per_request,
+				block_relay_params.downloader,
+				None,
+				[],
 			)
 			.unwrap(),
 		);
@@ -948,12 +860,7 @@ pub trait TestNetFactory: Default + Sized + Send {
 		for config in config.request_response_protocols {
 			full_net_config.add_request_response_protocol(config);
 		}
-		for config in [
-			block_relay_params.request_response_config,
-			state_request_protocol_config,
-			light_client_request_protocol_config,
-			warp_protocol_config,
-		] {
+		for config in [block_relay_params.request_response_config] {
 			full_net_config.add_request_response_protocol(config);
 		}
 

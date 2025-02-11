@@ -34,7 +34,7 @@ use sc_consensus_babe::{self, SlotProportion};
 use sc_network::{
 	event::Event, service::traits::NetworkService, NetworkBackend, NetworkEventStream,
 };
-use sc_network_sync::{strategy::warp::WarpSyncConfig, SyncingService};
+use sc_network_sync::SyncingService;
 use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sc_transaction_pool::TransactionPoolHandle;
@@ -394,12 +394,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 		);
 	net_config.add_notification_protocol(grandpa_protocol_config);
 
-	let warp_sync = Arc::new(grandpa::warp_proof::NetworkProvider::new(
-		backend.clone(),
-		import_setup.1.shared_authority_set().clone(),
-		Vec::default(),
-	));
-
 	let (network, system_rpc_tx, tx_handler_controller, network_starter, sync_service) =
 		sc_service::build_network(sc_service::BuildNetworkParams {
 			config: &config,
@@ -409,7 +403,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 			spawn_handle: task_manager.spawn_handle(),
 			import_queue,
 			block_announce_validator_builder: None,
-			warp_sync_config: Some(WarpSyncConfig::WithProvider(warp_sync)),
 			block_relay: None,
 			metrics,
 		})?;

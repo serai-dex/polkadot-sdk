@@ -881,30 +881,4 @@ mod tests {
 		pruning.prune_one(&mut commit).unwrap();
 		db.commit(&commit);
 	}
-
-	/// Ensure that after warp syncing the state is stored correctly in the db. The warp sync target
-	/// block is imported with all its state at once. This test ensures that after a restart
-	/// `pruning` still knows that this block was imported.
-	#[test]
-	fn store_correct_state_after_warp_syncing() {
-		for count_insertions in [true, false] {
-			let mut db = make_db(&[]);
-			let mut pruning: RefWindow<u64, H256, TestDb> =
-				RefWindow::new(db.clone(), DEFAULT_MAX_BLOCK_CONSTRAINT, count_insertions).unwrap();
-			let block = 10000;
-
-			// import blocks
-			let mut commit = make_commit(&[], &[]);
-			pruning.note_canonical(&block, block, &mut commit).unwrap();
-			push_last_canonicalized(block, &mut commit);
-			db.commit(&commit);
-
-			// load a new queue from db
-			// `cache` should be the same
-			let pruning: RefWindow<u64, H256, TestDb> =
-				RefWindow::new(db, DEFAULT_MAX_BLOCK_CONSTRAINT, count_insertions).unwrap();
-
-			assert_eq!(HaveBlock::Yes, pruning.have_block(&block, block));
-		}
-	}
 }

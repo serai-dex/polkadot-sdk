@@ -47,7 +47,6 @@ members = [
 	"substrate/client/network",
 	"substrate/client/network-gossip",
 	"substrate/client/network/common",
-	"substrate/client/network/light",
 	"substrate/client/network/sync",
 	"substrate/client/network/test",
 	"substrate/client/network/transactions",
@@ -62,7 +61,6 @@ members = [
 	"substrate/client/service/test",
 	"substrate/client/state-db",
 	"substrate/client/storage-monitor",
-	"substrate/client/sync-state-rpc",
 	"substrate/client/sysinfo",
 	"substrate/client/telemetry",
 	"substrate/client/tracing",
@@ -556,7 +554,6 @@ sc-keystore = { path = "substrate/client/keystore", default-features = false, ve
 sc-network = { path = "substrate/client/network", default-features = false, version = "0.48.0" }
 sc-network-common = { path = "substrate/client/network/common", default-features = false, version = "0.47.0" }
 sc-network-gossip = { path = "substrate/client/network-gossip", default-features = false, version = "0.48.0" }
-sc-network-light = { path = "substrate/client/network/light", default-features = false, version = "0.47.0" }
 sc-network-sync = { path = "substrate/client/network/sync", default-features = false, version = "0.47.0" }
 sc-network-test = { path = "substrate/client/network/test" }
 sc-network-transactions = { path = "substrate/client/network/transactions", default-features = false, version = "0.47.0" }
@@ -572,7 +569,6 @@ sc-service = { path = "substrate/client/service", default-features = false, vers
 sc-service-test = { path = "substrate/client/service/test" }
 sc-state-db = { path = "substrate/client/state-db", default-features = false, version = "0.37.0" }
 sc-storage-monitor = { path = "substrate/client/storage-monitor", default-features = false, version = "0.23.0" }
-sc-sync-state-rpc = { path = "substrate/client/sync-state-rpc", default-features = false, version = "0.48.0" }
 sc-sysinfo = { path = "substrate/client/sysinfo", default-features = false, version = "41.0.0" }
 sc-telemetry = { path = "substrate/client/telemetry", default-features = false, version = "28.0.0" }
 sc-tracing = { path = "substrate/client/tracing", default-features = false, version = "38.0.0" }

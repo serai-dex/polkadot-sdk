@@ -28,13 +28,9 @@ use sc_network::{
 	NotificationMetrics, NotificationService, PeerId,
 };
 use sc_network_common::role::Roles;
-use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
 use sc_network_sync::{
-	block_request_handler::BlockRequestHandler,
-	engine::SyncingEngine,
-	service::network::NetworkServiceProvider,
-	state_request_handler::StateRequestHandler,
-	strategy::polkadot::{PolkadotSyncingStrategy, PolkadotSyncingStrategyConfig},
+	block_request_handler::BlockRequestHandler, engine::SyncingEngine,
+	service::network::NetworkServiceProvider, strategy::ChainSync,
 };
 use sp_blockchain::HeaderBackend;
 use sp_runtime::traits::{Block as BlockT, Zero};
@@ -171,28 +167,6 @@ impl TestNetworkBuilder {
 			block_relay_params.server.run().await;
 		}));
 
-		let state_request_protocol_config = {
-			let (handler, protocol_config) = StateRequestHandler::new::<
-				NetworkWorker<
-					substrate_test_runtime_client::runtime::Block,
-					substrate_test_runtime_client::runtime::Hash,
-				>,
-			>(&protocol_id, None, client.clone(), 50);
-			tokio::spawn(handler.run().boxed());
-			protocol_config
-		};
-
-		let light_client_request_protocol_config = {
-			let (handler, protocol_config) = LightClientRequestHandler::new::<
-				NetworkWorker<
-					substrate_test_runtime_client::runtime::Block,
-					substrate_test_runtime_client::runtime::Hash,
-				>,
-			>(&protocol_id, None, client.clone());
-			tokio::spawn(handler.run().boxed());
-			protocol_config
-		};
-
 		let peer_store = PeerStore::new(
 			network_config
 				.boot_nodes
@@ -204,17 +178,18 @@ impl TestNetworkBuilder {
 		let peer_store_handle: Arc<dyn PeerStoreProvider> = Arc::new(peer_store.handle());
 		tokio::spawn(peer_store.run().boxed());
 
-		let syncing_config = PolkadotSyncingStrategyConfig {
-			mode: network_config.sync_mode,
-			max_parallel_downloads: network_config.max_parallel_downloads,
-			max_blocks_per_request: network_config.max_blocks_per_request,
-			metrics_registry: None,
-			state_request_protocol_name: state_request_protocol_config.name.clone(),
-			block_downloader: block_relay_params.downloader,
-		};
 		// Initialize syncing strategy.
 		let syncing_strategy = Box::new(
-			PolkadotSyncingStrategy::new(syncing_config, client.clone(), None, None).unwrap(),
+			ChainSync::new(
+				network_config.sync_mode,
+				client.clone(),
+				network_config.max_parallel_downloads,
+				network_config.max_blocks_per_request,
+				block_relay_params.downloader,
+				None,
+				[],
+			)
+			.unwrap(),
 		);
 
 		let (engine, chain_sync_service, block_announce_config) = SyncingEngine::new(
@@ -251,11 +226,7 @@ impl TestNetworkBuilder {
 			Some(handle)
 		};
 
-		for config in [
-			block_relay_params.request_response_config,
-			state_request_protocol_config,
-			light_client_request_protocol_config,
-		] {
+		for config in [block_relay_params.request_response_config] {
 			full_net_config.add_request_response_protocol(config);
 		}
 

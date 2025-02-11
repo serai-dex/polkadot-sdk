@@ -124,7 +124,6 @@ mod notification;
 mod observer;
 mod until_imported;
 mod voting_rule;
-pub mod warp_proof;
 
 pub use authorities::{AuthoritySet, AuthoritySetChanges, SharedAuthoritySet};
 pub use aux_schema::best_justification;

@@ -77,7 +77,6 @@ tokio = { features = ["macros", "rt-multi-thread"], workspace = true, default-fe
 tokio-util = { features = ["compat"], workspace = true }
 tokio-test = { workspace = true }
 sc-block-builder = { default-features = true, path = "../block-builder" }
-sc-network-light = { default-features = true, path = "light" }
 sc-network-sync = { default-features = true, path = "sync" }
 sp-crypto-hashing = { default-features = true, path = "../../primitives/crypto/hashing" }
 sp-consensus = { default-features = true, path = "../../primitives/consensus/common" }

@@ -19,7 +19,6 @@
 //! Blockchain syncing implementation in Substrate.
 
 pub use service::syncing_service::SyncingService;
-pub use strategy::warp::{WarpSyncConfig, WarpSyncPhase, WarpSyncProgress};
 pub use types::{SyncEvent, SyncEventStream, SyncState, SyncStatus, SyncStatusProvider};
 
 mod block_announce_validator;
@@ -35,9 +34,7 @@ pub mod blocks;
 pub mod engine;
 pub mod mock;
 pub mod service;
-pub mod state_request_handler;
 pub mod strategy;
-pub mod warp_request_handler;
 
 /// Log target for this crate.
 const LOG_TARGET: &str = "sync";
