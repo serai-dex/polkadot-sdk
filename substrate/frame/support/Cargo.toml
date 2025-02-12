@@ -29,7 +29,7 @@ frame-metadata = { features = [
 	"current",
 	"unstable",
 ], workspace = true }
-sp-api = { features = ["frame-metadata"], workspace = true }
+sp-api = { workspace = true }
 sp-std.workspace = true
 sp-io.workspace = true
 sp-runtime = { features = ["serde"], workspace = true }
