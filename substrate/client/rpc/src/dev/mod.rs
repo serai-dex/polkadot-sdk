@@ -25,8 +25,7 @@ mod tests;
 use jsonrpsee::Extensions;
 use sc_client_api::{BlockBackend, HeaderBackend};
 use sc_rpc_api::{check_if_safe, dev::error::Error};
-use sp_api::{ApiExt, Core, ProvideRuntimeApi};
-use sp_core::Encode;
+use sp_api::{Core, ProvideRuntimeApi};
 use sp_runtime::{
 	generic::DigestItem,
 	traits::{Block as BlockT, Header},
@@ -37,8 +36,6 @@ use std::{
 };
 
 pub use sc_rpc_api::dev::{BlockStats, DevApiServer};
-
-type HasherOf<Block> = <<Block as BlockT>::Header as Header>::Hashing;
 
 /// The Dev API. All methods are unsafe.
 pub struct Dev<Block: BlockT, Client> {
