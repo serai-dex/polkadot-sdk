@@ -1234,9 +1234,9 @@ pub trait Block:
 	+ 'static
 {
 	/// Type for extrinsics.
-	type Extrinsic: Member + Codec + ExtrinsicLike + MaybeSerialize;
+	type Extrinsic: Member + Codec + ExtrinsicLike;
 	/// Header type.
-	type Header: Header<Hash = Self::Hash> + MaybeSerializeDeserialize;
+	type Header: Header<Hash = Self::Hash> + MaybeSerialize;
 	/// Block hash type.
 	type Hash: HashOutput;
 
