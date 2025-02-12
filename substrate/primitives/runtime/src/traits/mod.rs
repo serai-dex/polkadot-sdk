@@ -1145,9 +1145,7 @@ impl<
 /// `parent_hash`, as well as a `digest` and a block `number`.
 ///
 /// You can also create a `new` one from those fields.
-pub trait Header:
-	Clone + Send + Sync + Codec + Eq + MaybeSerialize + Debug + TypeInfo + 'static
-{
+pub trait Header: Clone + Send + Sync + Codec + Eq + Debug + TypeInfo + 'static {
 	/// Header number.
 	type Number: BlockNumber;
 	/// Header hash type
