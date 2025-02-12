@@ -14,7 +14,6 @@ std = [
 	"frame-benchmarking?/std",
 	"frame-election-provider-support?/std",
 	"frame-executive?/std",
-	"frame-metadata-hash-extension?/std",
 	"frame-support-procedural?/std",
 	"frame-support?/std",
 	"frame-system-benchmarking?/std",
@@ -118,7 +117,6 @@ std = [
 	"substrate-bip39?/std",
 ]
 runtime-benchmarks = [
-	"frame-benchmarking-cli?/runtime-benchmarks",
 	"frame-benchmarking-pallet-pov?/runtime-benchmarks",
 	"frame-benchmarking/runtime-benchmarks",
 	"frame-election-provider-support?/runtime-benchmarks",
@@ -269,14 +267,13 @@ with-tracing = [
 	"sp-tracing?/with-tracing",
 	"sp-tracing?/with-tracing",
 ]
-runtime-full = ["frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-metadata-hash-extension", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
+runtime-full = ["frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
 runtime = [
 	"frame-benchmarking",
 	"frame-benchmarking-pallet-pov",
 	"frame-election-provider-solution-type",
 	"frame-election-provider-support",
 	"frame-executive",
-	"frame-metadata-hash-extension",
 	"frame-support",
 	"frame-support-procedural",
 	"frame-support-procedural-tools-derive",
@@ -327,7 +324,7 @@ runtime = [
 	"sp-wasm-interface",
 	"sp-weights",
 ]
-node = ["fork-tree", "frame-benchmarking-cli", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
+node = ["fork-tree", "frame-remote-externalities", "frame-support-procedural-tools", "generate-bags", "pallet-transaction-payment-rpc", "sc-allocator", "sc-authority-discovery", "sc-basic-authorship", "sc-block-builder", "sc-chain-spec", "sc-cli", "sc-client-api", "sc-client-db", "sc-consensus", "sc-consensus-aura", "sc-consensus-babe", "sc-consensus-babe-rpc", "sc-consensus-epochs", "sc-consensus-grandpa", "sc-consensus-grandpa-rpc", "sc-consensus-manual-seal", "sc-consensus-pow", "sc-consensus-slots", "sc-executor", "sc-executor-common", "sc-executor-polkavm", "sc-executor-wasmtime", "sc-informant", "sc-keystore", "sc-network", "sc-network-common", "sc-network-gossip", "sc-network-light", "sc-network-sync", "sc-network-transactions", "sc-network-types", "sc-offchain", "sc-proposer-metrics", "sc-rpc", "sc-rpc-api", "sc-rpc-server", "sc-rpc-spec-v2", "sc-service", "sc-state-db", "sc-storage-monitor", "sc-sync-state-rpc", "sc-sysinfo", "sc-telemetry", "sc-tracing", "sc-transaction-pool", "sc-transaction-pool-api", "sc-utils", "sp-blockchain", "sp-consensus", "sp-core-hashing", "sp-core-hashing-proc-macro", "sp-database", "sp-maybe-compressed-blob", "sp-panic-handler", "sp-rpc", "staging-chain-spec-builder", "staging-node-inspect", "std", "subkey", "substrate-build-script-utils", "substrate-frame-rpc-support", "substrate-frame-rpc-system", "substrate-prometheus-endpoint", "substrate-rpc-client", "substrate-state-trie-migration-rpc", "substrate-wasm-builder"]
 tuples-96 = [
 	"frame-support-procedural?/tuples-96",
 	"frame-support?/tuples-96",
@@ -368,12 +365,6 @@ path = "../substrate/frame/executive"
 default-features = false
 optional = true
 version = "39.0.0"
-
-[dependencies.frame-metadata-hash-extension]
-path = "../substrate/frame/metadata-hash-extension"
-default-features = false
-optional = true
-version = "0.7.0"
 
 [dependencies.frame-support]
 path = "../substrate/frame/support"
@@ -1016,12 +1007,6 @@ path = "../substrate/utils/fork-tree"
 default-features = false
 optional = true
 version = "13.0.1"
-
-[dependencies.frame-benchmarking-cli]
-path = "../substrate/utils/frame/benchmarking-cli"
-default-features = false
-optional = true
-version = "46.0.0"
 
 [dependencies.frame-remote-externalities]
 path = "../substrate/utils/frame/remote-externalities"

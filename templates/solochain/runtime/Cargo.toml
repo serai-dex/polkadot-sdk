@@ -25,7 +25,6 @@ frame-support = { features = ["experimental"], workspace = true }
 frame-system.workspace = true
 frame-try-runtime = { optional = true, workspace = true }
 frame-executive.workspace = true
-frame-metadata-hash-extension.workspace = true
 pallet-aura.workspace = true
 pallet-balances.workspace = true
 pallet-grandpa.workspace = true
@@ -61,7 +60,6 @@ std = [
 	"codec/std",
 	"frame-benchmarking?/std",
 	"frame-executive/std",
-	"frame-metadata-hash-extension/std",
 	"frame-support/std",
 	"frame-system-benchmarking?/std",
 	"frame-system-rpc-runtime-api/std",
@@ -123,15 +121,6 @@ try-runtime = [
 	"sp-runtime/try-runtime",
 ]
 
-# Enable the metadata hash generation.
-#
-# This is hidden behind a feature because it increases the compile time.
-# The wasm binary needs to be compiled twice, once to fetch the metadata,
-# generate the metadata hash and then a second time with the
-# `RUNTIME_METADATA_HASH` environment variable set for the `CheckMetadataHash`
-# extension.
-metadata-hash = ["substrate-wasm-builder/metadata-hash"]
-
 # A convenience feature for enabling things when doing a build
 # for an on-chain release.
-on-chain-release-build = ["metadata-hash", "sp-api/disable-logging"]
+on-chain-release-build = ["sp-api/disable-logging"]

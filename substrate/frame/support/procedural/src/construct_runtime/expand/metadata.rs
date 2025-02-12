@@ -99,7 +99,6 @@ pub fn expand_runtime_metadata(
 				// `Deref` needs a reference for resolving the function call.
 				let rt = #runtime;
 
-				let ty = #scrate::__private::scale_info::meta_type::<#extrinsic>();
 				let address_ty = #scrate::__private::scale_info::meta_type::<
 						<#extrinsic as #scrate::traits::SignedTransactionBuilder>::Address
 					>();
@@ -116,7 +115,6 @@ pub fn expand_runtime_metadata(
 				#scrate::__private::metadata_ir::MetadataIR {
 					pallets: #scrate::__private::vec![ #(#pallets),* ],
 					extrinsic: #scrate::__private::metadata_ir::ExtrinsicMetadataIR {
-						ty,
 						versions: <#extrinsic as #scrate::sp_runtime::traits::ExtrinsicMetadata>::VERSIONS.into_iter().map(|ref_version| *ref_version).collect(),
 						address_ty,
 						call_ty,
@@ -149,22 +147,6 @@ pub fn expand_runtime_metadata(
 						error_enum_ty: #scrate::__private::scale_info::meta_type::<RuntimeError>(),
 					}
 				}
-			}
-
-			pub fn metadata() -> #scrate::__private::metadata::RuntimeMetadataPrefixed {
-				// Note: this always returns the V14 version. The runtime API function
-				// must be deprecated.
-				#scrate::__private::metadata_ir::into_v14(#runtime::metadata_ir())
-			}
-
-			pub fn metadata_at_version(version: u32) -> Option<#scrate::__private::OpaqueMetadata> {
-				#scrate::__private::metadata_ir::into_version(#runtime::metadata_ir(), version).map(|prefixed| {
-					#scrate::__private::OpaqueMetadata::new(prefixed.into())
-				})
-			}
-
-			pub fn metadata_versions() -> #scrate::__private::Vec<u32> {
-				#scrate::__private::metadata_ir::supported_versions()
 			}
 		}
 	}

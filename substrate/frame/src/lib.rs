@@ -385,7 +385,6 @@ pub mod runtime {
 		pub use sp_api::impl_runtime_apis;
 
 		// Types often used in the runtime APIs.
-		pub use sp_core::OpaqueMetadata;
 		pub use sp_genesis_builder::{
 			PresetId, Result as GenesisBuilderResult, DEV_RUNTIME_PRESET,
 			LOCAL_TESTNET_RUNTIME_PRESET,

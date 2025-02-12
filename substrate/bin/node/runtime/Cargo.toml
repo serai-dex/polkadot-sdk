@@ -58,4 +58,3 @@ try-runtime = [
 	"polkadot-sdk/try-runtime",
 ]
 experimental = []
-metadata-hash = ["substrate-wasm-builder/metadata-hash"]

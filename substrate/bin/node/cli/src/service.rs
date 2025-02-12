@@ -24,7 +24,6 @@ use polkadot_sdk::{sc_consensus_grandpa as grandpa, *};
 
 use crate::Cli;
 use codec::Encode;
-use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 use frame_system_rpc_runtime_api::AccountNonceApi;
 use futures::prelude::*;
 use kitchensink_runtime::RuntimeApi;
@@ -122,7 +121,6 @@ pub fn create_extrinsic(
 					kitchensink_runtime::Runtime,
 				>::from(tip, None),
 			),
-			frame_metadata_hash_extension::CheckMetadataHash::new(false),
 		);
 
 	let raw_payload = kitchensink_runtime::SignedPayload::from_raw(
@@ -137,7 +135,6 @@ pub fn create_extrinsic(
 			(),
 			(),
 			(),
-			None,
 		),
 	);
 	let signature = raw_payload.using_encoded(|e| sender.sign(e));
@@ -335,7 +332,6 @@ pub struct NewFullBase {
 /// Creates a full service from the configuration.
 pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 	config: Configuration,
-	disable_hardware_benchmarks: bool,
 	with_startup_data: impl FnOnce(
 		&sc_consensus_babe::BabeBlockImport<Block, FullClient, FullGrandpaBlockImport>,
 		&sc_consensus_babe::BabeLink<Block>,
@@ -349,15 +345,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 	let enable_grandpa = !config.disable_grandpa;
 	let prometheus_registry = config.prometheus_registry().cloned();
 	let enable_offchain_worker = config.offchain_worker.enabled;
-
-	let hwbench = (!disable_hardware_benchmarks)
-		.then(|| {
-			config.database.path().map(|database_path| {
-				let _ = std::fs::create_dir_all(&database_path);
-				sc_sysinfo::gather_hwbench(Some(database_path), &SUBSTRATE_REFERENCE_HARDWARE)
-			})
-		})
-		.flatten();
 
 	let sc_service::PartialComponents {
 		client,
@@ -428,28 +415,6 @@ pub fn new_full_base<N: NetworkBackend<Block, <Block as BlockT>::Hash>>(
 		sync_service: sync_service.clone(),
 		telemetry: telemetry.as_mut(),
 	})?;
-
-	if let Some(hwbench) = hwbench {
-		sc_sysinfo::print_hwbench(&hwbench);
-		match SUBSTRATE_REFERENCE_HARDWARE.check_hardware(&hwbench, false) {
-			Err(err) if role.is_authority() => {
-				log::warn!(
-					"⚠️  The hardware does not meet the minimal requirements {} for role 'Authority'.",
-					err
-				);
-			},
-			_ => {},
-		}
-
-		if let Some(ref mut telemetry) = telemetry {
-			let telemetry_handle = telemetry.handle();
-			task_manager.spawn_handle().spawn(
-				"telemetry_hwbench",
-				None,
-				sc_sysinfo::initialize_hwbench_telemetry(telemetry_handle, hwbench),
-			);
-		}
-	}
 
 	let (block_import, grandpa_link, babe_link) = import_setup;
 
@@ -614,21 +579,14 @@ pub fn new_full(config: Configuration, cli: Cli) -> Result<TaskManager, ServiceE
 
 	let task_manager = match config.network.network_backend {
 		sc_network::config::NetworkBackendType::Libp2p => {
-			let task_manager = new_full_base::<sc_network::NetworkWorker<_, _>>(
-				config,
-				cli.no_hardware_benchmarks,
-				|_, _| (),
-			)
-			.map(|NewFullBase { task_manager, .. }| task_manager)?;
+			let task_manager = new_full_base::<sc_network::NetworkWorker<_, _>>(config, |_, _| ())
+				.map(|NewFullBase { task_manager, .. }| task_manager)?;
 			task_manager
 		},
 		sc_network::config::NetworkBackendType::Litep2p => {
-			let task_manager = new_full_base::<sc_network::Litep2pNetworkBackend>(
-				config,
-				cli.no_hardware_benchmarks,
-				|_, _| (),
-			)
-			.map(|NewFullBase { task_manager, .. }| task_manager)?;
+			let task_manager =
+				new_full_base::<sc_network::Litep2pNetworkBackend>(config, |_, _| ())
+					.map(|NewFullBase { task_manager, .. }| task_manager)?;
 			task_manager
 		},
 	};
@@ -711,7 +669,6 @@ mod tests {
 				let NewFullBase { task_manager, client, network, sync, transaction_pool, .. } =
 					new_full_base::<sc_network::NetworkWorker<_, _>>(
 						config,
-						false,
 						|block_import: &sc_consensus_babe::BabeBlockImport<Block, _, _>,
 						 babe_link: &sc_consensus_babe::BabeLink<Block>| {
 							setup_handles = Some((block_import.clone(), babe_link.clone()));
@@ -853,7 +810,6 @@ mod tests {
 				let tx_payment = pallet_skip_feeless_payment::SkipCheckIfFeeless::from(
 					pallet_asset_conversion_tx_payment::ChargeAssetTxPayment::from(0, None),
 				);
-				let metadata_hash = frame_metadata_hash_extension::CheckMetadataHash::new(false);
 				let tx_ext: TxExtension = (
 					check_non_zero_sender,
 					check_spec_version,
@@ -863,22 +819,11 @@ mod tests {
 					check_nonce,
 					check_weight,
 					tx_payment,
-					metadata_hash,
 				);
 				let raw_payload = SignedPayload::from_raw(
 					function,
 					tx_ext,
-					(
-						(),
-						spec_version,
-						transaction_version,
-						genesis_hash,
-						genesis_hash,
-						(),
-						(),
-						(),
-						None,
-					),
+					((), spec_version, transaction_version, genesis_hash, genesis_hash, (), (), ()),
 				);
 				let signature = raw_payload.using_encoded(|payload| signer.sign(payload));
 				let (function, tx_ext, _) = raw_payload.deconstruct();
@@ -906,7 +851,7 @@ mod tests {
 			crate::chain_spec::tests::integration_test_config_with_two_authorities(),
 			|config| {
 				let NewFullBase { task_manager, client, network, sync, transaction_pool, .. } =
-					new_full_base::<sc_network::NetworkWorker<_, _>>(config, false, |_, _| ())?;
+					new_full_base::<sc_network::NetworkWorker<_, _>>(config, |_, _| ())?;
 				Ok(sc_service_test::TestNetComponents::new(
 					task_manager,
 					client,

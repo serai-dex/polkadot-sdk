@@ -22,13 +22,8 @@
 #![recursion_limit = "128"]
 
 use codec::MaxEncodedLen;
-use frame_support::{
-	derive_impl, parameter_types, traits::PalletInfo as _, weights::RuntimeDbWeight,
-};
-use frame_system::{
-	limits::{BlockLength, BlockWeights},
-	DispatchEventInfo,
-};
+use frame_support::{derive_impl, parameter_types, traits::PalletInfo as _};
+use frame_system::DispatchEventInfo;
 use scale_info::TypeInfo;
 use sp_core::sr25519;
 use sp_runtime::{
@@ -36,7 +31,6 @@ use sp_runtime::{
 	traits::{BlakeTwo256, ValidateUnsigned, Verify},
 	DispatchError, ModuleError,
 };
-use sp_version::RuntimeVersion;
 
 parameter_types! {
 	pub static IntegrityTestExec: u32 = 0;
@@ -706,203 +700,6 @@ fn call_subtype_conversion() {
 
 	let from = RuntimeCall::from(subcall.unwrap().clone());
 	assert_eq!(from, call);
-}
-
-#[test]
-fn test_metadata() {
-	use frame_metadata::{
-		v14::{StorageEntryType::Plain, *},
-		*,
-	};
-	use scale_info::meta_type;
-	use sp_core::Encode;
-	use sp_metadata_ir::StorageEntryModifierIR::Optional;
-
-	fn maybe_docs(doc: Vec<&'static str>) -> Vec<&'static str> {
-		if cfg!(feature = "no-metadata-docs") {
-			vec![]
-		} else {
-			doc
-		}
-	}
-
-	let pallets = vec![
-		PalletMetadata {
-			name: "System",
-			storage: None,
-			calls: Some(meta_type::<frame_system::Call<Runtime>>().into()),
-			event: Some(meta_type::<frame_system::Event<Runtime>>().into()),
-			constants: vec![
-				PalletConstantMetadata {
-					name: "BlockWeights",
-					ty: meta_type::<BlockWeights>(),
-					value: BlockWeights::default().encode(),
-					docs: maybe_docs(vec![" Block & extrinsics weights: base values and limits."]),
-				},
-				PalletConstantMetadata {
-					name: "BlockLength",
-					ty: meta_type::<BlockLength>(),
-					value: BlockLength::default().encode(),
-					docs: maybe_docs(vec![" The maximum length of a block (in bytes)."]),
-				},
-				PalletConstantMetadata {
-					name: "BlockHashCount",
-					ty: meta_type::<u64>(),
-					value: 10u64.encode(),
-					docs: maybe_docs(vec![" Maximum number of block number to block hash mappings to keep (oldest pruned first)."]),
-				},
-				PalletConstantMetadata {
-					name: "DbWeight",
-					ty: meta_type::<RuntimeDbWeight>(),
-					value: RuntimeDbWeight::default().encode(),
-					docs: maybe_docs(vec![" The weight of runtime database operations the runtime can invoke.",]),
-				},
-				PalletConstantMetadata {
-					name: "Version",
-					ty: meta_type::<RuntimeVersion>(),
-					value: RuntimeVersion::default().encode(),
-					docs: maybe_docs(vec![ " Get the chain's in-code version."]),
-				},
-			],
-			error: Some(meta_type::<frame_system::Error<Runtime>>().into()),
-			index: 30,
-		},
-		PalletMetadata {
-			name: "Module1_1",
-			storage: None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance1>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance1>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime>>().into()),
-			index: 31,
-		},
-		PalletMetadata {
-			name: "Module2",
-			storage: None,
-			calls: Some(meta_type::<module2::Call<Runtime>>().into()),
-			event: Some(meta_type::<module2::Event<Runtime>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module2::Error<Runtime>>().into()),
-			index: 32,
-		},
-		PalletMetadata {
-			name: "Module1_2",
-			storage: None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance2>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance2>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance2>>().into()),
-			index: 33,
-		},
-		PalletMetadata {
-			name: "NestedModule3",
-			storage: None,
-			calls: Some(meta_type::<nested::module3::Call<Runtime>>().into()),
-			event: Some(meta_type::<nested::module3::Event<Runtime>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<nested::module3::Error<Runtime>>().into()),
-			index: 34,
-		},
-		PalletMetadata {
-			name: "Module3",
-			storage: Some(PalletStorageMetadata {
-				prefix: "Module3",
-				entries: vec![
-					StorageEntryMetadata {
-						name: "Storage",
-						modifier: Optional.into(),
-						ty: Plain(meta_type::<u32>().into()),
-						default: vec![0],
-						docs: vec![],
-					},
-				]
-			}),
-			calls: Some(meta_type::<module3::Call<Runtime>>().into()),
-			event: Some(meta_type::<module3::Event<Runtime>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module3::Error<Runtime>>().into()),
-			index: 35,
-		},
-		PalletMetadata {
-			name: "Module1_3",
-			storage: None,
-			calls: None,
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance3>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance3>>().into()),
-			index: 6,
-		},
-		PalletMetadata {
-			name: "Module1_4",
-			storage: None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance4>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance4>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance4>>().into()),
-			index: 3,
-		},
-		PalletMetadata {
-			name: "Module1_5",
-			storage: None,
-			calls: None,
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance5>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance5>>().into()),
-			index: 4,
-		},
-		PalletMetadata {
-			name: "Module1_6",
-			storage:None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance6>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance6>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance6>>().into()),
-			index: 1,
-		},
-		PalletMetadata {
-			name: "Module1_7",
-			storage: None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance7>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance7>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance7>>().into()),
-			index: 2,
-		},
-		PalletMetadata {
-			name: "Module1_8",
-			storage: None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance8>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance8>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance8>>().into()),
-			index: 12,
-		},
-		PalletMetadata {
-			name: "Module1_9",
-			storage: None,
-			calls: Some(meta_type::<module1::Call<Runtime, module1::Instance9>>().into()),
-			event: Some(meta_type::<module1::Event<Runtime, module1::Instance9>>().into()),
-			constants: vec![],
-			error: Some(meta_type::<module1::Error<Runtime, module1::Instance9>>().into()),
-			index: 13,
-		},
-	];
-
-	let extrinsic = ExtrinsicMetadata {
-		ty: meta_type::<UncheckedExtrinsic>(),
-		version: 4,
-		signed_extensions: vec![SignedExtensionMetadata {
-			identifier: "UnitTransactionExtension",
-			ty: meta_type::<()>(),
-			additional_signed: meta_type::<()>(),
-		}],
-	};
-
-	let expected_metadata: RuntimeMetadataPrefixed =
-		RuntimeMetadataLastVersion::new(pallets, extrinsic, meta_type::<Runtime>()).into();
-	let actual_metadata = Runtime::metadata();
-
-	pretty_assertions::assert_eq!(actual_metadata, expected_metadata);
 }
 
 #[test]

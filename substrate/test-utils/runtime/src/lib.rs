@@ -50,7 +50,7 @@ use sp_application_crypto::Ss58Codec;
 use sp_keyring::AccountKeyring;
 
 use sp_application_crypto::{sr25519, RuntimeAppPublic};
-use sp_core::{OpaqueMetadata, RuntimeDebug};
+use sp_core::RuntimeDebug;
 use sp_trie::{
 	trie_types::{TrieDBBuilder, TrieDBMutBuilderV1},
 	PrefixedMemoryDB, StorageProof,
@@ -151,11 +151,7 @@ pub type Pair = sp_core::sr25519::Pair;
 
 // TODO: Remove after the Checks are migrated to TxExtension.
 /// The extension to the basic transaction logic.
-pub type TxExtension = (
-	(CheckNonce<Runtime>, CheckWeight<Runtime>),
-	CheckSubstrateCall,
-	frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
-);
+pub type TxExtension = ((CheckNonce<Runtime>, CheckWeight<Runtime>), CheckSubstrateCall);
 /// The payload being signed in transactions.
 pub type SignedPayload = sp_runtime::generic::SignedPayload<RuntimeCall, TxExtension>;
 /// Unchecked extrinsic type as expected by this runtime.
@@ -467,19 +463,6 @@ impl_runtime_apis! {
 		fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
 			log::trace!(target: LOG_TARGET, "initialize_block: {header:#?}");
 			Executive::initialize_block(header)
-		}
-	}
-
-	impl sp_api::Metadata<Block> for Runtime {
-		fn metadata() -> OpaqueMetadata {
-			OpaqueMetadata::new(Runtime::metadata().into())
-		}
-
-		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata> {
-			Runtime::metadata_at_version(version)
-		}
-		fn metadata_versions() -> alloc::vec::Vec<u32> {
-			Runtime::metadata_versions()
 		}
 	}
 

@@ -18,28 +18,16 @@
 //! Convert the IR to V14 metadata.
 
 use super::types::{
-	ExtrinsicMetadataIR, MetadataIR, PalletCallMetadataIR, PalletConstantMetadataIR,
-	PalletErrorMetadataIR, PalletEventMetadataIR, PalletMetadataIR, PalletStorageMetadataIR,
-	StorageEntryMetadataIR, StorageEntryModifierIR, StorageEntryTypeIR, StorageHasherIR,
-	TransactionExtensionMetadataIR,
+	PalletCallMetadataIR, PalletConstantMetadataIR, PalletErrorMetadataIR, PalletEventMetadataIR,
+	PalletMetadataIR, PalletStorageMetadataIR, StorageEntryMetadataIR, StorageEntryModifierIR,
+	StorageEntryTypeIR, StorageHasherIR, TransactionExtensionMetadataIR,
 };
 
 use frame_metadata::v14::{
-	ExtrinsicMetadata, PalletCallMetadata, PalletConstantMetadata, PalletErrorMetadata,
-	PalletEventMetadata, PalletMetadata, PalletStorageMetadata, RuntimeMetadataV14,
-	SignedExtensionMetadata, StorageEntryMetadata, StorageEntryModifier, StorageEntryType,
-	StorageHasher,
+	PalletCallMetadata, PalletConstantMetadata, PalletErrorMetadata, PalletEventMetadata,
+	PalletMetadata, PalletStorageMetadata, SignedExtensionMetadata, StorageEntryMetadata,
+	StorageEntryModifier, StorageEntryType, StorageHasher,
 };
-
-impl From<MetadataIR> for RuntimeMetadataV14 {
-	fn from(ir: MetadataIR) -> Self {
-		RuntimeMetadataV14::new(
-			ir.pallets.into_iter().map(Into::into).collect(),
-			ir.extrinsic.into(),
-			ir.ty,
-		)
-	}
-}
 
 impl From<PalletMetadataIR> for PalletMetadata {
 	fn from(ir: PalletMetadataIR) -> Self {
@@ -143,19 +131,6 @@ impl From<TransactionExtensionMetadataIR> for SignedExtensionMetadata {
 			identifier: ir.identifier,
 			ty: ir.ty,
 			additional_signed: ir.implicit,
-		}
-	}
-}
-
-impl From<ExtrinsicMetadataIR> for ExtrinsicMetadata {
-	fn from(ir: ExtrinsicMetadataIR) -> Self {
-		let lowest_supported_version =
-			ir.versions.iter().min().expect("Metadata V14 supports one version; qed");
-
-		ExtrinsicMetadata {
-			ty: ir.ty,
-			version: *lowest_supported_version,
-			signed_extensions: ir.extensions.into_iter().map(Into::into).collect(),
 		}
 	}
 }

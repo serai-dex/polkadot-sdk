@@ -83,7 +83,7 @@ use pallet_tx_pause::RuntimeCallNameOf;
 use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_grandpa::AuthorityId as GrandpaId;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
+use sp_core::crypto::KeyTypeId;
 use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::{
 	curve::PiecewiseLinear,
@@ -948,7 +948,6 @@ where
 					tip, None,
 				),
 			),
-			frame_metadata_hash_extension::CheckMetadataHash::new(false),
 		);
 
 		let raw_payload = SignedPayload::new(call, tx_ext)
@@ -1600,7 +1599,6 @@ pub type TxExtension = (
 		Runtime,
 		pallet_asset_conversion_tx_payment::ChargeAssetTxPayment<Runtime>,
 	>,
-	frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
 );
 
 /// Unchecked extrinsic type as expected by this runtime.
@@ -1748,20 +1746,6 @@ impl_runtime_apis! {
 
 		fn initialize_block(header: &<Block as BlockT>::Header) -> sp_runtime::ExtrinsicInclusionMode {
 			Executive::initialize_block(header)
-		}
-	}
-
-	impl sp_api::Metadata<Block> for Runtime {
-		fn metadata() -> OpaqueMetadata {
-			OpaqueMetadata::new(Runtime::metadata().into())
-		}
-
-		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata> {
-			Runtime::metadata_at_version(version)
-		}
-
-		fn metadata_versions() -> alloc::vec::Vec<u32> {
-			Runtime::metadata_versions()
 		}
 	}
 

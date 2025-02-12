@@ -111,7 +111,7 @@ fn new_node(tokio_handle: Handle) -> node_cli::service::NewFullBase {
 		wasm_runtime_overrides: None,
 	};
 
-	node_cli::service::new_full_base::<sc_network::NetworkWorker<_, _>>(config, false, |_, _| ())
+	node_cli::service::new_full_base::<sc_network::NetworkWorker<_, _>>(config, |_, _| ())
 		.expect("creating a full node doesn't fail")
 }
 

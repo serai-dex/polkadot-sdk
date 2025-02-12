@@ -15,16 +15,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(all(feature = "std", not(feature = "metadata-hash")))]
+#[cfg(feature = "std")]
 fn main() {
 	substrate_wasm_builder::WasmBuilder::build_using_defaults()
-}
-
-#[cfg(all(feature = "std", feature = "metadata-hash"))]
-fn main() {
-	substrate_wasm_builder::WasmBuilder::init_with_defaults()
-		.enable_metadata_hash("Test", 14)
-		.build()
 }
 
 #[cfg(not(feature = "std"))]

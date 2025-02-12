@@ -121,8 +121,6 @@ use std::{
 use version::Version;
 
 mod builder;
-#[cfg(feature = "metadata-hash")]
-mod metadata_hash;
 mod prerequisites;
 mod version;
 mod wasm_project;

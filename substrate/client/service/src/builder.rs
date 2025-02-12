@@ -399,8 +399,7 @@ where
 		+ CallApiAt<TBl>
 		+ Send
 		+ 'static,
-	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_api::Metadata<TBl>
-		+ sp_transaction_pool::runtime_api::TaggedTransactionQueue<TBl>
+	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_transaction_pool::runtime_api::TaggedTransactionQueue<TBl>
 		+ sp_session::SessionKeys<TBl>
 		+ sp_api::ApiExt<TBl>,
 	TBl: BlockT,
@@ -668,7 +667,7 @@ where
 		+ Sync
 		+ 'static,
 	TBackend: sc_client_api::backend::Backend<TBl> + 'static,
-	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_session::SessionKeys<TBl> + sp_api::Metadata<TBl>,
+	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_session::SessionKeys<TBl>,
 	TExPool: MaintainedTransactionPool<Block = TBl, Hash = <TBl as BlockT>::Hash> + 'static,
 	TBl::Hash: Unpin,
 	TBl::Header: Unpin,

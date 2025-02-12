@@ -6,6 +6,7 @@
 ./cumulus
 ./docs
 ./polkadot
+./substrate/bin/node/cli/src/benchmarking.rs
 ./substrate/client/cli/src/params/mixnet_params.rs
 ./substrate/client/consensus/beefy
 ./substrate/client/merkle-mountain-range
@@ -39,6 +40,7 @@
 ./substrate/frame/lottery
 ./substrate/frame/membership
 ./substrate/frame/merkle-mountain-range
+./substrate/frame/metadata-hash-extension
 ./substrate/frame/mixnet
 ./substrate/frame/node-authorization
 ./substrate/frame/nomination-pools
@@ -55,6 +57,8 @@
 ./substrate/frame/support/src/crypto/ecdsa.rs
 ./substrate/frame/support/src/traits/proving.rs
 ./substrate/frame/support/src/traits/voting.rs
+./substrate/frame/support/test/tests/pallet_associated_types_metadata.rs
+./substrate/frame/support/test/tests/runtime_metadata.rs
 ./substrate/frame/tips
 ./substrate/frame/transaction-storage
 ./substrate/frame/treasury
@@ -83,4 +87,7 @@
 ./substrate/primitives/statement-store
 ./substrate/primitives/transaction-storage-proof
 ./substrate/utils/binary-merkle-tree
+./substrate/utils/frame/benchmarking-cli
+./substrate/utils/frame/omni-bencher
+./substrate/utils/wasm-builder/src/metadata_hash.rs
 ./templates/parachain

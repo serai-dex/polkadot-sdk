@@ -21,8 +21,6 @@ fs_extra = { workspace = true }
 futures = { workspace = true }
 log = { workspace = true, default-features = true }
 tempfile = { workspace = true }
-frame-metadata-hash-extension.workspace = true
-frame-metadata-hash-extension.default-features = true
 frame-system.workspace = true
 frame-system.default-features = true
 node-cli.workspace = true

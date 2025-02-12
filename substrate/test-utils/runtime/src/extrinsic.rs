@@ -22,7 +22,6 @@ use crate::{
 	CheckSubstrateCall, Extrinsic, Nonce, Pair, RuntimeCall, SignedPayload, TransferData,
 };
 use codec::Encode;
-use frame_metadata_hash_extension::CheckMetadataHash;
 use frame_system::{CheckNonce, CheckWeight};
 use sp_core::crypto::Pair as TraitPair;
 use sp_keyring::AccountKeyring;
@@ -209,9 +208,6 @@ impl ExtrinsicBuilder {
 			let tx_ext = (
 				(CheckNonce::from(self.nonce.unwrap_or(0)), CheckWeight::new()),
 				CheckSubstrateCall {},
-				self.metadata_hash
-					.map(CheckMetadataHash::new_with_custom_hash)
-					.unwrap_or_else(|| CheckMetadataHash::new(false)),
 			);
 			let raw_payload = SignedPayload::from_raw(
 				self.function.clone(),

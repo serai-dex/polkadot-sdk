@@ -102,7 +102,6 @@ members = [
 	"substrate/frame/indices",
 	"substrate/frame/insecure-randomness-collective-flip",
 	"substrate/frame/message-queue",
-	"substrate/frame/metadata-hash-extension",
 	"substrate/frame/migrations",
 	"substrate/frame/multisig",
 	"substrate/frame/nft-fractionalization",
@@ -216,10 +215,8 @@ members = [
 	"substrate/test-utils/runtime/transaction-pool",
 	"substrate/utils/build-script-utils",
 	"substrate/utils/fork-tree",
-	"substrate/utils/frame/benchmarking-cli",
 	"substrate/utils/frame/generate-bags",
 	"substrate/utils/frame/generate-bags/node-runtime",
-	"substrate/utils/frame/omni-bencher",
 	"substrate/utils/frame/remote-externalities",
 	"substrate/utils/frame/rpc/client",
 	"substrate/utils/frame/rpc/state-trie-migration-rpc",
@@ -338,13 +335,11 @@ forwarded-header-value = { version = "0.1.1" }
 fraction = { version = "0.13.1" }
 frame = { path = "substrate/frame", default-features = false, package = "polkadot-sdk-frame", version = "0.8.0" }
 frame-benchmarking = { path = "substrate/frame/benchmarking", default-features = false, version = "39.0.0" }
-frame-benchmarking-cli = { path = "substrate/utils/frame/benchmarking-cli", default-features = false, version = "46.0.0" }
 frame-benchmarking-pallet-pov = { default-features = false, path = "substrate/frame/benchmarking/pov" }
 frame-election-provider-solution-type = { path = "substrate/frame/election-provider-support/solution-type", default-features = false, version = "14.0.1" }
 frame-election-provider-support = { path = "substrate/frame/election-provider-support", default-features = false, version = "39.0.0" }
 frame-executive = { path = "substrate/frame/executive", default-features = false, version = "39.0.0" }
 frame-metadata = { version = "18.0.0", default-features = false }
-frame-metadata-hash-extension = { path = "substrate/frame/metadata-hash-extension", default-features = false, version = "0.7.0" }
 frame-support = { path = "substrate/frame/support", default-features = false, version = "39.0.0" }
 frame-support-procedural = { path = "substrate/frame/support/procedural", default-features = false, version = "31.0.0" }
 frame-support-procedural-tools = { path = "substrate/frame/support/procedural/tools", default-features = false, version = "13.0.1" }

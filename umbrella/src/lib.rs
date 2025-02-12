@@ -12,10 +12,6 @@ pub use fork_tree;
 #[cfg(feature = "frame-benchmarking")]
 pub use frame_benchmarking;
 
-/// CLI for benchmarking FRAME.
-#[cfg(feature = "frame-benchmarking-cli")]
-pub use frame_benchmarking_cli;
-
 /// Pallet for testing FRAME PoV benchmarking.
 #[cfg(feature = "frame-benchmarking-pallet-pov")]
 pub use frame_benchmarking_pallet_pov;
@@ -31,10 +27,6 @@ pub use frame_election_provider_support;
 /// FRAME executives engine.
 #[cfg(feature = "frame-executive")]
 pub use frame_executive;
-
-/// FRAME signed extension for verifying the metadata hash.
-#[cfg(feature = "frame-metadata-hash-extension")]
-pub use frame_metadata_hash_extension;
 
 /// An externalities provided environment that can load itself from remote nodes or cached
 /// files.
