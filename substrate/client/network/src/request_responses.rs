@@ -1544,8 +1544,10 @@ mod tests {
 		// This swarm only speaks protocol_name_1_fallback and protocol_name_2.
 		// It only responds to requests.
 		let mut older_swarm = {
-			let (tx_1, mut rx_1) = async_channel::bounded::<IncomingRequest>(64);
-			let (tx_2, mut rx_2) = async_channel::bounded::<IncomingRequest>(64);
+			let (tx_1, rx_1) = async_channel::bounded::<IncomingRequest>(64);
+			let mut rx_1 = Box::pin(rx_1);
+			let (tx_2, rx_2) = async_channel::bounded::<IncomingRequest>(64);
+			let mut rx_2 = Box::pin(rx_2);
 			let mut protocol_config_1_fallback = protocol_config_1_fallback.clone();
 			protocol_config_1_fallback.inbound_queue = Some(tx_1);
 
