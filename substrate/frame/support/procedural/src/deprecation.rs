@@ -19,7 +19,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
 	punctuated::Punctuated, spanned::Spanned, Error, Expr, ExprLit, Lit, Meta, MetaNameValue,
-	Result, Token, Variant,
+	Result, Token,
 };
 
 fn deprecation_msg_formatter(msg: &str) -> String {
@@ -108,74 +108,4 @@ fn parse_deprecation(path: &TokenStream, attrs: &[syn::Attribute]) -> Result<Opt
 		.find(|a| a.path().is_ident("deprecated"))
 		.map(|a| parse_deprecated_meta(path, a))
 		.transpose()
-}
-
-/// collects deprecation attribute if its present for enum-like types
-pub fn get_deprecation_enum<'a>(
-	path: &TokenStream,
-	parent_attrs: &[syn::Attribute],
-	children_attrs: impl Iterator<Item = (u8, &'a [syn::Attribute])>,
-) -> Result<TokenStream> {
-	let parent_deprecation = parse_deprecation(path, parent_attrs)?;
-
-	let children = children_attrs
-		.filter_map(|(key, attributes)| {
-			let key = quote::quote! { #path::__private::codec::Compact(#key as u8) };
-			let deprecation_status = parse_deprecation(path, attributes).transpose();
-			deprecation_status.map(|item| item.map(|item| quote::quote! { (#key, #item) }))
-		})
-		.collect::<Result<Vec<TokenStream>>>()?;
-	match (parent_deprecation, children.as_slice()) {
-		(None, []) =>
-			Ok(quote::quote! { #path::__private::metadata_ir::DeprecationInfoIR::NotDeprecated }),
-		(None, _) => {
-			let children = quote::quote! { #path::__private::scale_info::prelude::collections::BTreeMap::from([#( #children),*]) };
-			Ok(
-				quote::quote! { #path::__private::metadata_ir::DeprecationInfoIR::VariantsDeprecated(#children) },
-			)
-		},
-		(Some(depr), _) => Ok(
-			quote::quote! { #path::__private::metadata_ir::DeprecationInfoIR::ItemDeprecated(#depr) },
-		),
-	}
-}
-
-/// Gets the index for the variant inside `Error` or `Event` declaration.
-/// priority is as follows:
-/// Manual `#[codec(index = N)]`
-/// Explicit discriminant `Variant = N`
-/// Variant's definition index
-pub fn variant_index_for_deprecation(index: u8, item: &Variant) -> u8 {
-	let index: u8 =
-		if let Some((_, Expr::Lit(ExprLit { lit: Lit::Int(num_lit), .. }))) = &item.discriminant {
-			num_lit.base10_parse::<u8>().unwrap_or(index as u8)
-		} else {
-			index as u8
-		};
-
-	item.attrs
-		.iter()
-		.find(|attr| attr.path().is_ident("codec"))
-		.and_then(|attr| {
-			if let Meta::List(meta_list) = &attr.meta {
-				meta_list
-					.parse_args_with(Punctuated::<MetaNameValue, syn::Token![,]>::parse_terminated)
-					.ok()
-			} else {
-				None
-			}
-		})
-		.and_then(|parsed| {
-			parsed.iter().fold(None, |mut acc, item| {
-				if let Expr::Lit(ExprLit { lit: Lit::Int(num_lit), .. }) = &item.value {
-					num_lit.base10_parse::<u8>().iter().for_each(|val| {
-						if item.path.is_ident("index") {
-							acc.replace(*val);
-						}
-					})
-				};
-				acc
-			})
-		})
-		.unwrap_or(index)
 }

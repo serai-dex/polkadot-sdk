@@ -33,7 +33,7 @@ mod pallet {
 	}
 }
 
-#[derive(Encode, Decode, PalletError, scale_info::TypeInfo)]
+#[derive(Encode, Decode, PalletError)]
 pub enum MyError {
 	Foo,
 	Bar,
@@ -42,17 +42,17 @@ pub enum MyError {
 	Wrapper(Wrapper),
 }
 
-#[derive(Encode, Decode, PalletError, scale_info::TypeInfo)]
+#[derive(Encode, Decode, PalletError)]
 pub enum NestedError {
 	Quux,
 }
 
-#[derive(Encode, Decode, PalletError, scale_info::TypeInfo)]
+#[derive(Encode, Decode, PalletError)]
 pub struct MyStruct {
 	field: u8,
 }
 
-#[derive(Encode, Decode, PalletError, scale_info::TypeInfo)]
+#[derive(Encode, Decode, PalletError)]
 pub struct Wrapper(bool);
 
 fn main() {}

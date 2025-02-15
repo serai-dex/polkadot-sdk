@@ -207,8 +207,6 @@ pub struct StorageDef {
 	pub try_decode: bool,
 	/// Whether or not a default hasher is allowed to replace `_`
 	pub use_default_hasher: bool,
-	/// Attributes
-	pub attrs: Vec<syn::Attribute>,
 }
 
 /// The parsed generic from the
@@ -944,7 +942,6 @@ impl StorageDef {
 			whitelisted,
 			try_decode,
 			use_default_hasher,
-			attrs: item.attrs.clone(),
 		})
 	}
 }

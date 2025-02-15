@@ -120,18 +120,17 @@ pub use sp_runtime::{
 };
 
 use codec::{Decode, Encode};
-use scale_info::TypeInfo;
 use sp_runtime::TypeId;
 
 /// A unified log target for support operations.
 pub const LOG_TARGET: &str = "runtime::frame-support";
 
 /// A type that cannot be instantiated.
-#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone, TypeInfo)]
+#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
 pub enum Never {}
 
 /// A pallet identifier. These are per pallet and should be stored in a registry somewhere.
-#[derive(Clone, Copy, Eq, PartialEq, Encode, Decode, TypeInfo)]
+#[derive(Clone, Copy, Eq, PartialEq, Encode, Decode)]
 pub struct PalletId(pub [u8; 8]);
 
 impl TypeId for PalletId {
@@ -1601,11 +1600,11 @@ pub mod pallet_macros {
 	///
 	/// 		/// A simple type.
 	/// 		// Type that would have been included in metadata, but is now excluded.
-	/// 		type SimpleType: From<u32> + TypeInfo;
+	/// 		type SimpleType: From<u32>;
 	///
 	/// 		// The `pallet::include_metadata` is used to selectively include this type in metadata.
 	/// 		#[pallet::include_metadata]
-	/// 		type SelectivelyInclude: From<u32> + TypeInfo;
+	/// 		type SelectivelyInclude: From<u32>;
 	/// 	}
 	///
 	/// 	#[pallet::event]
@@ -1633,7 +1632,7 @@ pub mod pallet_macros {
 	/// following traits:
 	///
 	/// ```ignore
-	/// Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, MaxEncodedLen, TypeInfo,
+	/// Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, MaxEncodedLen,
 	/// RuntimeDebug
 	/// ```
 	///
@@ -2534,7 +2533,7 @@ pub mod pallet_macros {
 	///     # pub struct Pallet<T>(_);
 	/// 	/// On the spot declaration.
 	///     #[pallet::origin]
-	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, TypeInfo, MaxEncodedLen)]
+	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	/// 	pub enum Origin {
 	/// 		Foo,
 	/// 		Bar,
@@ -2552,7 +2551,7 @@ pub mod pallet_macros {
 	///     # pub trait Config: frame_system::Config {}
 	///     # #[pallet::pallet]
 	///     # pub struct Pallet<T>(_);
-	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, TypeInfo, MaxEncodedLen)]
+	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	/// 	pub enum RawOrigin {
 	/// 		Foo,
 	/// 		Bar,

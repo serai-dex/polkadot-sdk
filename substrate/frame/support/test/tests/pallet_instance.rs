@@ -47,7 +47,7 @@ pub mod pallet {
 	pub trait Config<I: 'static = ()>: frame_system::Config {
 		#[pallet::constant]
 		type MyGetParam: Get<u32>;
-		type Balance: Parameter + Default + scale_info::StaticTypeInfo;
+		type Balance: Parameter + Default;
 		type RuntimeEvent: From<Event<Self, I>>
 			+ IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
@@ -213,10 +213,8 @@ pub mod pallet {
 		OrdNoBound,
 		Encode,
 		Decode,
-		scale_info::TypeInfo,
 		MaxEncodedLen,
 	)]
-	#[scale_info(skip_type_params(T, I))]
 	pub struct Origin<T, I = ()>(PhantomData<(T, I)>);
 
 	#[pallet::validate_unsigned]

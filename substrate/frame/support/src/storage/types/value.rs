@@ -20,7 +20,7 @@
 use crate::{
 	storage::{
 		generator::StorageValue as StorageValueT,
-		types::{OptionQuery, QueryKindTrait, StorageEntryMetadataBuilder},
+		types::{OptionQuery, QueryKindTrait},
 		StorageAppend, StorageDecodeLength, StorageTryAppend,
 	},
 	traits::{Get, GetDefault, StorageInfo, StorageInstance},
@@ -29,7 +29,6 @@ use alloc::{vec, vec::Vec};
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen};
 use frame_support::storage::StorageDecodeNonDedupLength;
 use sp_arithmetic::traits::SaturatedConversion;
-use sp_metadata_ir::{StorageEntryMetadataIR, StorageEntryTypeIR};
 
 /// A type representing a *value* in storage. A *storage value* is a single value of a given type
 /// stored on-chain.
@@ -269,34 +268,6 @@ where
 	}
 }
 
-impl<Prefix, Value, QueryKind, OnEmpty> StorageEntryMetadataBuilder
-	for StorageValue<Prefix, Value, QueryKind, OnEmpty>
-where
-	Prefix: StorageInstance,
-	Value: FullCodec + scale_info::StaticTypeInfo,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: crate::traits::Get<QueryKind::Query> + 'static,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		let docs = if cfg!(feature = "no-metadata-docs") { vec![] } else { docs };
-
-		let entry = StorageEntryMetadataIR {
-			name: Prefix::STORAGE_PREFIX,
-			modifier: QueryKind::METADATA,
-			ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<Value>()),
-			default: OnEmpty::get().encode(),
-			docs,
-			deprecation_info: deprecation_status,
-		};
-
-		entries.push(entry);
-	}
-}
-
 impl<Prefix, Value, QueryKind, OnEmpty> crate::traits::StorageInfoTrait
 	for StorageValue<Prefix, Value, QueryKind, OnEmpty>
 where
@@ -341,7 +312,6 @@ mod test {
 	use super::*;
 	use crate::storage::types::ValueQuery;
 	use sp_io::{hashing::twox_128, TestExternalities};
-	use sp_metadata_ir::StorageEntryModifierIR;
 
 	struct Prefix;
 	impl StorageInstance for Prefix {
@@ -418,39 +388,6 @@ mod test {
 
 			A::kill();
 			assert_eq!(A::try_get(), Err(()));
-
-			let mut entries = vec![];
-			A::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			AValueQueryWithAnOnEmpty::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			assert_eq!(
-				entries,
-				vec![
-					StorageEntryMetadataIR {
-						name: "foo",
-						modifier: StorageEntryModifierIR::Optional,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: Option::<u32>::None.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated
-					},
-					StorageEntryMetadataIR {
-						name: "foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: 97u32.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated
-					}
-				]
-			);
 
 			WithLen::kill();
 			assert_eq!(WithLen::decode_len(), None);

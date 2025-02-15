@@ -18,9 +18,7 @@
 //! Storage types to build abstraction on storage, they implements storage traits such as
 //! StorageMap and others.
 
-use alloc::vec::Vec;
 use codec::FullCodec;
-use sp_metadata_ir::{StorageEntryMetadataIR, StorageEntryModifierIR};
 
 mod counted_map;
 mod counted_nmap;
@@ -55,9 +53,6 @@ pub use value::StorageValue;
 /// ## Example
 // #[doc = docify::embed!("src/storage/types/mod.rs", value_query_examples)]
 pub trait QueryKindTrait<Value, OnEmpty> {
-	/// Metadata for the storage kind.
-	const METADATA: StorageEntryModifierIR;
-
 	/// Type returned on query
 	type Query: FullCodec + 'static;
 
@@ -78,8 +73,6 @@ impl<Value> QueryKindTrait<Value, crate::traits::GetDefault> for OptionQuery
 where
 	Value: FullCodec + 'static,
 {
-	const METADATA: StorageEntryModifierIR = StorageEntryModifierIR::Optional;
-
 	type Query = Option<Value>;
 
 	fn from_optional_value_to_query(v: Option<Value>) -> Self::Query {
@@ -100,8 +93,6 @@ where
 	Error: FullCodec + 'static,
 	OnEmpty: crate::traits::Get<Result<Value, Error>>,
 {
-	const METADATA: StorageEntryModifierIR = StorageEntryModifierIR::Optional;
-
 	type Query = Result<Value, Error>;
 
 	fn from_optional_value_to_query(v: Option<Value>) -> Self::Query {
@@ -123,8 +114,6 @@ where
 	Value: FullCodec + 'static,
 	OnEmpty: crate::traits::Get<Value>,
 {
-	const METADATA: StorageEntryModifierIR = StorageEntryModifierIR::Default;
-
 	type Query = Value;
 
 	fn from_optional_value_to_query(v: Option<Value>) -> Self::Query {
@@ -134,18 +123,6 @@ where
 	fn from_query_to_optional_value(v: Self::Query) -> Option<Value> {
 		Some(v)
 	}
-}
-
-/// Build the metadata of a storage.
-///
-/// Implemented by each of the storage types: value, map, countedmap, doublemap and nmap.
-pub trait StorageEntryMetadataBuilder {
-	/// Build into `entries` the storage metadata entries of a storage given some `docs`.
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		doc: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	);
 }
 
 #[cfg(test)]

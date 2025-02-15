@@ -16,7 +16,6 @@
 // limitations under the License.
 
 use super::helper;
-use frame_support_procedural_tools::get_doc_literals;
 use syn::spanned::Spanned;
 
 /// List of additional token to be used for parsing.
@@ -33,26 +32,8 @@ mod keyword {
 
 /// Definition of extra constants typically `impl<T: Config> Pallet<T> { ... }`
 pub struct ExtraConstantsDef {
-	/// The where_clause used.
-	pub where_clause: Option<syn::WhereClause>,
 	/// A set of usage of instance, must be check for consistency with trait.
 	pub instances: Vec<helper::InstanceUsage>,
-	/// The extra constant defined.
-	pub extra_constants: Vec<ExtraConstantDef>,
-}
-
-/// Input definition for an constant in pallet.
-pub struct ExtraConstantDef {
-	/// Name of the function
-	pub ident: syn::Ident,
-	/// The type returned by the function
-	pub type_: syn::Type,
-	/// The doc associated
-	pub doc: Vec<syn::Expr>,
-	/// Optional MetaData Name
-	pub metadata_name: Option<syn::Ident>,
-	/// Attributes
-	pub attrs: Vec<syn::Attribute>,
 }
 
 /// Attributes for functions in extra_constants impl block.
@@ -98,7 +79,6 @@ impl ExtraConstantsDef {
 			return Err(syn::Error::new(for_.span(), msg));
 		}
 
-		let mut extra_constants = vec![];
 		for impl_item in &mut item.items {
 			let method = if let syn::ImplItem::Fn(method) = impl_item {
 				method
@@ -122,7 +102,7 @@ impl ExtraConstantsDef {
 				return Err(syn::Error::new(method.sig.generics.where_clause.span(), msg));
 			}
 
-			let type_ = match &method.sig.output {
+			let _type_ = match &method.sig.output {
 				syn::ReturnType::Default => {
 					let msg = "Invalid pallet::extra_constants, method must have a return type";
 					return Err(syn::Error::new(method.span(), msg));
@@ -140,17 +120,9 @@ impl ExtraConstantsDef {
 				return Err(syn::Error::new(extra_constant_attrs[1].metadata_name.span(), msg));
 			}
 
-			let metadata_name = extra_constant_attrs.pop().map(|attr| attr.metadata_name);
-
-			extra_constants.push(ExtraConstantDef {
-				ident: method.sig.ident.clone(),
-				type_,
-				doc: get_doc_literals(&method.attrs),
-				metadata_name,
-				attrs: method.attrs.clone(),
-			});
+			let _metadata_name = extra_constant_attrs.pop().map(|attr| attr.metadata_name);
 		}
 
-		Ok(Self { instances, where_clause: item.generics.where_clause.clone(), extra_constants })
+		Ok(Self { instances })
 	}
 }

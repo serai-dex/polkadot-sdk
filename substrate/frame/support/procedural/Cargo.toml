@@ -39,13 +39,13 @@ codec = { features = [
 	"max-encoded-len",
 ], workspace = true }
 regex = { workspace = true }
-sp-metadata-ir = { path = "../../../primitives/metadata-ir", default-features = false }
+sp-metadata-ir = { path = "../../../primitives/metadata-ir", default-features = false, features = ["std"] }
 scale-info = { features = ["derive"], workspace = true }
-sp-core = { path = "../../../primitives/core", default-features = false }
-sp-io = { path = "../../../primitives/io", default-features = false }
-sp-runtime = { features = ["serde"], path = "../../../primitives/runtime", default-features = false }
-frame-system = { path = "../../system", default-features = false }
-frame-support = { path = "..", default-features = false }
+sp-core = { path = "../../../primitives/core", default-features = false, features = ["std"] }
+sp-io = { path = "../../../primitives/io", default-features = false, features = ["std"] }
+sp-runtime = { features = ["std", "serde"], path = "../../../primitives/runtime", default-features = false }
+frame-system = { path = "../../system", default-features = false, features = ["std"] }
+frame-support = { path = "..", default-features = false, features = ["std"] }
 pretty_assertions = { workspace = true }
 static_assertions = { workspace = true }
 

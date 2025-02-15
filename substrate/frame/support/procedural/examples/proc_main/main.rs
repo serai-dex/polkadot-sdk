@@ -20,11 +20,6 @@ use frame_support_procedural::import_section;
 #[cfg(test)]
 use sp_io::{MultiRemovalResults, TestExternalities};
 #[cfg(test)]
-use sp_metadata_ir::{
-	PalletStorageMetadataIR, StorageEntryMetadataIR, StorageEntryModifierIR, StorageEntryTypeIR,
-	StorageHasherIR,
-};
-#[cfg(test)]
 use sp_runtime::BuildStorage;
 use sp_runtime::{generic, traits::BlakeTwo256};
 
@@ -578,124 +573,6 @@ fn double_map_try_mutate_exists_should_work() {
 		}));
 		assert!(!DoubleMap::contains_key(&key1, key2));
 	});
-}
-
-#[cfg(test)]
-fn expected_metadata() -> PalletStorageMetadataIR {
-	PalletStorageMetadataIR {
-		prefix: "System",
-		entries: vec![
-			StorageEntryMetadataIR {
-				name: "Data",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Twox64Concat],
-					key: scale_info::meta_type::<u32>(),
-					value: scale_info::meta_type::<u64>(),
-				},
-				default: vec![0, 0, 0, 0, 0, 0, 0, 0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "OptionLinkedMap",
-				modifier: StorageEntryModifierIR::Optional,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Blake2_128Concat],
-					key: scale_info::meta_type::<u32>(),
-					value: scale_info::meta_type::<u32>(),
-				},
-				default: vec![0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "GenericData",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Identity],
-					key: scale_info::meta_type::<u32>(),
-					value: scale_info::meta_type::<u32>(),
-				},
-				default: vec![0, 0, 0, 0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "GenericData2",
-				modifier: StorageEntryModifierIR::Optional,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Blake2_128Concat],
-					key: scale_info::meta_type::<u32>(),
-					value: scale_info::meta_type::<u32>(),
-				},
-				default: vec![0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "DataDM",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Twox64Concat, StorageHasherIR::Blake2_128Concat],
-					key: scale_info::meta_type::<(u32, u32)>(),
-					value: scale_info::meta_type::<u64>(),
-				},
-				default: vec![0, 0, 0, 0, 0, 0, 0, 0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "GenericDataDM",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Blake2_128Concat, StorageHasherIR::Identity],
-					key: scale_info::meta_type::<(u32, u32)>(),
-					value: scale_info::meta_type::<u32>(),
-				},
-				default: vec![0, 0, 0, 0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "GenericData2DM",
-				modifier: StorageEntryModifierIR::Optional,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Blake2_128Concat, StorageHasherIR::Twox64Concat],
-					key: scale_info::meta_type::<(u32, u32)>(),
-					value: scale_info::meta_type::<u32>(),
-				},
-				default: vec![0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "AppendableDM",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![
-						StorageHasherIR::Blake2_128Concat,
-						StorageHasherIR::Blake2_128Concat,
-					],
-					key: scale_info::meta_type::<(u32, u32)>(),
-					value: scale_info::meta_type::<Vec<u32>>(),
-				},
-				default: vec![0],
-				docs: vec![],
-			},
-			StorageEntryMetadataIR {
-				name: "Total",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<(u32, u32)>()),
-				default: vec![0, 0, 0, 0, 0, 0, 0, 0],
-				docs: vec![" Some running total."],
-			},
-			StorageEntryMetadataIR {
-				name: "Numbers",
-				modifier: StorageEntryModifierIR::Optional,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Twox64Concat],
-					key: scale_info::meta_type::<u32>(),
-					value: scale_info::meta_type::<u32>(),
-				},
-				default: vec![0],
-				docs: vec![" Numbers to be added into the total."],
-			},
-		],
-	}
 }
 
 #[test]

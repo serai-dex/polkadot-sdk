@@ -35,7 +35,7 @@ mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {}
 
-	#[derive(codec::Encode, codec::Decode, scale_info::TypeInfo)]
+	#[derive(codec::Encode, codec::Decode)]
 	struct Bar;
 
 	#[pallet::storage]

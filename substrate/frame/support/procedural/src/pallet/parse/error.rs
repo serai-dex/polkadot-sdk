@@ -54,6 +54,7 @@ pub struct ErrorDef {
 	/// The span of the pallet::error attribute.
 	pub attr_span: proc_macro2::Span,
 	/// Attributes
+	#[allow(unused)]
 	pub attrs: Vec<syn::Attribute>,
 }
 

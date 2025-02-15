@@ -18,7 +18,6 @@
 //! The transaction extension trait.
 
 use crate::{
-	scale_info::{MetaType, StaticTypeInfo},
 	transaction_validity::{
 		TransactionSource, TransactionValidity, TransactionValidityError, ValidTransaction,
 	},
@@ -227,7 +226,7 @@ pub type ValidateResult<Val, Call> =
 /// correct amount of weight used during the call. This is because one cannot know the actual weight
 /// of an extension after post dispatch without running the post dispatch ahead of time.
 pub trait TransactionExtension<Call: Dispatchable>:
-	Codec + Debug + Sync + Send + Clone + Eq + PartialEq + StaticTypeInfo
+	Codec + Debug + Sync + Send + Clone + Eq + PartialEq
 {
 	/// Unique identifier of this signed extension.
 	///
@@ -238,7 +237,7 @@ pub trait TransactionExtension<Call: Dispatchable>:
 	/// useful in authenticating the transaction. This is determined dynamically in part from the
 	/// on-chain environment using the `implicit` function and not directly contained in the
 	/// transaction itself and therefore is considered "implicit".
-	type Implicit: Codec + StaticTypeInfo;
+	type Implicit: Codec;
 
 	/// Determine any additional data which was known at the time of transaction construction and
 	/// can be useful in authenticating the transaction. The expected usage of this is to include in
@@ -247,22 +246,6 @@ pub trait TransactionExtension<Call: Dispatchable>:
 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
 		use crate::transaction_validity::InvalidTransaction::IndeterminateImplicit;
 		Ok(Self::Implicit::decode(&mut &[][..]).map_err(|_| IndeterminateImplicit)?)
-	}
-
-	/// Returns the metadata for this extension.
-	///
-	/// As a [`TransactionExtension`] can be a tuple of [`TransactionExtension`]s we need to return
-	/// a `Vec` that holds the metadata of each one. Each individual `TransactionExtension` must
-	/// return *exactly* one [`TransactionExtensionMetadata`].
-	///
-	/// This method provides a default implementation that returns a vec containing a single
-	/// [`TransactionExtensionMetadata`].
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		sp_std::vec![TransactionExtensionMetadata {
-			identifier: Self::IDENTIFIER,
-			ty: scale_info::meta_type::<Self>(),
-			implicit: scale_info::meta_type::<Self::Implicit>()
-		}]
 	}
 
 	/// The type that encodes information that can be passed from `validate` to `prepare`.
@@ -526,27 +509,12 @@ macro_rules! impl_tx_ext_default {
 	($call:ty ;) => {};
 }
 
-/// Information about a [`TransactionExtension`] for the runtime metadata.
-pub struct TransactionExtensionMetadata {
-	/// The unique identifier of the [`TransactionExtension`].
-	pub identifier: &'static str,
-	/// The type of the [`TransactionExtension`].
-	pub ty: MetaType,
-	/// The type of the [`TransactionExtension`] additional signed data for the payload.
-	pub implicit: MetaType,
-}
-
 #[impl_for_tuples(1, 12)]
 impl<Call: Dispatchable> TransactionExtension<Call> for Tuple {
 	const IDENTIFIER: &'static str = "Use `metadata()`!";
 	for_tuples!( type Implicit = ( #( Tuple::Implicit ),* ); );
 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
 		Ok(for_tuples!( ( #( Tuple.implicit()? ),* ) ))
-	}
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		let mut ids = Vec::new();
-		for_tuples!( #( ids.extend(Tuple::metadata()); )* );
-		ids
 	}
 
 	for_tuples!( type Val = ( #( Tuple::Val ),* ); );

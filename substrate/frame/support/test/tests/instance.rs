@@ -24,10 +24,6 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::BlockNumberFor;
 use sp_core::sr25519;
-use sp_metadata_ir::{
-	PalletStorageMetadataIR, StorageEntryMetadataIR, StorageEntryModifierIR, StorageEntryTypeIR,
-	StorageHasherIR,
-};
 use sp_runtime::{
 	generic,
 	traits::{BlakeTwo256, Verify},
@@ -112,8 +108,7 @@ mod module1 {
 	}
 
 	#[pallet::origin]
-	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
-	#[scale_info(skip_type_params(I))]
+	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	pub enum Origin<T, I = ()> {
 		Members(u32),
 		_Phantom(PhantomData<(T, I)>),
@@ -217,8 +212,7 @@ mod module2 {
 	}
 
 	#[pallet::origin]
-	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
-	#[scale_info(skip_type_params(I))]
+	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	pub enum Origin<T, I = ()> {
 		Members(u32),
 		_Phantom(PhantomData<(T, I)>),
@@ -429,50 +423,4 @@ fn storage_with_instance_basic_operation() {
 		DoubleMap::remove(&key1, &key2);
 		assert_eq!(DoubleMap::get(&key1, &key2), 0);
 	});
-}
-
-fn expected_metadata() -> PalletStorageMetadataIR {
-	PalletStorageMetadataIR {
-		prefix: "Module2_2",
-		entries: vec![
-			StorageEntryMetadataIR {
-				name: "Value",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-				default: vec![0, 0, 0, 0],
-				docs: vec![],
-				deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-			},
-			StorageEntryMetadataIR {
-				name: "Map",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Identity],
-					key: scale_info::meta_type::<u64>(),
-					value: scale_info::meta_type::<u64>(),
-				},
-				default: [0u8; 8].to_vec(),
-				docs: vec![],
-				deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-			},
-			StorageEntryMetadataIR {
-				name: "DoubleMap",
-				modifier: StorageEntryModifierIR::Default,
-				ty: StorageEntryTypeIR::Map {
-					hashers: vec![StorageHasherIR::Identity, StorageHasherIR::Identity],
-					key: scale_info::meta_type::<(u64, u64)>(),
-					value: scale_info::meta_type::<u64>(),
-				},
-				default: [0u8; 8].to_vec(),
-				docs: vec![],
-				deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-			},
-		],
-	}
-}
-
-#[test]
-fn test_instance_storage_metadata() {
-	let metadata = Module2_2::storage_metadata();
-	pretty_assertions::assert_eq!(expected_metadata(), metadata);
 }

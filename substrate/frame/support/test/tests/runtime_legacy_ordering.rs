@@ -24,7 +24,6 @@
 use codec::MaxEncodedLen;
 use frame_support::{derive_impl, parameter_types, traits::PalletInfo as _};
 use frame_system::DispatchEventInfo;
-use scale_info::TypeInfo;
 use sp_core::sr25519;
 use sp_runtime::{
 	generic,
@@ -58,8 +57,7 @@ mod module1 {
 	}
 
 	#[pallet::origin]
-	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
-	#[scale_info(skip_type_params(I))]
+	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	pub struct Origin<T, I = ()>(pub PhantomData<(T, I)>);
 
 	#[pallet::event]
@@ -102,7 +100,7 @@ mod module2 {
 	}
 
 	#[pallet::origin]
-	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	pub struct Origin;
 
 	#[pallet::event]
@@ -149,7 +147,7 @@ mod nested {
 		}
 
 		#[pallet::origin]
-		#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+		#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 		pub struct Origin;
 
 		#[pallet::event]
@@ -231,7 +229,7 @@ pub mod module3 {
 	}
 
 	#[pallet::origin]
-	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+	#[derive(Clone, PartialEq, Eq, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	pub struct Origin<T>(pub PhantomData<T>);
 
 	#[pallet::event]

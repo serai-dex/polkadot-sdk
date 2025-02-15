@@ -714,6 +714,7 @@ pub mod pallet {
 	}
 
 	// Expose miner configs over the metadata such that they can be re-implemented.
+	#[allow(dead_code)]
 	#[pallet::extra_constants]
 	impl<T: Config> Pallet<T> {
 		#[pallet::constant_name(MinerMaxLength)]

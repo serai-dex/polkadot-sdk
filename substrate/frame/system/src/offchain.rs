@@ -58,7 +58,6 @@
 
 use alloc::{boxed::Box, collections::btree_set::BTreeSet, vec::Vec};
 use codec::Encode;
-use scale_info::TypeInfo;
 use sp_runtime::{
 	app_crypto::RuntimeAppPublic,
 	traits::{ExtrinsicLike, IdentifyAccount, One},
@@ -461,7 +460,7 @@ pub trait CreateTransactionBase<LocalCall> {
 /// Interface for creating a transaction.
 pub trait CreateTransaction<LocalCall>: CreateTransactionBase<LocalCall> {
 	/// The extension.
-	type Extension: TypeInfo;
+	type Extension;
 
 	/// Create a transaction using the call and the desired transaction extension.
 	fn create_transaction(

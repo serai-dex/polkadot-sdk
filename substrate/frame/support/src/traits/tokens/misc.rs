@@ -17,7 +17,7 @@
 
 //! Miscellaneous types.
 
-use crate::{traits::Contains, TypeInfo};
+use crate::traits::Contains;
 use codec::{Decode, Encode, FullCodec, MaxEncodedLen};
 use core::fmt::Debug;
 use sp_arithmetic::traits::{AtLeast32BitUnsigned, Zero};
@@ -175,7 +175,7 @@ pub enum ExistenceRequirement {
 
 /// Status of funds.
 #[derive(
-	PartialEq, Eq, Clone, Copy, Encode, Decode, RuntimeDebug, scale_info::TypeInfo, MaxEncodedLen,
+	PartialEq, Eq, Clone, Copy, Encode, Decode, RuntimeDebug, MaxEncodedLen,
 )]
 pub enum BalanceStatus {
 	/// Funds are free, as corresponding to `free` item in Balances.
@@ -221,13 +221,9 @@ impl WithdrawReasons {
 }
 
 /// Simple amalgamation trait to collect together properties for an AssetId under one roof.
-pub trait AssetId:
-	FullCodec + Clone + Eq + PartialEq + Debug + scale_info::TypeInfo + MaxEncodedLen
-{
+pub trait AssetId: FullCodec + Clone + Eq + PartialEq + Debug + MaxEncodedLen {
 }
-impl<T: FullCodec + Clone + Eq + PartialEq + Debug + scale_info::TypeInfo + MaxEncodedLen> AssetId
-	for T
-{
+impl<T: FullCodec + Clone + Eq + PartialEq + Debug + MaxEncodedLen> AssetId for T {
 }
 
 /// Simple amalgamation trait to collect together properties for a Balance under one roof.
@@ -237,7 +233,6 @@ pub trait Balance:
 	+ Copy
 	+ Default
 	+ Debug
-	+ scale_info::TypeInfo
 	+ MaxEncodedLen
 	+ Send
 	+ Sync
@@ -251,7 +246,6 @@ impl<
 			+ Copy
 			+ Default
 			+ Debug
-			+ scale_info::TypeInfo
 			+ MaxEncodedLen
 			+ Send
 			+ Sync
@@ -341,7 +335,7 @@ impl<CollectionId, ItemId> Locker<CollectionId, ItemId> for () {
 }
 
 /// An identifier and balance.
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, MaxEncodedLen, TypeInfo)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, MaxEncodedLen)]
 pub struct IdAmount<Id, Balance> {
 	/// An identifier for this item.
 	pub id: Id,

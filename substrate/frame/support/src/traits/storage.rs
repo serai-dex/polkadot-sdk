@@ -21,7 +21,6 @@ use alloc::{collections::btree_set::BTreeSet, vec, vec::Vec};
 use codec::{Encode, FullCodec, MaxEncodedLen};
 use core::marker::PhantomData;
 use impl_trait_for_tuples::impl_for_tuples;
-use scale_info::TypeInfo;
 pub use sp_core::storage::TrackedStorageKey;
 use sp_core::Get;
 use sp_runtime::{
@@ -93,7 +92,7 @@ pub trait StorageInstance {
 }
 
 /// Metadata about storage from the runtime.
-#[derive(Debug, codec::Encode, codec::Decode, Eq, PartialEq, Clone, scale_info::TypeInfo)]
+#[derive(Debug, codec::Encode, codec::Decode, Eq, PartialEq, Clone)]
 pub struct StorageInfo {
 	/// Encoded string of pallet name.
 	pub pallet_name: Vec<u8>,
@@ -214,7 +213,7 @@ where
 /// it.
 #[must_use]
 pub trait Consideration<AccountId, Footprint>:
-	Member + FullCodec + TypeInfo + MaxEncodedLen
+	Member + FullCodec + MaxEncodedLen
 {
 	/// Create a ticket for the `new` footprint attributable to `who`. This ticket *must* ultimately
 	/// be consumed through `update` or `drop` once the footprint changes or is removed.

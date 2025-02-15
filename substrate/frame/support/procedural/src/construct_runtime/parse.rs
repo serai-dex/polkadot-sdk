@@ -596,6 +596,7 @@ pub struct Pallet {
 
 impl Pallet {
 	/// Get resolved pallet parts
+	#[allow(dead_code)]
 	pub fn pallet_parts(&self) -> &[PalletPart] {
 		&self.pallet_parts
 	}

@@ -99,11 +99,9 @@ impl TaskEnumDef {
 					#frame_support::PartialEqNoBound,
 					#frame_support::pallet_prelude::Encode,
 					#frame_support::pallet_prelude::Decode,
-					#frame_support::pallet_prelude::TypeInfo,
 				)]
 				#[codec(encode_bound())]
 				#[codec(decode_bound())]
-				#[scale_info(skip_type_params(#type_use_generics))]
 				#vis enum #ident #generics {
 					#variants
 					#[doc(hidden)]

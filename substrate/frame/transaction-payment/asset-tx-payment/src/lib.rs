@@ -169,8 +169,7 @@ pub mod pallet {
 ///
 /// Wraps the transaction logic in [`pallet_transaction_payment`] and extends it with assets.
 /// An asset id of `None` falls back to the underlying transaction payment via the native currency.
-#[derive(Encode, Decode, Clone, Eq, PartialEq, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, Clone, Eq, PartialEq)]
 pub struct ChargeAssetTxPayment<T: Config> {
 	#[codec(compact)]
 	tip: BalanceOf<T>,

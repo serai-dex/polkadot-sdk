@@ -44,6 +44,7 @@ pub struct EventDef {
 	/// The span of the pallet::event attribute.
 	pub attr_span: proc_macro2::Span,
 	/// event attributes
+	#[allow(unused)]
 	pub attrs: Vec<syn::Attribute>,
 }
 

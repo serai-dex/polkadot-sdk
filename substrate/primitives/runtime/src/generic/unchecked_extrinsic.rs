@@ -21,7 +21,7 @@ use crate::{
 	generic::{CheckedExtrinsic, ExtrinsicFormat},
 	traits::{
 		self, transaction_extension::TransactionExtension, Checkable, Dispatchable, ExtrinsicLike,
-		ExtrinsicMetadata, IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
+		IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
 	},
 	transaction_validity::{InvalidTransaction, TransactionValidityError},
 	OpaqueExtrinsic,
@@ -62,7 +62,7 @@ const EXTENSION_VERSION: ExtensionVersion = 0;
 /// The `SignaturePayload` of `UncheckedExtrinsic`.
 pub type UncheckedSignaturePayload<Address, Signature, Extension> = (Address, Signature, Extension);
 
-impl<Address: TypeInfo, Signature: TypeInfo, Extension: TypeInfo> SignaturePayload
+impl<Address, Signature, Extension> SignaturePayload
 	for UncheckedSignaturePayload<Address, Signature, Extension>
 {
 	type SignatureAddress = Address;
@@ -312,7 +312,7 @@ impl<Address, Call, Signature, Extension> UncheckedExtrinsic<Address, Call, Sign
 	}
 }
 
-impl<Address: TypeInfo, Call: TypeInfo, Signature: TypeInfo, Extension: TypeInfo> ExtrinsicLike
+impl<Address, Call, Signature, Extension> ExtrinsicLike
 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
 {
 	fn is_bare(&self) -> bool {
@@ -383,13 +383,6 @@ where
 				CheckedExtrinsic { format: ExtrinsicFormat::Bare, function: self.function },
 		})
 	}
-}
-
-impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
-	ExtrinsicMetadata for UncheckedExtrinsic<Address, Call, Signature, Extension>
-{
-	const VERSIONS: &'static [u8] = &[LEGACY_EXTRINSIC_FORMAT_VERSION, EXTRINSIC_FORMAT_VERSION];
-	type TransactionExtensions = Extension;
 }
 
 impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>

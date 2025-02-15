@@ -21,16 +21,15 @@ use crate::{
 	storage::{
 		types::{
 			EncodeLikeTuple, HasKeyPrefix, HasReversibleKeyPrefix, OptionQuery, QueryKindTrait,
-			StorageEntryMetadataBuilder, StorageNMap, StorageValue, TupleToEncodedIter, ValueQuery,
+			StorageNMap, StorageValue, TupleToEncodedIter, ValueQuery,
 		},
 		KeyGenerator, PrefixIterator, StorageAppend, StorageDecodeLength,
 	},
 	traits::{Get, GetDefault, StorageInfo, StorageInstance},
 	Never,
 };
-use alloc::{vec, vec::Vec};
+use alloc::vec::Vec;
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen, Ref};
-use sp_metadata_ir::StorageEntryMetadataIR;
 use sp_runtime::traits::Saturating;
 
 /// A wrapper around a [`StorageNMap`] and a [`StorageValue`] (with the value being `u32`) to keep
@@ -622,30 +621,6 @@ where
 	}
 }
 
-impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuilder
-	for CountedStorageNMap<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues>
-where
-	Prefix: CountedStorageNMapInstance,
-	Key: super::key::KeyGenerator,
-	Value: FullCodec + scale_info::StaticTypeInfo,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: Get<QueryKind::Query> + 'static,
-	MaxValues: Get<Option<u32>>,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		<Self as MapWrapper>::Map::build_metadata(deprecation_status.clone(), docs, entries);
-		CounterFor::<Prefix>::build_metadata(
-			deprecation_status,
-			vec![&"Counter for the related counted storage map"],
-			entries,
-		);
-	}
-}
-
 impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> crate::traits::StorageInfoTrait
 	for CountedStorageNMap<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues>
 where
@@ -690,7 +665,6 @@ mod test {
 	};
 	use alloc::boxed::Box;
 	use sp_io::{hashing::twox_128, TestExternalities};
-	use sp_metadata_ir::{StorageEntryModifierIR, StorageEntryTypeIR, StorageHasherIR};
 
 	struct Prefix;
 	impl StorageInstance for Prefix {
@@ -862,71 +836,6 @@ mod test {
 			A::translate::<u8, _>(|k1, v| Some((k1 as u16 * v as u16).into()));
 			assert_eq!(A::iter().collect::<Vec<_>>(), vec![(4, 40), (3, 30)]);
 			assert_eq!(A::count(), 2);
-
-			let mut entries = vec![];
-			A::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			AValueQueryWithAnOnEmpty::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			assert_eq!(
-				entries,
-				vec![
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Optional,
-						ty: StorageEntryTypeIR::Map {
-							hashers: vec![StorageHasherIR::Blake2_128Concat],
-							key: scale_info::meta_type::<u16>(),
-							value: scale_info::meta_type::<u32>(),
-						},
-						default: Option::<u32>::None.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: vec![0, 0, 0, 0],
-						docs: if cfg!(feature = "no-metadata-docs") {
-							vec![]
-						} else {
-							vec!["Counter for the related counted storage map"]
-						},
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Map {
-							hashers: vec![StorageHasherIR::Blake2_128Concat],
-							key: scale_info::meta_type::<u16>(),
-							value: scale_info::meta_type::<u32>(),
-						},
-						default: 98u32.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: vec![0, 0, 0, 0],
-						docs: if cfg!(feature = "no-metadata-docs") {
-							vec![]
-						} else {
-							vec!["Counter for the related counted storage map"]
-						},
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-				]
-			);
 
 			let _ = WithLen::clear(u32::max_value(), None);
 			assert_eq!(WithLen::decode_len((3,)), None);
@@ -1123,77 +1032,6 @@ mod test {
 			A::translate::<u8, _>(|(k1, k2), v| Some((k1 * k2 as u16 * v as u16).into()));
 			assert_eq!(A::iter().collect::<Vec<_>>(), vec![((4, 40), 1600), ((3, 30), 900)]);
 			assert_eq!(A::count(), 2);
-
-			let mut entries = vec![];
-			A::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			AValueQueryWithAnOnEmpty::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			assert_eq!(
-				entries,
-				vec![
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Optional,
-						ty: StorageEntryTypeIR::Map {
-							hashers: vec![
-								StorageHasherIR::Blake2_128Concat,
-								StorageHasherIR::Twox64Concat
-							],
-							key: scale_info::meta_type::<(u16, u8)>(),
-							value: scale_info::meta_type::<u32>(),
-						},
-						default: Option::<u32>::None.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: vec![0, 0, 0, 0],
-						docs: if cfg!(feature = "no-metadata-docs") {
-							vec![]
-						} else {
-							vec!["Counter for the related counted storage map"]
-						},
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Map {
-							hashers: vec![
-								StorageHasherIR::Blake2_128Concat,
-								StorageHasherIR::Twox64Concat
-							],
-							key: scale_info::meta_type::<(u16, u8)>(),
-							value: scale_info::meta_type::<u32>(),
-						},
-						default: 98u32.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: vec![0, 0, 0, 0],
-						docs: if cfg!(feature = "no-metadata-docs") {
-							vec![]
-						} else {
-							vec!["Counter for the related counted storage map"]
-						},
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-				]
-			);
 
 			let _ = WithLen::clear(u32::max_value(), None);
 			assert_eq!(WithLen::decode_len((3, 30)), None);
@@ -1421,79 +1259,6 @@ mod test {
 			});
 			assert_eq!(A::iter().collect::<Vec<_>>(), vec![((4, 40, 400), 4), ((3, 30, 300), 3)]);
 			assert_eq!(A::count(), 2);
-
-			let mut entries = vec![];
-			A::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			AValueQueryWithAnOnEmpty::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				vec![],
-				&mut entries,
-			);
-			assert_eq!(
-				entries,
-				vec![
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Optional,
-						ty: StorageEntryTypeIR::Map {
-							hashers: vec![
-								StorageHasherIR::Blake2_128Concat,
-								StorageHasherIR::Blake2_128Concat,
-								StorageHasherIR::Twox64Concat
-							],
-							key: scale_info::meta_type::<(u16, u16, u16)>(),
-							value: scale_info::meta_type::<u32>(),
-						},
-						default: Option::<u32>::None.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: vec![0, 0, 0, 0],
-						docs: if cfg!(feature = "no-metadata-docs") {
-							vec![]
-						} else {
-							vec!["Counter for the related counted storage map"]
-						},
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Map {
-							hashers: vec![
-								StorageHasherIR::Blake2_128Concat,
-								StorageHasherIR::Blake2_128Concat,
-								StorageHasherIR::Twox64Concat
-							],
-							key: scale_info::meta_type::<(u16, u16, u16)>(),
-							value: scale_info::meta_type::<u32>(),
-						},
-						default: 98u32.encode(),
-						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-					StorageEntryMetadataIR {
-						name: "Foo",
-						modifier: StorageEntryModifierIR::Default,
-						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
-						default: vec![0, 0, 0, 0],
-						docs: if cfg!(feature = "no-metadata-docs") {
-							vec![]
-						} else {
-							vec!["Counter for the related counted storage map"]
-						},
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-					},
-				]
-			);
 
 			let _ = WithLen::clear(u32::max_value(), None);
 			assert_eq!(WithLen::decode_len((3, 30, 300)), None);

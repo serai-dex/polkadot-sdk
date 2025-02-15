@@ -152,7 +152,6 @@ impl CompositeDef {
 				#[derive(
 					Copy, Clone, Eq, PartialEq,
 					#scrate::__private::codec::Encode, #scrate::__private::codec::Decode, #scrate::__private::codec::MaxEncodedLen,
-					#scrate::__private::scale_info::TypeInfo,
 					#scrate::__private::RuntimeDebug,
 				)]
 			};
@@ -160,10 +159,6 @@ impl CompositeDef {
 		}
 
 		if has_instance {
-			item.attrs.push(syn::parse_quote! {
-				#[scale_info(skip_type_params(I))]
-			});
-
 			item.variants.push(syn::parse_quote! {
 				#[doc(hidden)]
 				#[codec(skip)]

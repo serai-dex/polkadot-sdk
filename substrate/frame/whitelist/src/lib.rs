@@ -50,7 +50,6 @@ use frame_support::{
 	traits::{QueryPreimage, StorePreimage},
 	weights::Weight,
 };
-use scale_info::TypeInfo;
 use sp_runtime::traits::{Dispatchable, Hash};
 
 pub use pallet::*;
@@ -71,7 +70,6 @@ pub mod pallet {
 			+ Dispatchable<RuntimeOrigin = Self::RuntimeOrigin, PostInfo = PostDispatchInfo>
 			+ GetDispatchInfo
 			+ FullCodec
-			+ TypeInfo
 			+ From<frame_system::Call<Self>>
 			+ Parameter;
 

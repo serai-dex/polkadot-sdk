@@ -30,7 +30,6 @@ use frame_support::traits::{
 	},
 	AccountTouch,
 };
-use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::Convert,
 	DispatchError, DispatchResult, Either,
@@ -40,7 +39,7 @@ use sp_runtime::{
 
 /// The `NativeOrWithId` enum classifies an asset as either `Native` to the current chain or as an
 /// asset with a specific ID.
-#[derive(Decode, Encode, Default, MaxEncodedLen, TypeInfo, Clone, RuntimeDebug, Eq)]
+#[derive(Decode, Encode, Default, MaxEncodedLen, Clone, RuntimeDebug, Eq)]
 pub enum NativeOrWithId<AssetId>
 where
 	AssetId: Ord,

@@ -30,7 +30,7 @@ mod pallet {
 	#[pallet::hooks]
 	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
-	#[derive(Encode, Decode, scale_info::TypeInfo, PartialEq, Clone)]
+	#[derive(Encode, Decode, PartialEq, Clone)]
 	struct Bar;
 
 	#[pallet::call]

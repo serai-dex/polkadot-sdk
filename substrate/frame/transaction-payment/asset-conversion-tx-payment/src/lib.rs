@@ -172,8 +172,7 @@ pub mod pallet {
 /// - Payments with a native asset are charged by
 ///   [pallet_transaction_payment::Config::OnChargeTransaction].
 /// - Payments with other assets are charged by [Config::OnChargeAssetTransaction].
-#[derive(Encode, Decode, Clone, Eq, PartialEq, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, Clone, Eq, PartialEq)]
 pub struct ChargeAssetTxPayment<T: Config> {
 	#[codec(compact)]
 	tip: BalanceOf<T>,

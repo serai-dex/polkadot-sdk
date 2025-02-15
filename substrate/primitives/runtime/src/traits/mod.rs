@@ -55,7 +55,7 @@ use std::str::FromStr;
 pub mod transaction_extension;
 pub use transaction_extension::{
 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
-	TransactionExtensionMetadata, TxBaseImplication, ValidateResult,
+	TxBaseImplication, ValidateResult,
 };
 
 /// A lazy value.
@@ -187,7 +187,7 @@ pub trait Lookup {
 /// context.
 pub trait StaticLookup {
 	/// Type to lookup from.
-	type Source: Codec + Clone + PartialEq + Debug + TypeInfo;
+	type Source: Codec + Clone + PartialEq + Debug;
 	/// Type to lookup into.
 	type Target;
 	/// Attempt a lookup.
@@ -205,7 +205,7 @@ impl<T> Default for IdentityLookup<T> {
 	}
 }
 
-impl<T: Codec + Clone + PartialEq + Debug + TypeInfo> StaticLookup for IdentityLookup<T> {
+impl<T: Codec + Clone + PartialEq + Debug> StaticLookup for IdentityLookup<T> {
 	type Source = T;
 	type Target = T;
 	fn lookup(x: T) -> Result<T, LookupError> {
@@ -1145,7 +1145,7 @@ impl<
 /// `parent_hash`, as well as a `digest` and a block `number`.
 ///
 /// You can also create a `new` one from those fields.
-pub trait Header: Clone + Send + Sync + Codec + Eq + Debug + TypeInfo + 'static {
+pub trait Header: Clone + Send + Sync + Codec + Eq + Debug + 'static {
 	/// Header number.
 	type Number: BlockNumber;
 	/// Header hash type
@@ -1325,34 +1325,23 @@ pub trait SignaturePayload {
 	/// The type of the address that signed the extrinsic.
 	///
 	/// Particular to a signed extrinsic.
-	type SignatureAddress: TypeInfo;
+	type SignatureAddress;
 
 	/// The signature type of the extrinsic.
 	///
 	/// Particular to a signed extrinsic.
-	type Signature: TypeInfo;
+	type Signature;
 
 	/// The additional data that is specific to the signed extrinsic.
 	///
 	/// Particular to a signed extrinsic.
-	type SignatureExtra: TypeInfo;
+	type SignatureExtra;
 }
 
 impl SignaturePayload for () {
 	type SignatureAddress = ();
 	type Signature = ();
 	type SignatureExtra = ();
-}
-
-/// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
-pub trait ExtrinsicMetadata {
-	/// The format versions of the `Extrinsic`.
-	///
-	/// By format we mean the encoded representation of the `Extrinsic`.
-	const VERSIONS: &'static [u8];
-
-	/// Transaction extensions attached to this `Extrinsic`.
-	type TransactionExtensions;
 }
 
 /// Extract the hashing type for a block.
@@ -1554,9 +1543,7 @@ pub trait AsTransactionAuthorizedOrigin {
 /// Means by which a transaction may be extended. This type embodies both the data and the logic
 /// that should be additionally associated with the transaction. It should be plain old data.
 #[deprecated = "Use `TransactionExtension` instead."]
-pub trait SignedExtension:
-	Codec + Debug + Sync + Send + Clone + Eq + PartialEq + StaticTypeInfo
-{
+pub trait SignedExtension: Codec + Debug + Sync + Send + Clone + Eq + PartialEq {
 	/// Unique identifier of this signed extension.
 	///
 	/// This will be exposed in the metadata to identify the signed extension used
@@ -1571,7 +1558,7 @@ pub trait SignedExtension:
 
 	/// Any additional data that will go into the signed payload. This may be created dynamically
 	/// from the transaction using the `additional_signed` function.
-	type AdditionalSigned: Codec + TypeInfo;
+	type AdditionalSigned: Codec;
 
 	/// The type that encodes information that can be passed from pre_dispatch to post-dispatch.
 	type Pre;
@@ -1634,22 +1621,6 @@ pub trait SignedExtension:
 		_result: &DispatchResult,
 	) -> Result<(), TransactionValidityError> {
 		Ok(())
-	}
-
-	/// Returns the metadata for this signed extension.
-	///
-	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
-	/// that holds the metadata of each one. Each individual `SignedExtension` must return
-	/// *exactly* one [`TransactionExtensionMetadata`].
-	///
-	/// This method provides a default implementation that returns a vec containing a single
-	/// [`TransactionExtensionMetadata`].
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		sp_std::vec![TransactionExtensionMetadata {
-			identifier: Self::IDENTIFIER,
-			ty: scale_info::meta_type::<Self>(),
-			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
-		}]
 	}
 
 	/// Validate an unsigned transaction for the transaction queue.
@@ -2278,7 +2249,6 @@ pub trait BlockNumberProvider {
 		+ Ord
 		+ Eq
 		+ AtLeast32BitUnsigned
-		+ TypeInfo
 		+ Debug
 		+ MaxEncodedLen
 		+ Copy;

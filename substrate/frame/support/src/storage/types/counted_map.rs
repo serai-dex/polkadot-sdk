@@ -20,19 +20,15 @@
 use crate::{
 	storage::{
 		generator::StorageMap as _,
-		types::{
-			OptionQuery, QueryKindTrait, StorageEntryMetadataBuilder, StorageMap, StorageValue,
-			ValueQuery,
-		},
+		types::{OptionQuery, QueryKindTrait, StorageMap, StorageValue, ValueQuery},
 		StorageAppend, StorageDecodeLength, StorageTryAppend,
 	},
 	traits::{Get, GetDefault, StorageInfo, StorageInfoTrait, StorageInstance},
 	Never,
 };
-use alloc::{vec, vec::Vec};
+use alloc::vec::Vec;
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen, Ref};
 use sp_io::MultiRemovalResults;
-use sp_metadata_ir::StorageEntryMetadataIR;
 use sp_runtime::traits::Saturating;
 
 /// A wrapper around a [`StorageMap`] and a [`StorageValue`] (with the value being `u32`) to keep
@@ -497,35 +493,6 @@ where
 	}
 }
 
-impl<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuilder
-	for CountedStorageMap<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues>
-where
-	Prefix: CountedStorageMapInstance,
-	Hasher: crate::hash::StorageHasher,
-	Key: FullCodec + scale_info::StaticTypeInfo,
-	Value: FullCodec + scale_info::StaticTypeInfo,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: Get<QueryKind::Query> + 'static,
-	MaxValues: Get<Option<u32>>,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		<Self as MapWrapper>::Map::build_metadata(deprecation_status.clone(), docs, entries);
-		CounterFor::<Prefix>::build_metadata(
-			deprecation_status,
-			if cfg!(feature = "no-metadata-docs") {
-				vec![]
-			} else {
-				vec!["Counter for the related counted storage map"]
-			},
-			entries,
-		);
-	}
-}
-
 impl<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues> crate::traits::StorageInfoTrait
 	for CountedStorageMap<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues>
 where
@@ -570,7 +537,6 @@ mod test {
 		traits::ConstU32,
 	};
 	use sp_io::{hashing::twox_128, TestExternalities};
-	use sp_metadata_ir::{StorageEntryModifierIR, StorageEntryTypeIR, StorageHasherIR};
 
 	struct Prefix;
 	impl StorageInstance for Prefix {
@@ -1192,42 +1158,6 @@ mod test {
 			let last_key = before.last().map(|(k, _)| k).unwrap();
 			assert_eq!(A::iter_from(A::hashed_key_for(last_key)).collect::<Vec<_>>(), after);
 		})
-	}
-
-	#[test]
-	fn test_metadata() {
-		type A = CountedStorageMap<Prefix, Twox64Concat, u16, u32, ValueQuery, ADefault>;
-		let mut entries = vec![];
-		A::build_metadata(sp_metadata_ir::DeprecationStatusIR::NotDeprecated, vec![], &mut entries);
-		assert_eq!(
-			entries,
-			vec![
-				StorageEntryMetadataIR {
-					name: "foo",
-					modifier: StorageEntryModifierIR::Default,
-					ty: StorageEntryTypeIR::Map {
-						hashers: vec![StorageHasherIR::Twox64Concat],
-						key: scale_info::meta_type::<u16>(),
-						value: scale_info::meta_type::<u32>(),
-					},
-					default: 97u32.encode(),
-					docs: vec![],
-					deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				},
-				StorageEntryMetadataIR {
-					name: "counter_for_foo",
-					modifier: StorageEntryModifierIR::Default,
-					ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<Counter>()),
-					default: vec![0, 0, 0, 0],
-					docs: if cfg!(feature = "no-metadata-docs") {
-						vec![]
-					} else {
-						vec!["Counter for the related counted storage map"]
-					},
-					deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
-				},
-			]
-		);
 	}
 
 	// #[docify::export]

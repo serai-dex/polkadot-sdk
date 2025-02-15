@@ -31,12 +31,12 @@ mod module {
 	pub type Request<T> = (<T as frame_system::Config>::AccountId, Role, BlockNumberFor<T>);
 	pub type Requests<T> = Vec<Request<T>>;
 
-	#[derive(Copy, Clone, Eq, PartialEq, Debug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+	#[derive(Copy, Clone, Eq, PartialEq, Debug, Encode, Decode, MaxEncodedLen)]
 	pub enum Role {
 		Storage,
 	}
 
-	#[derive(Copy, Clone, Eq, PartialEq, Debug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+	#[derive(Copy, Clone, Eq, PartialEq, Debug, Encode, Decode, MaxEncodedLen)]
 	pub struct RoleParameters<T: Config> {
 		// minimum actors to maintain - if role is unstaking
 		// and remaining actors would be less that this value - prevent or punish for unstaking
@@ -83,7 +83,7 @@ mod module {
 	pub struct Pallet<T>(_);
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config + TypeInfo {}
+	pub trait Config: frame_system::Config {}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {}

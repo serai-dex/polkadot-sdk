@@ -33,8 +33,6 @@ use scale_info::{
 pub struct MetadataIR<T: Form = MetaForm> {
 	/// Pallet metadata.
 	pub pallets: Vec<PalletMetadataIR<T>>,
-	/// Metadata of the extrinsic.
-	pub extrinsic: ExtrinsicMetadataIR<T>,
 	/// The type of the `Runtime`.
 	pub ty: T::Type,
 	/// Metadata of the Runtime API.
@@ -163,39 +161,6 @@ impl IntoPortable for PalletMetadataIR {
 	}
 }
 
-/// Metadata of the extrinsic used by the runtime.
-#[derive(Clone, PartialEq, Eq, Encode, Debug)]
-pub struct ExtrinsicMetadataIR<T: Form = MetaForm> {
-	/// Extrinsic versions.
-	pub versions: Vec<u8>,
-	/// The type of the address that signs the extrinsic
-	pub address_ty: T::Type,
-	/// The type of the outermost Call enum.
-	pub call_ty: T::Type,
-	/// The type of the extrinsic's signature.
-	pub signature_ty: T::Type,
-	/// The type of the outermost Extra/Extensions enum.
-	// TODO: metadata-v16: remove this, the `implicit` type can be found in `extensions::implicit`.
-	pub extra_ty: T::Type,
-	/// The transaction extensions in the order they appear in the extrinsic.
-	pub extensions: Vec<TransactionExtensionMetadataIR<T>>,
-}
-
-impl IntoPortable for ExtrinsicMetadataIR {
-	type Output = ExtrinsicMetadataIR<PortableForm>;
-
-	fn into_portable(self, registry: &mut Registry) -> Self::Output {
-		ExtrinsicMetadataIR {
-			versions: self.versions,
-			address_ty: registry.register_type(&self.address_ty),
-			call_ty: registry.register_type(&self.call_ty),
-			signature_ty: registry.register_type(&self.signature_ty),
-			extra_ty: registry.register_type(&self.extra_ty),
-			extensions: registry.map_into_portable(self.extensions),
-		}
-	}
-}
-
 /// Metadata of a pallet's associated type.
 #[derive(Clone, PartialEq, Eq, Encode, Debug)]
 pub struct PalletAssociatedTypeMetadataIR<T: Form = MetaForm> {
@@ -215,29 +180,6 @@ impl IntoPortable for PalletAssociatedTypeMetadataIR {
 			name: self.name.into_portable(registry),
 			ty: registry.register_type(&self.ty),
 			docs: registry.map_into_portable(self.docs),
-		}
-	}
-}
-
-/// Metadata of an extrinsic's signed extension.
-#[derive(Clone, PartialEq, Eq, Encode, Debug)]
-pub struct TransactionExtensionMetadataIR<T: Form = MetaForm> {
-	/// The unique signed extension identifier, which may be different from the type name.
-	pub identifier: T::String,
-	/// The type of the signed extension, with the data to be included in the extrinsic.
-	pub ty: T::Type,
-	/// The type of the implicit data, with the data to be included in the signed payload.
-	pub implicit: T::Type,
-}
-
-impl IntoPortable for TransactionExtensionMetadataIR {
-	type Output = TransactionExtensionMetadataIR<PortableForm>;
-
-	fn into_portable(self, registry: &mut Registry) -> Self::Output {
-		TransactionExtensionMetadataIR {
-			identifier: self.identifier.into_portable(registry),
-			ty: registry.register_type(&self.ty),
-			implicit: registry.register_type(&self.implicit),
 		}
 	}
 }

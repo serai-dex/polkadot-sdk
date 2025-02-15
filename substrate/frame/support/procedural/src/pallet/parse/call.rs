@@ -52,6 +52,7 @@ pub struct CallDef {
 	/// The optional `weight` attribute on the `pallet::call`.
 	pub inherited_call_weight: Option<InheritedCallWeightAttr>,
 	/// attributes
+	#[allow(unused)]
 	pub attrs: Vec<syn::Attribute>,
 }
 
