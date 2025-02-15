@@ -20,7 +20,7 @@
 
 use codec::Encode;
 use kitchensink_runtime::{CheckedExtrinsic, SessionKeys, TxExtension, UncheckedExtrinsic};
-use node_primitives::{AccountId, Balance, Nonce};
+use node_primitives::{AccountId, Nonce};
 use sp_core::{crypto::get_public_from_string_or_panic, sr25519};
 use sp_crypto_hashing::blake2_256;
 use sp_keyring::Sr25519Keyring;
@@ -71,7 +71,7 @@ pub fn session_keys_from_seed(seed: &str) -> SessionKeys {
 }
 
 /// Returns transaction extra.
-pub fn tx_ext(nonce: Nonce, extra_fee: Balance) -> TxExtension {
+pub fn tx_ext(nonce: Nonce) -> TxExtension {
 	(
 		frame_system::CheckNonZeroSender::new(),
 		frame_system::CheckSpecVersion::new(),
@@ -80,9 +80,6 @@ pub fn tx_ext(nonce: Nonce, extra_fee: Balance) -> TxExtension {
 		frame_system::CheckEra::from(Era::mortal(256, 0)),
 		frame_system::CheckNonce::from(nonce),
 		frame_system::CheckWeight::new(),
-		pallet_skip_feeless_payment::SkipCheckIfFeeless::from(
-			pallet_asset_conversion_tx_payment::ChargeAssetTxPayment::from(extra_fee, None),
-		),
 	)
 }
 

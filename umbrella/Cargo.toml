@@ -20,13 +20,6 @@ std = [
 	"frame-system-rpc-runtime-api?/std",
 	"frame-system?/std",
 	"frame-try-runtime?/std",
-	"pallet-asset-conversion-ops?/std",
-	"pallet-asset-conversion-tx-payment?/std",
-	"pallet-asset-conversion?/std",
-	"pallet-asset-rate?/std",
-	"pallet-asset-tx-payment?/std",
-	"pallet-assets-freezer?/std",
-	"pallet-assets?/std",
 	"pallet-aura?/std",
 	"pallet-authority-discovery?/std",
 	"pallet-authorship?/std",
@@ -44,10 +37,8 @@ std = [
 	"pallet-message-queue?/std",
 	"pallet-migrations?/std",
 	"pallet-multisig?/std",
-	"pallet-nft-fractionalization?/std",
 	"pallet-nfts-runtime-api?/std",
 	"pallet-nfts?/std",
-	"pallet-nis?/std",
 	"pallet-offences-benchmarking?/std",
 	"pallet-offences?/std",
 	"pallet-paged-list?/std",
@@ -123,13 +114,6 @@ runtime-benchmarks = [
 	"frame-support?/runtime-benchmarks",
 	"frame-system-benchmarking?/runtime-benchmarks",
 	"frame-system?/runtime-benchmarks",
-	"pallet-asset-conversion-ops?/runtime-benchmarks",
-	"pallet-asset-conversion-tx-payment?/runtime-benchmarks",
-	"pallet-asset-conversion?/runtime-benchmarks",
-	"pallet-asset-rate?/runtime-benchmarks",
-	"pallet-asset-tx-payment?/runtime-benchmarks",
-	"pallet-assets-freezer?/runtime-benchmarks",
-	"pallet-assets?/runtime-benchmarks",
 	"pallet-babe?/runtime-benchmarks",
 	"pallet-bags-list?/runtime-benchmarks",
 	"pallet-balances?/runtime-benchmarks",
@@ -143,9 +127,7 @@ runtime-benchmarks = [
 	"pallet-message-queue?/runtime-benchmarks",
 	"pallet-migrations?/runtime-benchmarks",
 	"pallet-multisig?/runtime-benchmarks",
-	"pallet-nft-fractionalization?/runtime-benchmarks",
 	"pallet-nfts?/runtime-benchmarks",
-	"pallet-nis?/runtime-benchmarks",
 	"pallet-offences-benchmarking?/runtime-benchmarks",
 	"pallet-offences?/runtime-benchmarks",
 	"pallet-paged-list?/runtime-benchmarks",
@@ -180,13 +162,6 @@ try-runtime = [
 	"frame-support?/try-runtime",
 	"frame-system?/try-runtime",
 	"frame-try-runtime/try-runtime",
-	"pallet-asset-conversion-ops?/try-runtime",
-	"pallet-asset-conversion-tx-payment?/try-runtime",
-	"pallet-asset-conversion?/try-runtime",
-	"pallet-asset-rate?/try-runtime",
-	"pallet-asset-tx-payment?/try-runtime",
-	"pallet-assets-freezer?/try-runtime",
-	"pallet-assets?/try-runtime",
 	"pallet-aura?/try-runtime",
 	"pallet-authority-discovery?/try-runtime",
 	"pallet-authorship?/try-runtime",
@@ -203,9 +178,7 @@ try-runtime = [
 	"pallet-message-queue?/try-runtime",
 	"pallet-migrations?/try-runtime",
 	"pallet-multisig?/try-runtime",
-	"pallet-nft-fractionalization?/try-runtime",
 	"pallet-nfts?/try-runtime",
-	"pallet-nis?/try-runtime",
 	"pallet-offences?/try-runtime",
 	"pallet-paged-list?/try-runtime",
 	"pallet-preimage?/try-runtime",
@@ -232,7 +205,6 @@ try-runtime = [
 ]
 serde = [
 	"frame-benchmarking?/serde",
-	"pallet-asset-tx-payment?/serde",
 	"pallet-message-queue?/serde",
 	"pallet-offences?/serde",
 	"pallet-remark?/serde",
@@ -267,7 +239,7 @@ with-tracing = [
 	"sp-tracing?/with-tracing",
 	"sp-tracing?/with-tracing",
 ]
-runtime-full = ["frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-asset-conversion", "pallet-asset-conversion-ops", "pallet-asset-conversion-tx-payment", "pallet-asset-rate", "pallet-asset-tx-payment", "pallet-assets", "pallet-assets-freezer", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nft-fractionalization", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-nis", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
+runtime-full = ["frame-benchmarking", "frame-benchmarking-pallet-pov", "frame-election-provider-solution-type", "frame-election-provider-support", "frame-executive", "frame-support", "frame-support-procedural", "frame-support-procedural-tools-derive", "frame-system", "frame-system-benchmarking", "frame-system-rpc-runtime-api", "frame-try-runtime", "pallet-aura", "pallet-authority-discovery", "pallet-authorship", "pallet-babe", "pallet-bags-list", "pallet-balances", "pallet-election-provider-multi-phase", "pallet-election-provider-support-benchmarking", "pallet-glutton", "pallet-grandpa", "pallet-identity", "pallet-im-online", "pallet-indices", "pallet-insecure-randomness-collective-flip", "pallet-message-queue", "pallet-migrations", "pallet-multisig", "pallet-nfts", "pallet-nfts-runtime-api", "pallet-offences", "pallet-offences-benchmarking", "pallet-paged-list", "pallet-preimage", "pallet-proxy", "pallet-remark", "pallet-root-offences", "pallet-root-testing", "pallet-safe-mode", "pallet-scheduler", "pallet-session", "pallet-session-benchmarking", "pallet-skip-feeless-payment", "pallet-staking", "pallet-staking-reward-curve", "pallet-staking-reward-fn", "pallet-staking-runtime-api", "pallet-state-trie-migration", "pallet-sudo", "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", "pallet-tx-pause", "pallet-uniques", "pallet-utility", "pallet-verify-signature", "pallet-whitelist", "polkadot-sdk-frame", "sc-chain-spec-derive", "sc-tracing-proc-macro", "sp-api", "sp-api-proc-macro", "sp-application-crypto", "sp-arithmetic", "sp-authority-discovery", "sp-block-builder", "sp-consensus-aura", "sp-consensus-babe", "sp-consensus-grandpa", "sp-consensus-pow", "sp-consensus-slots", "sp-core", "sp-crypto-hashing", "sp-crypto-hashing-proc-macro", "sp-debug-derive", "sp-externalities", "sp-genesis-builder", "sp-inherents", "sp-io", "sp-keyring", "sp-keystore", "sp-metadata-ir", "sp-npos-elections", "sp-offchain", "sp-runtime", "sp-runtime-interface", "sp-runtime-interface-proc-macro", "sp-session", "sp-staking", "sp-state-machine", "sp-std", "sp-storage", "sp-timestamp", "sp-tracing", "sp-transaction-pool", "sp-trie", "sp-version", "sp-version-proc-macro", "sp-wasm-interface", "sp-weights", "substrate-bip39"]
 runtime = [
 	"frame-benchmarking",
 	"frame-benchmarking-pallet-pov",
@@ -408,48 +380,6 @@ default-features = false
 optional = true
 version = "0.45.0"
 
-[dependencies.pallet-asset-conversion]
-path = "../substrate/frame/asset-conversion"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.pallet-asset-conversion-ops]
-path = "../substrate/frame/asset-conversion/ops"
-default-features = false
-optional = true
-version = "0.7.0"
-
-[dependencies.pallet-asset-conversion-tx-payment]
-path = "../substrate/frame/transaction-payment/asset-conversion-tx-payment"
-default-features = false
-optional = true
-version = "21.0.0"
-
-[dependencies.pallet-asset-rate]
-path = "../substrate/frame/asset-rate"
-default-features = false
-optional = true
-version = "18.0.0"
-
-[dependencies.pallet-asset-tx-payment]
-path = "../substrate/frame/transaction-payment/asset-tx-payment"
-default-features = false
-optional = true
-version = "39.0.0"
-
-[dependencies.pallet-assets]
-path = "../substrate/frame/assets"
-default-features = false
-optional = true
-version = "41.0.0"
-
-[dependencies.pallet-assets-freezer]
-path = "../substrate/frame/assets-freezer"
-default-features = false
-optional = true
-version = "0.6.0"
-
 [dependencies.pallet-aura]
 path = "../substrate/frame/aura"
 default-features = false
@@ -552,12 +482,6 @@ default-features = false
 optional = true
 version = "39.0.0"
 
-[dependencies.pallet-nft-fractionalization]
-path = "../substrate/frame/nft-fractionalization"
-default-features = false
-optional = true
-version = "22.0.0"
-
 [dependencies.pallet-nfts]
 path = "../substrate/frame/nfts"
 default-features = false
@@ -569,12 +493,6 @@ path = "../substrate/frame/nfts/runtime-api"
 default-features = false
 optional = true
 version = "25.0.0"
-
-[dependencies.pallet-nis]
-path = "../substrate/frame/nis"
-default-features = false
-optional = true
-version = "39.0.0"
 
 [dependencies.pallet-offences]
 path = "../substrate/frame/offences"

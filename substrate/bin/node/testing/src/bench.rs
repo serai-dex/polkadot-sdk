@@ -297,7 +297,7 @@ impl<'a> Iterator for BlockContentIterator<'a> {
 			CheckedExtrinsic {
 				format: ExtrinsicFormat::Signed(
 					sender,
-					tx_ext(0, kitchensink_runtime::ExistentialDeposit::get() + 1),
+					tx_ext(0),
 				),
 				function: match self.content.block_type {
 					BlockType::RandomTransfersKeepAlive =>

@@ -7,6 +7,7 @@
 ./docs
 ./polkadot
 ./substrate/bin/node/cli/src/benchmarking.rs
+./substrate/bin/node/runtime/src/assets_api.rs
 ./substrate/client/cli/src/params/mixnet_params.rs
 ./substrate/client/consensus/beefy
 ./substrate/client/merkle-mountain-range
@@ -22,6 +23,9 @@
 ./substrate/client/rpc-api/src/statement
 ./substrate/client/statement-store
 ./substrate/frame/alliance
+./substrate/frame/asset-conversion
+./substrate/frame/asset-rate
+./substrate/frame/assets
 ./substrate/frame/atomic-swap
 ./substrate/frame/beefy
 ./substrate/frame/beefy-mmr
@@ -42,6 +46,8 @@
 ./substrate/frame/merkle-mountain-range
 ./substrate/frame/metadata-hash-extension
 ./substrate/frame/mixnet
+./substrate/frame/nft-fractionalization
+./substrate/frame/nis
 ./substrate/frame/node-authorization
 ./substrate/frame/nomination-pools
 ./substrate/frame/parameters
@@ -71,6 +77,8 @@
 ./substrate/frame/support/test/tests/pallet_ui/pallet_doc_multiple_args.stderr
 ./substrate/frame/support/test/tests/runtime_metadata.rs
 ./substrate/frame/tips
+./substrate/frame/transaction-payment/asset-conversion-tx-payment
+./substrate/frame/transaction-payment/asset-tx-payment
 ./substrate/frame/transaction-storage
 ./substrate/frame/treasury
 ./substrate/frame/vesting

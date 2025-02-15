@@ -69,34 +69,6 @@ pub use frame_try_runtime;
 #[cfg(feature = "generate-bags")]
 pub use generate_bags;
 
-/// FRAME asset conversion pallet.
-#[cfg(feature = "pallet-asset-conversion")]
-pub use pallet_asset_conversion;
-
-/// FRAME asset conversion pallet's operations suite.
-#[cfg(feature = "pallet-asset-conversion-ops")]
-pub use pallet_asset_conversion_ops;
-
-/// Pallet to manage transaction payments in assets by converting them to native assets.
-#[cfg(feature = "pallet-asset-conversion-tx-payment")]
-pub use pallet_asset_conversion_tx_payment;
-
-/// Whitelist non-native assets for treasury spending and provide conversion to native balance.
-#[cfg(feature = "pallet-asset-rate")]
-pub use pallet_asset_rate;
-
-/// pallet to manage transaction payments in assets.
-#[cfg(feature = "pallet-asset-tx-payment")]
-pub use pallet_asset_tx_payment;
-
-/// FRAME asset management pallet.
-#[cfg(feature = "pallet-assets")]
-pub use pallet_assets;
-
-/// Provides freezing features to `pallet-assets`.
-#[cfg(feature = "pallet-assets-freezer")]
-pub use pallet_assets_freezer;
-
 /// FRAME AURA consensus pallet.
 #[cfg(feature = "pallet-aura")]
 pub use pallet_aura;
@@ -166,10 +138,6 @@ pub use pallet_migrations;
 #[cfg(feature = "pallet-multisig")]
 pub use pallet_multisig;
 
-/// FRAME pallet to convert non-fungible to fungible tokens.
-#[cfg(feature = "pallet-nft-fractionalization")]
-pub use pallet_nft_fractionalization;
-
 /// FRAME NFTs pallet.
 #[cfg(feature = "pallet-nfts")]
 pub use pallet_nfts;
@@ -177,10 +145,6 @@ pub use pallet_nfts;
 /// Runtime API for the FRAME NFTs pallet.
 #[cfg(feature = "pallet-nfts-runtime-api")]
 pub use pallet_nfts_runtime_api;
-
-/// FRAME pallet for rewarding account freezing.
-#[cfg(feature = "pallet-nis")]
-pub use pallet_nis;
 
 /// FRAME offences pallet.
 #[cfg(feature = "pallet-offences")]

@@ -55,18 +55,6 @@
     "blockLength": "0",
     "trashDataCount": 0
   },
-  "assets": {
-    "assets": [],
-    "metadata": [],
-    "accounts": [],
-    "nextAssetId": null
-  },
-  "poolAssets": {
-    "assets": [],
-    "metadata": [],
-    "accounts": [],
-    "nextAssetId": null
-  },
   "transactionStorage": {
     "byteFee": 10,
     "entryFee": 1000,

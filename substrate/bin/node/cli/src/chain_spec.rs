@@ -322,10 +322,6 @@ pub fn testnet_genesis(
 		"babe": {
 			"epochConfig": Some(kitchensink_runtime::BABE_GENESIS_EPOCH_CONFIG),
 		},
-		"assets": {
-			// This asset is used by the NIS pallet as counterpart currency.
-			"assets": vec![(9, Sr25519Keyring::Alice.to_account_id(), true, 1)],
-		},
 	})
 }
 
