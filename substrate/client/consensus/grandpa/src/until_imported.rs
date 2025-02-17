@@ -641,7 +641,7 @@ mod tests {
 	}
 
 	fn make_header(number: u64) -> Header {
-		Header::new(
+		Header::propose(
 			number,
 			Default::default(),
 			Default::default(),

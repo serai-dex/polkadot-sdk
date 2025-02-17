@@ -181,7 +181,7 @@ mod tests {
 			0 => Default::default(),
 			_ => header(number - 1).hash(),
 		};
-		Header::new(
+		Header::propose(
 			number,
 			H256::from_low_u64_be(0),
 			H256::from_low_u64_be(0),

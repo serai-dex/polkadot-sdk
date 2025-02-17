@@ -25,7 +25,7 @@ use sc_client_api::{backend::Backend, BlockImportOperation};
 use sc_executor::RuntimeVersionOf;
 use sp_core::storage::{well_known_keys, StateVersion, Storage};
 use sp_runtime::{
-	traits::{Block as BlockT, Hash as HashT, HashingFor, Header as HeaderT, Zero},
+	traits::{Block as BlockT, Hash as HashT, HashingFor, Header as HeaderT},
 	BuildStorage,
 };
 
@@ -67,14 +67,11 @@ pub fn construct_genesis_block<Block: BlockT>(
 		state_version,
 	);
 
+	let mut header = <<Block as BlockT>::Header as HeaderT>::genesis();
+	header.set_state_root(state_root);
+	header.set_extrinsics_root(extrinsics_root);
 	Block::new(
-		<<Block as BlockT>::Header as HeaderT>::new(
-			Zero::zero(),
-			extrinsics_root,
-			state_root,
-			Default::default(),
-			Default::default(),
-		),
+		header,
 		Default::default(),
 	)
 }

@@ -213,7 +213,7 @@ pub fn go_to_block(n: u64, s: u64) {
 	let pre_digest = make_secondary_plain_pre_digest(0, s.into());
 
 	System::reset_events();
-	System::initialize(&n, &parent_hash, &pre_digest);
+	System::initialize(HeaderFor::<Test>::propose(n, Default::default(), Default::default(), parent_hash, pre_digest));
 
 	Babe::on_initialize(n);
 	Session::on_initialize(n);
@@ -366,7 +366,7 @@ pub fn generate_equivocation_proof(
 		let parent_hash = System::parent_hash();
 		let pre_digest = make_secondary_plain_pre_digest(offender_authority_index, slot);
 		System::reset_events();
-		System::initialize(&current_block, &parent_hash, &pre_digest);
+		System::initialize(HeaderFor::<Test>::propose(current_block, Default::default(), Default::default(), parent_hash, pre_digest));
 		System::set_block_number(current_block);
 		Timestamp::set_timestamp(*current_slot * Babe::slot_duration());
 		System::finalize()

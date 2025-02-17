@@ -152,7 +152,7 @@ mod tests {
 	}
 
 	fn create_header(number: u64, parent_hash: H256, state_root: H256) -> Header {
-		Header::new(number, Default::default(), state_root, parent_hash, Default::default())
+		Header::propose(number, Default::default(), state_root, parent_hash, Default::default())
 	}
 
 	fn new_test_ext() -> sp_io::TestExternalities {
@@ -169,7 +169,7 @@ mod tests {
 
 			header.digest_mut().pop(); // pop the seal off.
 			System::reset_events();
-			System::initialize(&1, &Default::default(), header.digest());
+			System::initialize(HeaderFor::<Test>::propose(1, Default::default(), Default::default(), Default::default(), header.digest()));
 
 			assert_eq!(Authorship::author(), Some(author));
 		});

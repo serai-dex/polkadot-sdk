@@ -1145,7 +1145,7 @@ impl<
 /// `parent_hash`, as well as a `digest` and a block `number`.
 ///
 /// You can also create a `new` one from those fields.
-pub trait Header: Clone + Send + Sync + Codec + Eq + Debug + 'static {
+pub trait Header: Clone + Send + Sync + Codec + EncodeLike + Eq + Debug + 'static {
 	/// Header number.
 	type Number: BlockNumber;
 	/// Header hash type
@@ -1153,14 +1153,28 @@ pub trait Header: Clone + Send + Sync + Codec + Eq + Debug + 'static {
 	/// Hashing algorithm
 	type Hashing: Hash<Output = Self::Hash>;
 
-	/// Creates new header.
-	fn new(
+	/// Creates a new header for the purposes of building a new block.
+	///
+	/// This MUST NOT be used to replicate an existing header and MAY be non-deterministic.
+	#[cfg(feature = "std")]
+	fn propose(
 		number: Self::Number,
 		extrinsics_root: Self::Hash,
 		state_root: Self::Hash,
 		parent_hash: Self::Hash,
 		digest: Digest,
 	) -> Self;
+
+	/// Creates a shimmed header.
+	fn shim_propose(
+		number: Self::Number,
+		parent_hash: Self::Hash,
+		digest: Digest,
+	) -> Self;
+
+	/// Create the header for the genesis block.
+	#[cfg(feature = "std")]
+	fn genesis() -> Self;
 
 	/// Returns a reference to the header number.
 	fn number(&self) -> &Self::Number;

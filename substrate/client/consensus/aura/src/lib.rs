@@ -526,7 +526,7 @@ where
 				runtime_api
 					.initialize_block(
 						parent_hash,
-						&B::Header::new(
+						&B::Header::propose(
 							context_block_number,
 							Default::default(),
 							Default::default(),
@@ -813,7 +813,7 @@ mod tests {
 			_phantom: PhantomData::<fn() -> AuthorityPair>,
 		};
 
-		let head = Header::new(
+		let head = Header::propose(
 			1,
 			H256::from_low_u64_be(0),
 			H256::from_low_u64_be(0),

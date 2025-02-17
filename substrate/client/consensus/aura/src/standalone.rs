@@ -213,7 +213,7 @@ where
 				runtime_api
 					.initialize_block(
 						parent_hash,
-						&B::Header::new(
+						&B::Header::propose(
 							context_block_number,
 							Default::default(),
 							Default::default(),

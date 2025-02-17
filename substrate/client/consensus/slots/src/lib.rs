@@ -821,7 +821,7 @@ mod test {
 			duration: SLOT_DURATION,
 			create_inherent_data: Box::new(()),
 			ends_at: Instant::now() + SLOT_DURATION,
-			chain_head: Header::new(
+			chain_head: Header::propose(
 				1,
 				Default::default(),
 				Default::default(),

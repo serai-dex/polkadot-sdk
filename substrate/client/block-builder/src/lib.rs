@@ -224,7 +224,7 @@ where
 		record_proof: bool,
 		inherent_digests: Digest,
 	) -> Result<Self, Error> {
-		let header = <<Block as BlockT>::Header as HeaderT>::new(
+		let header = <<Block as BlockT>::Header as HeaderT>::propose(
 			parent_number + One::one(),
 			Default::default(),
 			Default::default(),

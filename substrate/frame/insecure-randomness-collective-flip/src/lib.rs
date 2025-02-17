@@ -216,7 +216,7 @@ mod tests {
 
 		for i in 1..(blocks + 1) {
 			System::reset_events();
-			System::initialize(&i, &parent_hash, &Default::default());
+			System::initialize(HeaderFor::<Test>::propose(i, Default::default(), Default::default(), parent_hash, Default::default()));
 			CollectiveFlip::on_initialize(i);
 
 			let header = System::finalize();

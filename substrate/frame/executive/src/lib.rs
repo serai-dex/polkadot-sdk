@@ -546,8 +546,10 @@ where
 	) -> ExtrinsicInclusionMode {
 		sp_io::init_tracing();
 		sp_tracing::enter_span!(sp_tracing::Level::TRACE, "init_block");
-		let digests = Self::extract_pre_digest(header);
-		Self::initialize_block_impl(header.number(), header.parent_hash(), &digests);
+		let pre_digests = Self::extract_pre_digest(header);
+		let header = header.clone();
+		*header.digest_mut() = pre_digests;
+		Self::initialize_block_impl(header);
 
 		Self::extrinsic_mode()
 	}
@@ -571,9 +573,7 @@ where
 	}
 
 	fn initialize_block_impl(
-		block_number: &BlockNumberFor<System>,
-		parent_hash: &System::Hash,
-		digest: &Digest,
+	    header: HeaderFor<System>,
 	) {
 		// Reset events before apply runtime upgrade hook.
 		// This is required to preserve events from runtime upgrade hook.
@@ -590,10 +590,11 @@ where
 				),
 			);
 		}
-		<frame_system::Pallet<System>>::initialize(block_number, parent_hash, digest);
+
+		<frame_system::Pallet<System>>::initialize(header);
 		weight = weight.saturating_add(<AllPalletsWithSystem as OnInitialize<
 			BlockNumberFor<System>,
-		>>::on_initialize(*block_number));
+		>>::on_initialize(header.number()));
 		weight = weight.saturating_add(
 			<System::BlockWeights as frame_support::traits::Get<_>>::get().base_block,
 		);
@@ -854,9 +855,7 @@ where
 		use sp_tracing::{enter_span, within_span};
 
 		<frame_system::Pallet<System>>::initialize(
-			&(frame_system::Pallet::<System>::block_number() + One::one()),
-			&block_hash,
-			&Default::default(),
+		    HeaderFor::<T>::shim_propose(frame_system::Pallet::<System>::block_number() + One::one(), block_hash, Default::default())
 		);
 
 		enter_span! { sp_tracing::Level::TRACE, "validate_transaction" };
@@ -886,12 +885,8 @@ where
 	/// Start an offchain worker and generate extrinsics.
 	pub fn offchain_worker(header: &frame_system::pallet_prelude::HeaderFor<System>) {
 		sp_io::init_tracing();
-		// We need to keep events available for offchain workers,
-		// hence we initialize the block manually.
-		// OffchainWorker RuntimeApi should skip initialization.
-		let digests = header.digest().clone();
 
-		<frame_system::Pallet<System>>::initialize(header.number(), header.parent_hash(), &digests);
+		<frame_system::Pallet<System>>::initialize(header.clone());
 
 		// Frame system only inserts the parent hash into the block hashes as normally we don't know
 		// the hash for the header before. However, here we are aware of the hash and we can add it

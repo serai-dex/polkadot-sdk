@@ -837,7 +837,7 @@ mod test {
 	#[test]
 	fn warp_sync_to_target_for_db_with_finalized_state_is_noop() {
 		let client = mock_client_with_state();
-		let config = WarpSyncConfig::WithTarget(<Block as BlockT>::Header::new(
+		let config = WarpSyncConfig::WithTarget(<Block as BlockT>::Header::propose(
 			1,
 			Default::default(),
 			Default::default(),
@@ -877,7 +877,7 @@ mod test {
 	#[test]
 	fn warp_sync_to_target_for_empty_db_doesnt_finish_instantly() {
 		let client = mock_client_without_state();
-		let config = WarpSyncConfig::WithTarget(<Block as BlockT>::Header::new(
+		let config = WarpSyncConfig::WithTarget(<Block as BlockT>::Header::propose(
 			1,
 			Default::default(),
 			Default::default(),
@@ -1048,7 +1048,7 @@ mod test {
 		}
 
 		// Manually set to another phase.
-		warp_sync.phase = Phase::TargetBlock(<Block as BlockT>::Header::new(
+		warp_sync.phase = Phase::TargetBlock(<Block as BlockT>::Header::propose(
 			1,
 			Default::default(),
 			Default::default(),

@@ -953,10 +953,15 @@ pub mod pallet {
 	#[pallet::getter(fn block_number)]
 	pub(super) type Number<T: Config> = StorageValue<_, BlockNumberFor<T>, ValueQuery>;
 
-	/// Hash of the previous block.
+    /// Hash of the previous block.
+    /// The pending block header.
+    #[pallet::storage]
+    #[pallet::getter(fn parent_hash)]
+    pub(super) type ParentHash<T: Config> = StorageValue<_, T::Hash, ValueQuery>;
+
+	/// The pending block header.
 	#[pallet::storage]
-	#[pallet::getter(fn parent_hash)]
-	pub(super) type ParentHash<T: Config> = StorageValue<_, T::Hash, ValueQuery>;
+	pub(super) type PendingBlockHeader<T: Config> = StorageValue<_, HeaderFor<T>, OptionQuery>;
 
 	/// Digest of the current block, also part of the block header.
 	#[pallet::storage]
@@ -1781,16 +1786,17 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Start the execution of a particular block.
-	pub fn initialize(number: &BlockNumberFor<T>, parent_hash: &T::Hash, digest: &generic::Digest) {
+	pub fn initialize(header: &HeaderFor<T>) {
 		// populate environment
 		ExecutionPhase::<T>::put(Phase::Initialization);
 		storage::unhashed::put(well_known_keys::EXTRINSIC_INDEX, &0u32);
-		let entropy = (b"frame_system::initialize", parent_hash).using_encoded(blake2_256);
+		let entropy = (b"frame_system::initialize", header.parent_hash()).using_encoded(blake2_256);
 		storage::unhashed::put_raw(well_known_keys::INTRABLOCK_ENTROPY, &entropy[..]);
-		<Number<T>>::put(number);
-		<Digest<T>>::put(digest);
-		<ParentHash<T>>::put(parent_hash);
-		<BlockHash<T>>::insert(*number - One::one(), parent_hash);
+		<PendingBlockHeader<T>>::put(header);
+		<Number<T>>::put(header.number());
+		<Digest<T>>::put(header.digest());
+		<ParentHash<T>>::put(header.parent_hash());
+		<BlockHash<T>>::insert(*header.number() - One::one(), header.parent_hash());
 		<InherentsApplied<T>>::kill();
 
 		// Remove previous block data from storage
@@ -1850,9 +1856,7 @@ impl<T: Config> Pallet<T> {
 		// - <Digest<T>>
 		//
 		// stay to be inspected by the client and will be cleared by `Self::initialize`.
-		let number = <Number<T>>::get();
-		let parent_hash = <ParentHash<T>>::get();
-		let digest = <Digest<T>>::get();
+		let mut header = <PendingBlockHeader<T>>::take().unwrap();
 
 		let extrinsics = (0..ExtrinsicCount::<T>::take().unwrap_or_default())
 			.map(ExtrinsicData::<T>::take)
@@ -1863,7 +1867,7 @@ impl<T: Config> Pallet<T> {
 
 		// move block hash pruning window by one block
 		let block_hash_count = T::BlockHashCount::get();
-		let to_remove = number.saturating_sub(block_hash_count).saturating_sub(One::one());
+		let to_remove = header.number().saturating_sub(block_hash_count).saturating_sub(One::one());
 
 		// keep genesis hash
 		if !to_remove.is_zero() {
@@ -1874,7 +1878,9 @@ impl<T: Config> Pallet<T> {
 		let storage_root = T::Hash::decode(&mut &sp_io::storage::root(version)[..])
 			.expect("Node is configured to use the same hash; qed");
 
-		HeaderFor::<T>::new(number, extrinsics_root, storage_root, parent_hash, digest)
+		header.set_extrinsics_root(extrinsics_root);
+		header.set_state_root(storage_root);
+		header
 	}
 
 	/// Deposits a log and ensures it matches the block's log data.
@@ -1951,12 +1957,12 @@ impl<T: Config> Pallet<T> {
 		storage::unhashed::put(well_known_keys::EXTRINSIC_INDEX, &extrinsic_index)
 	}
 
-	/// Set the parent hash number to something in particular. Can be used as an alternative to
-	/// `initialize` for tests that don't need to bother with the other environment entries.
-	#[cfg(any(feature = "std", test))]
-	pub fn set_parent_hash(n: T::Hash) {
-		<ParentHash<T>>::put(n);
-	}
+    /// Set the parent hash number to something in particular. Can be used as an alternative to
+    /// `initialize` for tests that don't need to bother with the other environment entries.
+    #[cfg(any(feature = "std", test))]
+    pub fn set_parent_hash(n: T::Hash) {
+        <ParentHash<T>>::put(n);
+    }
 
 	/// Set the current block weight. This should only be used in some integration tests.
 	#[cfg(any(feature = "std", test))]

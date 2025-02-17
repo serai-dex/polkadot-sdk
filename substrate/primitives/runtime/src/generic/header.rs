@@ -18,10 +18,10 @@
 //! Generic implementation of a block header.
 
 use crate::{
-	codec::{Codec, Decode, Encode},
+	codec::{Decode, Encode},
 	generic::Digest,
 	scale_info::TypeInfo,
-	traits::{self, AtLeast32BitUnsigned, BlockNumber, Hash as HashT, MaybeDisplay, Member},
+	traits::{self, BlockNumber, Hash as HashT},
 };
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -33,7 +33,7 @@ use sp_core::U256;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
-pub struct Header<Number: Copy + Into<U256> + TryFrom<U256>, Hash: HashT> {
+pub struct Header<Number: BlockNumber, Hash: HashT> {
 	/// The parent hash.
 	pub parent_hash: Hash::Output,
 	/// The block number.
@@ -81,7 +81,8 @@ where
 	type Hash = <Hash as HashT>::Output;
 	type Hashing = Hash;
 
-	fn new(
+	#[cfg(feature = "std")]
+	fn propose(
 		number: Self::Number,
 		extrinsics_root: Self::Hash,
 		state_root: Self::Hash,
@@ -90,6 +91,20 @@ where
 	) -> Self {
 		Self { number, extrinsics_root, state_root, parent_hash, digest }
 	}
+
+	fn shim_propose(
+		number: Self::Number,
+		parent_hash: Self::Hash,
+		digest: Digest,
+	) -> Self {
+		Self { number, extrinsics_root: Default::default(), state_root: Default::default(), parent_hash, digest }
+	}
+
+	#[cfg(feature = "std")]
+	fn genesis() -> Self {
+	  Self { number: Number::zero(), extrinsics_root: Default::default(), state_root: Default::default(), parent_hash: Default::default(), digest: Default::default() }
+	}
+
 	fn number(&self) -> &Self::Number {
 		&self.number
 	}
@@ -132,14 +147,7 @@ where
 
 impl<Number, Hash> Header<Number, Hash>
 where
-	Number: Member
-		+ core::hash::Hash
-		+ Copy
-		+ MaybeDisplay
-		+ AtLeast32BitUnsigned
-		+ Codec
-		+ Into<U256>
-		+ TryFrom<U256>,
+	Number: BlockNumber,
 	Hash: HashT,
 {
 	/// Convenience helper for computing the hash of the header without having
